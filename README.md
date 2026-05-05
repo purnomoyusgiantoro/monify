@@ -6,11 +6,11 @@ Monorepo untuk proyek capstone MONIFY yang menggabungkan **React**, **Express.js
 
 ```
 monify/
-├── apps/
-│   ├── web/            ⚛️  Frontend (React)
+├── frontend/           ⚛️  Frontend (React)
+├── backend/
 │   ├── api/            🟢 Backend (Express.js)
-│   └── ai-service/     🐍 Microservice AI (FastAPI + TensorFlow)
-├── data-science/       📊 Area Kerja Data Scientist
+│   ├── ai-service/     🐍 Microservice AI (FastAPI + TensorFlow)
+│   └── data-science/   📊 Area Kerja Data Scientist
 └── Documentation/      📄 Dokumen Proyek
 ```
 
@@ -42,7 +42,7 @@ npm run dev
 
 ### 2. Setup AI Service (Python)
 ```bash
-cd apps/ai-service
+cd backend/ai-service
 python -m venv venv
 
 # Windows

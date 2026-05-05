@@ -103,7 +103,7 @@ def train_model(model, X_train, y_train, X_val, y_val, epochs=20, batch_size=32)
 # ============================
 # 4. Simpan Model
 # ============================
-def save_model(model, filepath='../apps/ai-service/models/category_classifier.h5'):
+def save_model(model, filepath='../ai-service/models/category_classifier.h5'):
     """Menyimpan model terlatih ke file .h5"""
     print(f"💾 Menyimpan model ke {filepath}...")
     # model.save(filepath)

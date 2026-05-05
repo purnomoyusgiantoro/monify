@@ -1,11 +1,14 @@
 ### 1. Arsitektur Monorepo MONIFY
 
-Kita akan membagi monorepo menjadi 3 aplikasi utama dan 1 direktori riset:
+Kita akan membagi monorepo menjadi 2 folder utama:
+1. **`frontend`**: Berisi aplikasi web React.
+2. **`backend`**: Berisi layanan backend (Express API, AI Service, dan Data Science).
 
-1. **`apps/web`**: Frontend aplikasi menggunakan React (Penanggung jawab: Purnomo Yusgiantoro).
-2. **`apps/api`**: Backend utama menggunakan Node.js/Express untuk CRUD, Autentikasi, dan manajemen JSON lokal (Penanggung jawab: Indra Fata Nizar Azizi).
-3. **`apps/ai-service`**: Microservice menggunakan Python (FastAPI) khusus untuk menjalankan model TensorFlow Deep Learning (Penanggung jawab: Faradila Octavia & Mohamad Fajar Mutaqin).
-4. **`data-science`**: Folder khusus untuk riset, dataset finansial, _feature engineering_, dan file Jupyter Notebook (Penanggung jawab: Kristina Ester & Chenida Rira Verlyta).
+Rincian:
+1. **`frontend`**: Frontend aplikasi menggunakan React (Penanggung jawab: Purnomo Yusgiantoro).
+2. **`backend/api`**: Backend utama menggunakan Node.js/Express untuk CRUD, Autentikasi, dan manajemen JSON lokal (Penanggung jawab: Indra Fata Nizar Azizi).
+3. **`backend/ai-service`**: Microservice menggunakan Python (FastAPI) khusus untuk menjalankan model TensorFlow Deep Learning (Penanggung jawab: Faradila Octavia & Mohamad Fajar Mutaqin).
+4. **`backend/data-science`**: Folder khusus untuk riset, dataset finansial, _feature engineering_, dan file Jupyter Notebook (Penanggung jawab: Kristina Ester & Chenida Rira Verlyta).
 
 ---
 
@@ -19,32 +22,32 @@ monify-monorepo/
 ├── package.json                 # Konfigurasi Monorepo (NPM Workspaces)
 ├── README.md
 │
-├── apps/
-│   ├── web/                     # ⚛️ Frontend (React)
-│   │   ├── package.json
-│   │   ├── src/
-│   │   │   ├── App.jsx
-│   │   │   ├── components/      # UI component
-│   │   │   └── pages/           # Halaman Dashboard, AI Analysis
-│   │   └── public/
-│   │
-│   ├── api/                     # 🟢 Backend (Express.js)
-│   │   ├── package.json
-│   │   ├── server.js
-│   │   ├── data/                # Penyimpanan JSON lokal (karena tanpa DB riil)
-│   │   │   └── transactions.json
-│   │   └── routes/
-│   │       └── transactionRoutes.js
-│   │
-│   └── ai-service/              # 🐍 Microservice AI (FastAPI + TensorFlow)
-│       ├── requirements.txt
-│       ├── main.py
-│       └── models/              # Model ML (.h5 / .tflite) disimpan di sini
+├── frontend/                    # ⚛️ Frontend (React)
+│   ├── package.json
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── components/          # UI component
+│   │   └── pages/               # Halaman Dashboard, AI Analysis
+│   └── public/
 │
-└── data-science/                # 📊 Area Kerja Data Scientist
-    ├── datasets/                # Financial Dataset
-    ├── notebooks/               # Jupyter Notebooks untuk training model
-    └── train_model.py           # Script training LSTM/GRU/ANN
+└── backend/
+    ├── api/                     # 🟢 Backend (Express.js)
+    │   ├── package.json
+    │   ├── server.js
+    │   ├── data/                # Penyimpanan JSON lokal
+    │   │   └── transactions.json
+    │   └── routes/
+    │       └── transactionRoutes.js
+    │
+    ├── ai-service/              # 🐍 Microservice AI (FastAPI + TensorFlow)
+    │   ├── requirements.txt
+    │   ├── main.py
+    │   └── models/              # Model ML (.h5 / .tflite) disimpan di sini
+    │
+    └── data-science/            # 📊 Area Kerja Data Scientist
+        ├── datasets/            # Financial Dataset
+        ├── notebooks/           # Jupyter Notebooks untuk training model
+        └── train_model.py       # Script training LSTM/GRU/ANN
 ```
 
 ---
@@ -62,10 +65,10 @@ Fungsi: Mengatur agar seluruh aplikasi JavaScript berada dalam satu perintah ins
 {
   "name": "monify-monorepo",
   "private": true,
-  "workspaces": ["apps/web", "apps/api"],
+  "workspaces": ["frontend", "backend/api"],
   "scripts": {
-    "dev:web": "npm run dev --workspace=apps/web",
-    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=frontend",
+    "dev:api": "npm run dev --workspace=backend/api",
     "dev": "npm run dev:api & npm run dev:web"
   }
 }
@@ -78,14 +81,14 @@ node_modules/
 .env
 __pycache__/
 *.pyc
-apps/ai-service/venv/
-data-science/datasets/*.csv
-apps/api/data/*.json
+backend/ai-service/venv/
+backend/data-science/datasets/*.csv
+backend/api/data/*.json
 ```
 
 #### B. Backend / API Node.js (Tugas: Indra Fata Nizar Azizi)
 
-**File:** `apps/api/server.js`
+**File:** `backend/api/server.js`
 Fungsi: Jembatan penghubung Frontend dan AI Service, serta menyimpan data transaksi ke JSON lokal.
 
 ```javascript
@@ -115,7 +118,7 @@ app.listen(PORT, () => {
 
 #### C. AI Service / Python Backend (Tugas: Faradila & Fajar)
 
-**File:** `apps/ai-service/requirements.txt`
+**File:** `backend/ai-service/requirements.txt`
 
 ```text
 fastapi
@@ -125,7 +128,7 @@ pandas
 numpy
 ```
 
-**File:** `apps/ai-service/main.py`
+**File:** `backend/ai-service/main.py`
 Fungsi: Menjalankan model Dense Layer (ANN) untuk menerima input dari Node.js Backend dan mengembalikan hasil klasifikasi/prediksi.
 
 ```python
@@ -161,7 +164,7 @@ def predict_category(data: TransactionInput):
 
 #### D. Data Science Area (Tugas: Kristina & Chenida)
 
-**File:** `data-science/train_model.py`
+**File:** `backend/data-science/train_model.py`
 Fungsi: Script awal untuk mengolah _Financial Dataset_.
 
 ```python
@@ -197,7 +200,7 @@ if __name__ == "__main__":
    - Jalankan `npm install` (akan menginstal dependency untuk web dan api sekaligus).
    - Frontend berjalan di `localhost:3000` (React), Backend Express di `localhost:5000`.
 3. **Setup AI & ML (Fajar, Faradila, Kristina, Chenida):**
-   - Masuk ke folder `apps/ai-service`.
+   - Masuk ke folder `backend/ai-service`.
    - Buat virtual environment: `python -m venv venv`.
    - Aktifkan venv dan install: `pip install -r requirements.txt`.
    - Jalankan FastAPI di port khusus: `uvicorn main:app --reload --port 8000`.
