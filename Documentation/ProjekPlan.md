@@ -1,11 +1,3 @@
-Berdasarkan dokumen Project Plan yang Anda berikan untuk proyek **MONIFY (Sistem Cerdas Pengelolaan Keuangan Pribadi)**, penggunaan arsitektur **Monorepo** (satu repositori Git untuk seluruh kode) adalah pilihan yang sangat tepat.
-
-Karena proyek ini menggabungkan ekosistem **JavaScript/Node.js** (React & Express) dan ekosistem **Python** (TensorFlow & FastAPI), monorepo akan memudahkan tim yang terdiri dari Frontend, Backend, AI Engineer, dan Data Scientist untuk berkolaborasi tanpa harus berpindah-pindah repositori.
-
-Berikut adalah rancangan _Monorepo Setup_, struktur folder, dan inisiasi file awal yang disesuaikan dengan _Job Desk_ tim Anda.
-
----
-
 ### 1. Arsitektur Monorepo MONIFY
 
 Kita akan membagi monorepo menjadi 3 aplikasi utama dan 1 direktori riset:
