@@ -1,38 +1,27 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './Navbar.css';
 
-function Navbar() {
+export default function Navbar({ openAuth }) {
   const location = useLocation();
+  const isTeam = location.pathname === '/team';
 
   return (
-    <nav className="navbar">
-      <div className="container navbar-inner">
-        <Link to="/" className="navbar-brand">
-          <span className="brand-icon">💰</span>
-          <span className="brand-text">MONIFY</span>
+    <header className="site-header" id="top">
+      <nav className="navbar container" aria-label="Navigasi utama">
+        <Link className="brand" to="/" aria-label="Monify Beranda">
+          <span>Monify</span>
         </Link>
-
-        <ul className="navbar-links">
-          <li>
-            <Link
-              to="/"
-              className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-            >
-              Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/ai-analysis"
-              className={`nav-link ${location.pathname === '/ai-analysis' ? 'active' : ''}`}
-            >
-              AI Analysis
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
+        <div className="nav-links" id="navLinks">
+          <Link to="/" className={location.pathname === '/' && !location.hash ? 'active' : ''}>Beranda</Link>
+          <Link to="/#tentang" className={location.hash === '#tentang' ? 'active' : ''}>Tentang</Link>
+          <Link to="/team" className={isTeam ? 'active' : ''}>Team</Link>
+          <Link to="/#kontak" className={location.hash === '#kontak' ? 'active' : ''}>Kontak</Link>
+        </div>
+        <a className="login-btn" href="#" onClick={(e) => { e.preventDefault(); openAuth('login'); }} aria-label="Masuk ke Monify">
+          <span className="login-icon">●</span>
+          Masuk
+        </a>
+      </nav>
+    </header>
   );
 }
-
-export default Navbar;
