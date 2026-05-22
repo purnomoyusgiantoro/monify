@@ -1,27 +1,18 @@
 
 export const rupiah = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value || 0);
 
-const seedTransactions = [
-  { id: 1, date: '2026-05-01', title: 'Uang bulanan', type: 'income', category: 'Pemasukan', amount: 3500000, note: 'Saldo awal bulan' },
-  { id: 2, date: '2026-05-02', title: 'Makan ayam geprek', type: 'expense', category: 'Makanan', amount: 28000, note: 'Makan siang' },
-  { id: 3, date: '2026-05-03', title: 'Bensin motor', type: 'expense', category: 'Transport', amount: 35000, note: 'Isi bensin' },
-  { id: 4, date: '2026-05-04', title: 'Top up kuota', type: 'expense', category: 'Internet', amount: 43000, note: 'Paket data' },
-  { id: 5, date: '2026-05-05', title: 'Kopi dan camilan', type: 'expense', category: 'Makanan', amount: 24000, note: 'Nongkrong' },
-  { id: 6, date: '2026-05-06', title: 'Langganan aplikasi', type: 'expense', category: 'Hiburan', amount: 49000, note: 'Subscription' },
-  { id: 7, date: '2026-05-07', title: 'Belanja skincare', type: 'expense', category: 'Belanja', amount: 89000, note: 'Kebutuhan pribadi' },
-  { id: 8, date: '2026-05-08', title: 'Gojek kampus', type: 'expense', category: 'Transport', amount: 22000, note: 'Transportasi' }
-];
+const seedTransactions = [];
 
 const defaultState = {
-  user: { name: 'Indra Fata', email: 'indra@example.com', role: 'Full-Stack MONIFY' },
-  profile: { income: 3500000, budget: 2200000, savingTarget: 500000 },
+  user: { name: 'Pengguna', email: 'user@example.com', role: 'Member' },
+  profile: { income: 0, budget: 0, savingTarget: 0 },
   budgets: {
-    Makanan: 700000,
-    Transport: 400000,
-    Belanja: 450000,
-    Hiburan: 250000,
-    Internet: 180000,
-    Lainnya: 220000
+    Makanan: 0,
+    Transport: 0,
+    Belanja: 0,
+    Hiburan: 0,
+    Internet: 0,
+    Lainnya: 0
   },
   transactions: seedTransactions
 };

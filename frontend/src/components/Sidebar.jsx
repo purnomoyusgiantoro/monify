@@ -39,7 +39,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
       <Link className="logo" to="/dashboard"><span>Monify<small>AI Finance</small></span></Link>
       <div className="profile-mini">
         <div className="avatar">IF</div>
-        <div><strong>{user?.name || 'Indra Fata'}</strong><span>Gen Z Finance User</span></div>
+        <div><strong>{user?.name || 'namamu'}</strong><span>Gen Z Finance User</span></div>
       </div>
       <nav className="nav-menu">
         {navs.map(nav => (

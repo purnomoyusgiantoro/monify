@@ -30,8 +30,15 @@ export default function Profil() {
     toast('Password demo berhasil diganti.');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('monify_logged_in');
+  const handleLogout = async () => {
+    try {
+      const { apiLogout } = await import('../utils/api');
+      await apiLogout();
+    } catch {
+      localStorage.removeItem('monify_logged_in');
+      localStorage.removeItem('monify_token');
+      localStorage.removeItem('monify_user');
+    }
     navigate('/');
   };
 

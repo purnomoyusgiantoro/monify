@@ -3,6 +3,7 @@ import { useStylesheet, useReveal } from '../utils/hooks';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { Search, BarChart3, ShieldAlert, CheckCircle } from 'lucide-react';
+import { apiLogin, apiRegister, setAuth } from '../utils/api';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -11,12 +12,65 @@ export default function Landing() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState('login');
   const [showPass, setShowPass] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
 
-  const handleAuth = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
-    localStorage.setItem('monify_logged_in', 'true');
-    closeAuth();
-    navigate('/dashboard');
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      const formData = new FormData(e.target);
+
+      let result;
+
+      if (authView === 'register') {
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const password = formData.get('password');
+
+        if (!name || !email || !password) {
+          setAuthError('Semua field wajib diisi.');
+          setAuthLoading(false);
+          return;
+        }
+
+        result = await apiRegister(name, email, password);
+      } else {
+        const email = formData.get('email');
+        const password = formData.get('password');
+
+        if (!email || !password) {
+          setAuthError('Email dan password wajib diisi.');
+          setAuthLoading(false);
+          return;
+        }
+
+        result = await apiLogin(email, password);
+      }
+
+      if (result.ok && result.data.success) {
+        // Simpan token & user data
+        setAuth(result.data.data.token, result.data.data.user);
+
+        // Update store user data
+        const { getState, setState } = await import('../utils/store');
+        const st = getState();
+        st.user.name = result.data.data.user.name;
+        st.user.email = result.data.data.user.email;
+        setState(st);
+
+        closeAuth();
+        navigate('/dashboard');
+      } else {
+        setAuthError(result.data.message || 'Terjadi kesalahan. Coba lagi.');
+      }
+    } catch (error) {
+      setAuthError('Tidak bisa terhubung ke server. Pastikan backend berjalan.');
+    }
+
+    setAuthLoading(false);
   };
 
   const openAuth = (view) => {
@@ -330,15 +384,16 @@ export default function Landing() {
                   <h3>Selamat datang kembali</h3>
                   <p>Cek kondisi uangmu sebelum membuat keputusan belanja berikutnya.</p>
                 </div>
+                {authError && authView === 'login' && <div className="auth-error" style={{color:'#f45f5f',background:'rgba(244,95,95,0.1)',padding:'10px 14px',borderRadius:'8px',fontSize:'13px',marginBottom:'8px'}}>{authError}</div>}
                 <label>Email</label>
-                <div className="auth-field"><input type="email" placeholder="nama@email.com" required /></div>
+                <div className="auth-field"><input name="email" type="email" placeholder="nama@email.com" required /></div>
                 <label>Password</label>
                 <div className="auth-field with-action">
-                  <input type={showPass ? "text" : "password"} placeholder="Masukkan password" required />
+                  <input name="password" type={showPass ? "text" : "password"} placeholder="Masukkan password" required />
                   <button type="button" onClick={() => setShowPass(!showPass)}>{showPass ? "Tutup" : "Lihat"}</button>
                 </div>
-                <button className="btn btn-primary auth-submit" type="submit">Masuk ke Dashboard</button>
-                <p className="auth-switcher">Belum punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('register'); }}>Daftar sekarang</a></p>
+                <button className="btn btn-primary auth-submit" type="submit" disabled={authLoading}>{authLoading ? 'Memproses...' : 'Masuk ke Dashboard'}</button>
+                <p className="auth-switcher">Belum punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('register'); setAuthError(''); }}>Daftar sekarang</a></p>
               </form>
               
               <form className={`auth-form ${authView === 'register' ? 'active' : ''}`} onSubmit={handleAuth}>
@@ -347,17 +402,18 @@ export default function Landing() {
                   <h3>Mulai rapikan uangmu</h3>
                   <p>Daftar agar transaksi, budget, dan prediksi AI tersimpan di dashboard.</p>
                 </div>
+                {authError && authView === 'register' && <div className="auth-error" style={{color:'#f45f5f',background:'rgba(244,95,95,0.1)',padding:'10px 14px',borderRadius:'8px',fontSize:'13px',marginBottom:'8px'}}>{authError}</div>}
                 <label>Nama Lengkap</label>
-                <div className="auth-field"><input type="text" placeholder="Contoh: Indra Fata" required /></div>
+                <div className="auth-field"><input name="name" type="text" placeholder="Contoh: namamu" required /></div>
                 <label>Email</label>
-                <div className="auth-field"><input type="email" placeholder="nama@email.com" required /></div>
+                <div className="auth-field"><input name="email" type="email" placeholder="nama@email.com" required /></div>
                 <label>Password</label>
                 <div className="auth-field with-action">
-                  <input type={showPass ? "text" : "password"} placeholder="Minimal 8 karakter" required />
+                  <input name="password" type={showPass ? "text" : "password"} placeholder="Minimal 8 karakter" required />
                   <button type="button" onClick={() => setShowPass(!showPass)}>{showPass ? "Tutup" : "Lihat"}</button>
                 </div>
-                <button className="btn btn-primary auth-submit" type="submit">Daftar & Masuk</button>
-                <p className="auth-switcher">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('login'); }}>Masuk di sini</a></p>
+                <button className="btn btn-primary auth-submit" type="submit" disabled={authLoading}>{authLoading ? 'Memproses...' : 'Daftar & Masuk'}</button>
+                <p className="auth-switcher">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('login'); setAuthError(''); }}>Masuk di sini</a></p>
               </form>
             </div>
           </section>

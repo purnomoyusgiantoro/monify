@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { useStylesheet } from '../utils/hooks';
 import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import { isAuthenticated } from '../utils/api';
 
 export default function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isLoggedIn = localStorage.getItem('monify_logged_in') === 'true';
+  const isLoggedIn = isAuthenticated();
   useStylesheet('/styles.css');
 
   React.useEffect(() => {
