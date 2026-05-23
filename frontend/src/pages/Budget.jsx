@@ -164,7 +164,7 @@ export default function Budget() {
           <div className="panel-head"><div><h2>Target Keuangan Dasar</h2><p>Pemasukan dan tabungan disimpan secara lokal. Total budget dihitung otomatis dari limit kategori Anda.</p></div></div>
           <div className="form-grid">
             <div className="field"><label>Pemasukan Bulanan</label><div className="input-wrap"><input name="income" type="number" defaultValue={profile.income} /></div></div>
-            <div className="field"><label>Total Budget Pengeluaran</label><div className="input-wrap"><input type="text" value={rupiah(totalBudget)} disabled style={{backgroundColor: '#1E293B'}} /></div></div>
+            <div className="field"><label>Total Budget Pengeluaran</label><div className="input-wrap"><input type="text" value={rupiah(totalBudget)} /></div></div>
             <div className="field"><label>Target Tabungan</label><div className="input-wrap"><input name="saving" type="number" defaultValue={profile.savingTarget} /></div></div>
             <button className="btn btn-primary" type="submit">Simpan Info Lokal</button>
           </div>
