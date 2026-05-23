@@ -687,7 +687,7 @@ button { cursor: pointer; }
   .mobile-menu { display:grid; }
   .hero-dashboard, .content-grid, .page-grid { grid-template-columns:1fr; }
   .stats-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }
-  .search-box { display:none; }
+  .search-box { width: 100%; max-width: none; }
 }
 @media (max-width: 720px) {
   .auth-body { padding:14px; }
@@ -695,7 +695,10 @@ button { cursor: pointer; }
   .auth-copy h1 { font-size:44px; }
   .form-card { padding:24px; }
   .main { padding:20px 16px 34px; }
-  .topbar { align-items:flex-start; }
+  .topbar { flex-direction: column; align-items: stretch; gap: 16px; }
+  .top-actions { width: 100%; flex-direction: column; align-items: stretch; gap: 10px; }
+  .search-box { width: 100%; max-width: 100%; }
+  .top-actions .btn { width: 100%; justify-content: center; }
   .top-actions .btn span { display:none; }
   .stats-grid, .feature-grid, .insight-board { grid-template-columns:1fr; }
   .balance-card h2 { font-size:38px; }
