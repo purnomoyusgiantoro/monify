@@ -49,21 +49,23 @@ export default function Prediksi() {
         <div className="feature-card"><i><ShieldAlert size={24} /></i><h3>Deteksi Over Budget</h3><p>Prediksi dibandingkan dengan budget. Kalau risiko tinggi, user diberi sinyal sebelum uang keburu habis.</p></div>
       </section>
       <section className="insight-board">
-        <div className="prediction-card">
-          <h3>Prediksi Akhir Bulan</h3><p className="help">Estimasi total pengeluaran jika pola harian tetap sama.</p>
-          <div className="big-number">{rupiah(s.projected)}</div>
-          <span className="badge">Budget: <b>{rupiah(st.profile.budget)}</b></span>
-        </div>
-        <div className="prediction-card">
-          <h3>Safe-to-Spend Hari Ini</h3><p className="help">Batas belanja aman per hari agar budget tidak jebol.</p>
-          <div className="big-number">{rupiah(s.safe)}</div>
-          <span className="badge">Sisa hari dihitung otomatis</span>
-        </div>
-        <div className="prediction-card">
-          <h3>Risiko Over Budget</h3><p className="help">Semakin tinggi, semakin besar peluang pengeluaran melewati budget.</p>
-          <div className="big-number">{s.risk}%</div>
-          <div className="progress warn"><span style={{ width: `${Math.min(100, s.risk)}%` }}></span></div>
-          <div style={{ marginTop: '14px' }}>{getStatus()}</div>
+        <div className="prediction-group">
+          <div className="prediction-card">
+            <h3>Prediksi Akhir Bulan</h3><p className="help">Estimasi total pengeluaran jika pola harian tetap sama.</p>
+            <div className="big-number">{rupiah(s.projected)}</div>
+            <span className="badge">Budget: <b>{rupiah(st.profile.budget)}</b></span>
+          </div>
+          <div className="prediction-card">
+            <h3>Safe-to-Spend Hari Ini</h3><p className="help">Batas belanja aman per hari agar budget tidak jebol.</p>
+            <div className="big-number">{rupiah(s.safe)}</div>
+            <span className="badge">Sisa hari dihitung otomatis</span>
+          </div>
+          <div className="prediction-card">
+            <h3>Risiko Over Budget</h3><p className="help">Semakin tinggi, semakin besar peluang pengeluaran melewati budget.</p>
+            <div className="big-number">{s.risk}%</div>
+            <div className="progress warn"><span style={{ width: `${Math.min(100, s.risk)}%` }}></span></div>
+            <div style={{ marginTop: '14px' }}>{getStatus()}</div>
+          </div>
         </div>
         <div className="prediction-card">
           <h3>Rekomendasi MONIFY</h3><p className="help">{aiStamp}</p>

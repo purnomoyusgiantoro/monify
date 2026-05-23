@@ -16,7 +16,7 @@ export default function Team() {
           <div className="container team-hero-grid">
             <div className="reveal">
               <span className="pill">MONIFY TEAM</span>
-              <h1>Tim kecil dengan tugas yang jelas.</h1>
+              <h1>Tim kecil dengan tugas yang jelas</h1>
               <p>
                 Monify dikembangkan oleh 6 anggota dengan pembagian kerja Data Scientist, AI Engineer, dan Full-Stack Web Developer. Fokusnya bukan banyak fitur, tapi fitur yang nyambung dari data, model AI, sampai antarmuka pengguna.
               </p>

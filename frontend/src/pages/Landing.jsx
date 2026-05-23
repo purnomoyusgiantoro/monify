@@ -122,7 +122,7 @@ export default function Landing() {
         <section className="hero section-pad">
           <div className="container hero-grid">
             <div className="hero-copy reveal">
-              <div className="eyebrow">Capstone Project • AI Finance Assistant</div>
+              <div className="eyebrow">AI Finance Assistant</div>
               <h1>Kontrol <span>Keuanganmu</span> dengan AI</h1>
               <p>
                 Catat, analisis, dan prediksi pengeluaranmu secara otomatis. Gen Z bisa tahu uangnya lari ke mana tanpa ribet bikin tabel manual.
