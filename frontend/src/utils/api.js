@@ -205,6 +205,10 @@ export async function apiPredict() {
     return apiFetch('/ai/predict', { method: 'POST' });
 }
 
+export async function apiGetPredictions(limit = 1) {
+    return apiFetch(`/ai/predictions?limit=${limit}`);
+}
+
 export async function apiGetSafeToSpend() {
     return apiFetch('/ai/safe-to-spend');
 }

@@ -1,103 +1,195 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import Topbar from '../components/Topbar';
-import { getState, setState, summary, rupiah, toast, timestamp } from '../utils/store';
+import { getState, setState, rupiah, toast, timestamp } from '../utils/store';
 import { Target, CreditCard, Leaf, Bot, Flame, Calculator, CheckCircle } from 'lucide-react';
+import {
+  apiGetDashboardSummary,
+  apiGetBudgets,
+  apiGetExpenseCategories,
+  apiCreateBudget,
+  apiUpdateBudget,
+  apiPredict,
+  apiGetPredictions
+} from '../utils/api';
 
 export default function Budget() {
   const { setMobileMenuOpen } = useOutletContext();
-  const [s, setS] = useState(null);
-  const [st, setSt] = useState(null);
-  const [aiStamp, setAiStamp] = useState('Klik update untuk membaca ulang kondisi budget terbaru.');
+  const [loading, setLoading] = useState(true);
+  
+  // Backend data states
+  const [summaryData, setSummaryData] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [budgets, setBudgets] = useState([]);
+  const [prediction, setPrediction] = useState(null);
+
+  // Local state for profile (income & savingTarget are not in DB)
+  const [profile, setProfile] = useState({ income: 0, savingTarget: 0 });
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [sumRes, catRes, budRes, predRes] = await Promise.all([
+        apiGetDashboardSummary(),
+        apiGetExpenseCategories(),
+        apiGetBudgets(),
+        apiGetPredictions(1)
+      ]);
+
+      if (sumRes.ok) setSummaryData(sumRes.data.data);
+      if (catRes.ok) setCategories(catRes.data.data);
+      if (budRes.ok) setBudgets(budRes.data.data);
+      if (predRes.ok && predRes.data.data.length > 0) {
+        setPrediction(predRes.data.data[0]);
+      }
+      
+      const st = getState();
+      setProfile(st.profile);
+    } catch (err) {
+      console.error('Failed to load budget data:', err);
+      toast('Gagal memuat data dari server');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const load = () => {
-      const state = getState();
-      setSt(state);
-      setS(summary(state));
-    };
-    load();
-    window.addEventListener('statechange', load);
-    return () => window.removeEventListener('statechange', load);
+    loadData();
+    window.addEventListener('statechange', loadData);
+    return () => window.removeEventListener('statechange', loadData);
   }, []);
-
-  if (!s || !st) return null;
 
   const handleProfileSubmit = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
     const next = getState();
     next.profile.income = Number(data.get('income')) || next.profile.income;
-    next.profile.budget = Number(data.get('budget')) || next.profile.budget;
     next.profile.savingTarget = Number(data.get('saving')) || next.profile.savingTarget;
     setState(next);
-    toast('Target keuangan diperbarui.');
+    toast('Target penghasilan & tabungan diperbarui di lokal.');
   };
 
-  const handleLimitSubmit = (e, cat) => {
+  const handleLimitSubmit = async (e, catId, budgetId) => {
     e.preventDefault();
     const limit = Number(e.target.elements.limit.value);
-    const next = getState();
-    next.budgets[cat] = Math.max(1, limit || next.budgets[cat]);
-    setState(next);
-    toast(`Limit ${cat} diperbarui.`);
+    
+    try {
+      if (limit <= 0) {
+        toast('Limit harus lebih besar dari 0');
+        return;
+      }
+
+      if (budgetId) {
+        const res = await apiUpdateBudget(budgetId, { amount: limit });
+        if (res.ok) toast('Limit diperbarui!');
+        else toast(res.data?.message || 'Gagal memperbarui');
+      } else {
+        const res = await apiCreateBudget({ expense_category_id: catId, amount: limit });
+        if (res.ok) toast('Limit dibuat!');
+        else toast(res.data?.message || 'Gagal membuat limit');
+      }
+      loadData();
+    } catch (err) {
+      toast('Terjadi kesalahan server');
+    }
   };
 
-  const rows = Object.entries(st.budgets).map(([cat, limit]) => {
-    const used = s.byCategory[cat] || 0;
-    return { cat, limit, used, pct: Math.round((used / Math.max(1, limit)) * 100) };
+  const handleUpdateAI = async () => {
+    try {
+      toast('Meminta rekomendasi AI...');
+      const res = await apiPredict();
+      if (res.ok) {
+        toast('Prediksi AI berhasil diperbarui!');
+        loadData();
+      } else {
+        toast(res.data?.message || 'Gagal update AI');
+      }
+    } catch (err) {
+      toast('Terjadi kesalahan saat memanggil AI');
+    }
+  };
+
+  if (loading && !summaryData) return <div className="p-8">Memuat data budget...</div>;
+
+  // Merge categories with budgets
+  const rows = categories.map(cat => {
+    const b = budgets.find(x => x.expense_category_id === cat.id);
+    return {
+      catId: cat.id,
+      catName: cat.name,
+      budgetId: b ? b.id : null,
+      limit: b ? b.amount : 0,
+      used: b ? b.used_amount : 0,
+      pct: b ? b.usage_percentage : 0
+    };
   });
 
-  const risky = rows.filter(row => row.pct >= 70).sort((a,b)=>b.pct-a.pct).slice(0,3);
-  const messages = risky.length ? risky.map(row => `Kurangi kategori ${row.cat}. Sudah terpakai ${row.pct}% dari limit ${rupiah(row.limit)}.`) : [
-    `Belum ada kategori yang rawan. Tetap pantau ${s.topCategory[0]} karena menjadi pengeluaran terbesar saat ini.`,
-    `Safe-to-spend hari ini sekitar ${rupiah(s.safe)}.`,
-    `Target tabungan ${rupiah(st.profile.savingTarget)} sebaiknya dipisahkan di awal bulan.`
-  ];
+  const aiStamp = prediction 
+    ? `Terakhir diperbarui: ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(prediction.created_at))}`
+    : 'Klik update untuk membaca ulang kondisi budget terbaru.';
+
+  // Parse recommendation text from prediction or generate default
+  let messages = ['Belum ada rekomendasi AI. Silakan klik Update Prediksi AI.'];
+  if (prediction && prediction.recommendation) {
+    // Split by dot to get individual sentences for the UI list
+    messages = prediction.recommendation.split('. ').filter(x => x.trim().length > 0);
+  } else if (prediction) {
+     messages = [
+      `Safe-to-spend hari ini: ${rupiah(prediction.safe_to_spend_today)}`,
+      `Risiko saat ini ${prediction.risk_percentage}%. Status: ${prediction.overbudget_status}`
+    ];
+  }
+
+  const totalBudget = summaryData?.total_budget || 0;
+  const totalExpense = summaryData?.total_expense || 0;
+  const remaining = Math.max(0, totalBudget - totalExpense);
 
   return (
     <>
       <Topbar 
         setMobileMenuOpen={setMobileMenuOpen} 
         title="Budget Bulanan" 
-        desc="Atur batas total dan limit tiap kategori supaya rekomendasi AI lebih masuk akal." 
-        extraAction={<button className="btn btn-primary" onClick={() => { setAiStamp(`Terakhir diperbarui: ${timestamp()}`); toast('Prediksi AI budget diperbarui dari data terbaru.'); }}>Update Prediksi AI</button>} 
+        desc="Atur batas pengeluaran tiap kategori agar keuangan tetap terkontrol." 
+        extraAction={<button className="btn btn-primary" onClick={handleUpdateAI}>Update Prediksi AI</button>} 
       />
       <section className="stats-grid">
-        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><Target size={24}/></div><span className="stat-pill">Target</span></div><h3>{rupiah(st.profile.budget)}</h3><p>Budget pengeluaran bulan ini</p></div>
-        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><CreditCard size={24}/></div><span className="stat-pill">Terpakai</span></div><h3>{rupiah(s.expense)}</h3><p>Total pengeluaran tercatat</p></div>
-        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><Leaf size={24}/></div><span className="stat-pill">Sisa</span></div><h3>{rupiah(Math.max(0, st.profile.budget - s.expense))}</h3><p>Sisa ruang pengeluaran</p></div>
-        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><Bot size={24}/></div><span className="stat-pill">AI</span></div><h3>{s.risk}%</h3><p>Risiko dari pola pengeluaran</p></div>
+        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><Target size={24}/></div><span className="stat-pill">Target</span></div><h3>{rupiah(totalBudget)}</h3><p>Total limit kategori Anda</p></div>
+        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><CreditCard size={24}/></div><span className="stat-pill">Terpakai</span></div><h3>{rupiah(totalExpense)}</h3><p>Total pengeluaran tercatat</p></div>
+        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><Leaf size={24}/></div><span className="stat-pill">Sisa</span></div><h3>{rupiah(remaining)}</h3><p>Sisa ruang pengeluaran</p></div>
+        <div className="stat-card"><div className="stat-top"><div className="stat-icon"><Bot size={24}/></div><span className="stat-pill">AI</span></div><h3>{summaryData?.risk_percentage || 0}%</h3><p>Risiko dari pola pengeluaran</p></div>
       </section>
+      
       <section className="page-grid">
         <form className="panel" onSubmit={handleProfileSubmit}>
-          <div className="panel-head"><div><h2>Target Keuangan</h2><p>Isi angka yang realistis. Budget terlalu kecil cuma bikin sistem terus-terusan memberi peringatan palsu.</p></div></div>
+          <div className="panel-head"><div><h2>Target Keuangan Dasar</h2><p>Pemasukan dan tabungan disimpan secara lokal. Total budget dihitung otomatis dari limit kategori Anda.</p></div></div>
           <div className="form-grid">
-            <div className="field"><label>Pemasukan Bulanan</label><div className="input-wrap"><input name="income" type="number" defaultValue={st.profile.income} /></div></div>
-            <div className="field"><label>Budget Pengeluaran</label><div className="input-wrap"><input name="budget" type="number" defaultValue={st.profile.budget} /></div></div>
-            <div className="field"><label>Target Tabungan</label><div className="input-wrap"><input name="saving" type="number" defaultValue={st.profile.savingTarget} /></div></div>
-            <button className="btn btn-primary" type="submit">Simpan Target</button>
+            <div className="field"><label>Pemasukan Bulanan</label><div className="input-wrap"><input name="income" type="number" defaultValue={profile.income} /></div></div>
+            <div className="field"><label>Total Budget Pengeluaran</label><div className="input-wrap"><input type="text" value={rupiah(totalBudget)} disabled style={{backgroundColor: '#1E293B'}} /></div></div>
+            <div className="field"><label>Target Tabungan</label><div className="input-wrap"><input name="saving" type="number" defaultValue={profile.savingTarget} /></div></div>
+            <button className="btn btn-primary" type="submit">Simpan Info Lokal</button>
           </div>
         </form>
+
         <div className="panel">
-          <div className="panel-head"><div><h2>Limit per Kategori</h2><p>Ubah limit sesuai kebutuhan. Angka ini dipakai untuk membaca kategori mana yang harus dikurangi.</p></div></div>
+          <div className="panel-head"><div><h2>Limit per Kategori (Tersimpan di Supabase)</h2><p>Ubah limit sesuai kebutuhan. Angka ini dipakai AI untuk membaca kategori mana yang harus dikurangi.</p></div></div>
           <div className="budget-list">
             {rows.map(row => (
-              <form key={row.cat} className="budget-item editable-budget" onSubmit={(e) => handleLimitSubmit(e, row.cat)}>
-                <div className="budget-head"><span>{row.cat}</span><span>{rupiah(row.used)} / {rupiah(row.limit)}</span></div>
+              <form key={row.catId} className="budget-item editable-budget" onSubmit={(e) => handleLimitSubmit(e, row.catId, row.budgetId)}>
+                <div className="budget-head"><span>{row.catName}</span><span>{rupiah(row.used)} / {rupiah(row.limit)}</span></div>
                 <div className={`progress ${row.pct >= 90 ? 'danger' : row.pct >= 70 ? 'warn' : ''}`}><span style={{width: `${Math.min(100, row.pct)}%`}}></span></div>
-                <p className="help">Terpakai {row.pct}%. {row.pct >= 90 ? 'Stop dulu kategori ini.' : row.pct >= 70 ? 'Mulai rem belanja kategori ini.' : 'Masih cukup aman.'}</p>
-                <div className="budget-edit-row"><input type="number" name="limit" defaultValue={row.limit} /><button className="btn btn-ghost" type="submit">Ubah Limit</button></div>
+                <p className="help">Terpakai {row.pct}%. {row.pct >= 90 ? 'Stop dulu kategori ini.' : row.pct >= 70 ? 'Mulai rem belanja kategori ini.' : row.limit === 0 ? 'Belum ada limit.' : 'Masih cukup aman.'}</p>
+                <div className="budget-edit-row"><input type="number" name="limit" defaultValue={row.limit} placeholder="Masukkan limit..." /><button className="btn btn-ghost" type="submit">Simpan Limit</button></div>
               </form>
             ))}
           </div>
         </div>
       </section>
+
       <section className="panel ai-budget-panel">
         <div className="panel-head"><div><h2>Rekomendasi AI Budget</h2><p>{aiStamp}</p></div></div>
         <div className="reco-list">
           {messages.map((m, i) => (
-            <div className="reco" key={i}><i>{[<Flame size={18}/>, <Target size={18}/>, <Calculator size={18}/>][i] || <CheckCircle size={18}/>}</i><span>{m}</span></div>
+            <div className="reco" key={i}><i>{[<Flame size={18}/>, <Target size={18}/>, <Calculator size={18}/>][i % 4] || <CheckCircle size={18}/>}</i><span>{m}</span></div>
           ))}
         </div>
       </section>
