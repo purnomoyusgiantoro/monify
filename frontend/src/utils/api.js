@@ -105,6 +105,13 @@ export async function apiUpdateProfile(name, email) {
     });
 }
 
+export async function apiUpdateSettings(monthly_income, saving_target) {
+    return apiFetch('/auth/settings', {
+        method: 'PUT',
+        body: JSON.stringify({ monthly_income, saving_target })
+    });
+}
+
 export async function apiUpdatePassword(oldPassword, newPassword) {
     return apiFetch('/auth/password', {
         method: 'PUT',

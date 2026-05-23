@@ -128,7 +128,7 @@ router.get('/me', authMiddleware, async (req, res) => {
     try {
         const { data: user, error } = await supabase
             .from('users')
-            .select('id, name, email, created_at, update_at')
+            .select('id, name, email, created_at, update_at, monthly_income, saving_target')
             .eq('id', req.user.id)
             .single();
 
@@ -186,6 +186,39 @@ router.put('/profile', authMiddleware, async (req, res) => {
         });
     } catch (error) {
         console.error('Update profile error:', error.message);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan server.' });
+    }
+});
+
+// ============================================
+// PUT /api/auth/settings — Update settings user
+// ============================================
+router.put('/settings', authMiddleware, async (req, res) => {
+    try {
+        const { monthly_income, saving_target } = req.body;
+        
+        let updates = { update_at: now() };
+        if (monthly_income !== undefined) updates.monthly_income = Number(monthly_income);
+        if (saving_target !== undefined) updates.saving_target = Number(saving_target);
+
+        const { data: updatedUser, error } = await supabase
+            .from('users')
+            .update(updates)
+            .eq('id', req.user.id)
+            .select('id, monthly_income, saving_target, update_at')
+            .single();
+
+        if (error || !updatedUser) {
+            return res.status(404).json({ success: false, message: 'User tidak ditemukan atau gagal diupdate.' });
+        }
+
+        res.json({
+            success: true,
+            message: 'Pengaturan berhasil diperbarui.',
+            data: updatedUser
+        });
+    } catch (error) {
+        console.error('Update settings error:', error.message);
         res.status(500).json({ success: false, message: 'Terjadi kesalahan server.' });
     }
 });

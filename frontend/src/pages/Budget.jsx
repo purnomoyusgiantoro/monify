@@ -10,7 +10,9 @@ import {
   apiCreateBudget,
   apiUpdateBudget,
   apiPredict,
-  apiGetPredictions
+  apiGetPredictions,
+  apiGetMe,
+  apiUpdateSettings
 } from '../utils/api';
 
 export default function Budget() {
@@ -23,17 +25,18 @@ export default function Budget() {
   const [budgets, setBudgets] = useState([]);
   const [prediction, setPrediction] = useState(null);
 
-  // Local state for profile (income & savingTarget are not in DB)
-  const [profile, setProfile] = useState({ income: 0, savingTarget: 0 });
+  // User settings from DB
+  const [profile, setProfile] = useState({ monthly_income: 0, saving_target: 0 });
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [sumRes, catRes, budRes, predRes] = await Promise.all([
+      const [sumRes, catRes, budRes, predRes, meRes] = await Promise.all([
         apiGetDashboardSummary(),
         apiGetExpenseCategories(),
         apiGetBudgets(),
-        apiGetPredictions(1)
+        apiGetPredictions(1),
+        apiGetMe()
       ]);
 
       if (sumRes.ok) setSummaryData(sumRes.data.data);
@@ -43,8 +46,12 @@ export default function Budget() {
         setPrediction(predRes.data.data[0]);
       }
       
-      const st = getState();
-      setProfile(st.profile);
+      if (meRes.ok && meRes.data.data) {
+        setProfile({
+          monthly_income: meRes.data.data.monthly_income || 0,
+          saving_target: meRes.data.data.saving_target || 0
+        });
+      }
     } catch (err) {
       console.error('Failed to load budget data:', err);
       toast('Gagal memuat data dari server');
@@ -59,14 +66,23 @@ export default function Budget() {
     return () => window.removeEventListener('statechange', loadData);
   }, []);
 
-  const handleProfileSubmit = (e) => {
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-    const next = getState();
-    next.profile.income = Number(data.get('income')) || next.profile.income;
-    next.profile.savingTarget = Number(data.get('saving')) || next.profile.savingTarget;
-    setState(next);
-    toast('Target penghasilan & tabungan diperbarui di lokal.');
+    const income = Number(data.get('income')) || 0;
+    const saving = Number(data.get('saving')) || 0;
+    
+    try {
+      const res = await apiUpdateSettings(income, saving);
+      if (res.ok) {
+        toast('Target penghasilan & tabungan berhasil disimpan ke database!');
+        loadData();
+      } else {
+        toast(res.data?.message || 'Gagal menyimpan target keuangan');
+      }
+    } catch (err) {
+      toast('Terjadi kesalahan saat menghubungi server');
+    }
   };
 
   const handleLimitSubmit = async (e, catId, budgetId) => {
@@ -160,13 +176,13 @@ export default function Budget() {
       </section>
       
       <section className="page-grid">
-        <form className="panel" onSubmit={handleProfileSubmit}>
-          <div className="panel-head"><div><h2>Target Keuangan Dasar</h2><p>Pemasukan dan tabungan disimpan secara lokal. Total budget dihitung otomatis dari limit kategori Anda.</p></div></div>
+        <form className="panel form-profile" onSubmit={handleProfileSubmit}>
+          <div className="panel-head"><div><h2>Target Keuangan Dasar</h2><p>Pemasukan dan tabungan kini disimpan ke Supabase. Total budget dihitung otomatis dari limit kategori Anda.</p></div></div>
           <div className="form-grid">
-            <div className="field"><label>Pemasukan Bulanan</label><div className="input-wrap"><input name="income" type="number" defaultValue={profile.income} /></div></div>
-            <div className="field"><label>Total Budget Pengeluaran</label><div className="input-wrap"><input type="text" value={rupiah(totalBudget)} /></div></div>
-            <div className="field"><label>Target Tabungan</label><div className="input-wrap"><input name="saving" type="number" defaultValue={profile.savingTarget} /></div></div>
-            <button className="btn btn-primary" type="submit">Simpan Info Lokal</button>
+            <div className="field"><label>Pemasukan Bulanan</label><div className="input-wrap"><input name="income" type="number" defaultValue={profile.monthly_income} /></div></div>
+            <div className="field"><label>Total Budget Pengeluaran</label><div className="input-wrap"><input type="text" value={rupiah(totalBudget)} disabled /></div></div>
+            <div className="field"><label>Target Tabungan</label><div className="input-wrap"><input name="saving" type="number" defaultValue={profile.saving_target} /></div></div>
+            <button className="btn btn-primary" type="submit">Simpan ke Supabase</button>
           </div>
         </form>
 
