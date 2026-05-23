@@ -60,7 +60,6 @@ export default function Dashboard() {
 
   const topAction = (
     <>
-      <div className="search-box"><Search size={18} /> <input placeholder="Cari transaksi..." /></div>
       <Link className="btn btn-primary" to="/transaksi"><span>Tambah Transaksi</span> <Plus size={16} style={{ marginLeft: '4px' }} /></Link>
     </>
   );

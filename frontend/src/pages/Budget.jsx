@@ -182,7 +182,7 @@ export default function Budget() {
             <div className="field"><label>Pemasukan Bulanan</label><div className="input-wrap"><input name="income" type="number" defaultValue={profile.monthly_income} /></div></div>
             <div className="field"><label>Total Budget Pengeluaran</label><div className="input-wrap"><input type="text" value={rupiah(totalBudget)} disabled /></div></div>
             <div className="field"><label>Target Tabungan</label><div className="input-wrap"><input name="saving" type="number" defaultValue={profile.saving_target} /></div></div>
-            <button className="btn btn-primary" type="submit">Simpan ke Supabase</button>
+            <button className="btn btn-primary" type="submit">Simpan</button>
           </div>
         </form>
 

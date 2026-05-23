@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import Topbar from '../components/Topbar';
 import { rupiah, toast } from '../utils/store';
+import { Search } from 'lucide-react';
 import {
   apiGetTransactions,
   apiCreateTransaction,
@@ -19,6 +20,7 @@ export default function Transaksi() {
   const [transactions, setTransactions] = useState([]);
   const [incomeCats, setIncomeCats] = useState([]);
   const [expenseCats, setExpenseCats] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [form, setForm] = useState({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0, 10), note: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -162,13 +164,31 @@ export default function Transaksi() {
     setForm({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0, 10), note: '' });
   };
 
+  const filteredTransactions = transactions.filter(x => {
+    const desc = (x.description || x.title || '').toLowerCase();
+    const q = searchQuery.toLowerCase();
+    return desc.includes(q);
+  });
+
   return (
     <>
       <Topbar
         setMobileMenuOpen={setMobileMenuOpen}
         title="Catat Transaksi"
         desc="Masukkan pemasukan atau pengeluaran"
-        extraAction={<Link className="btn btn-ghost" to="/dashboard">Kembali</Link>}
+        extraAction={
+          <>
+            <div className="search-box">
+              <Search size={18} /> 
+              <input 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+                placeholder="Cari transaksi..." 
+              />
+            </div>
+            <Link className="btn btn-ghost" to="/dashboard">Kembali</Link>
+          </>
+        }
       />
       <section className="page-grid">
         <form className="panel" onSubmit={handleSubmit}>
@@ -194,9 +214,9 @@ export default function Transaksi() {
             <table>
               <thead><tr><th>Tanggal</th><th>Transaksi</th><th>Kategori AI</th><th>Nominal</th><th>Aksi</th></tr></thead>
               <tbody>
-                {transactions.length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: 'center' }}>Belum ada transaksi</td></tr>
-                ) : transactions.map(x => (
+                {filteredTransactions.length === 0 ? (
+                  <tr><td colSpan="5" style={{ textAlign: 'center' }}>{searchQuery ? 'Transaksi tidak ditemukan' : 'Belum ada transaksi'}</td></tr>
+                ) : filteredTransactions.map(x => (
                   <tr key={x.id}>
                     <td>{x.transactions_date || x.date}</td>
                     <td><strong>{x.description || x.title}</strong><br /><small style={{ color: '#6b7b74' }}>{x.note || '-'}</small></td>
