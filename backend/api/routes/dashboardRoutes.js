@@ -22,6 +22,15 @@ router.get('/summary', authMiddleware, async (req, res) => {
 
         if (trxError) throw trxError;
 
+        // 1.5. Fetch user profile for monthly_income
+        const { data: userProfile, error: profileError } = await supabase
+            .from('users')
+            .select('monthly_income')
+            .eq('id', req.user.id)
+            .single();
+            
+        if (profileError) throw profileError;
+
         // 2. Fetch budgets for the current month
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
@@ -35,10 +44,8 @@ router.get('/summary', authMiddleware, async (req, res) => {
 
         if (budgetError) throw budgetError;
 
-        // Calculate balance
-        const totalIncome = monthTransactions
-            .filter(t => t.type === 'income')
-            .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        // Calculate balance using user's monthly income setting instead of transactions
+        const totalIncome = Number(userProfile.monthly_income || 0);
 
         const totalExpense = monthTransactions
             .filter(t => t.type === 'expense')
