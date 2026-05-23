@@ -50,23 +50,22 @@ export default function Profil() {
 
   return (
     <>
-      <Topbar 
-        setMobileMenuOpen={setMobileMenuOpen} 
-        title="Profil & Pengaturan" 
-        desc="Kelola akun demo dan navigasi keluar dari dashboard." 
-        extraAction={<><Link className="btn btn-ghost" to="/">Landing Page</Link><button className="btn btn-primary" onClick={handleLogout}>Keluar</button></>} 
+      <Topbar
+        setMobileMenuOpen={setMobileMenuOpen}
+        title="Profil & Pengaturan"
+        extraAction={<><Link className="btn btn-ghost" to="/">Landing Page</Link><button className="btn btn-primary" onClick={handleLogout}>Keluar</button></>}
       />
       <section className="page-grid">
         <div className="panel profile-card">
-          <div className="panel-head"><div><h2>Informasi Akun</h2><p>Di aplikasi final, bagian ini terhubung ke database dan sistem auth.</p></div></div>
+          <div className="panel-head"><div><h2>Informasi Akun</h2></div></div>
           <form className="form-grid" onSubmit={handleProfile}>
-            <div className="field"><label>Nama</label><div className="input-wrap"><input value={user.name} onChange={e=>setUser({...user, name: e.target.value})} /></div></div>
-            <div className="field"><label>Email</label><div className="input-wrap"><input type="email" value={user.email} onChange={e=>setUser({...user, email: e.target.value})} /></div></div>
+            <div className="field"><label>Nama</label><div className="input-wrap"><input value={user.name} onChange={e => setUser({ ...user, name: e.target.value })} /></div></div>
+            <div className="field"><label>Email</label><div className="input-wrap"><input type="email" value={user.email} onChange={e => setUser({ ...user, email: e.target.value })} /></div></div>
             <button className="btn btn-primary" type="submit">Simpan Profil</button>
           </form>
         </div>
         <div className="panel profile-card">
-          <div className="panel-head"><div><h2>Ganti Password</h2><p>Prototype ini hanya simulasi frontend. Backend final tetap wajib validasi password lama.</p></div></div>
+          <div className="panel-head"><div><h2>Ganti Password</h2></div></div>
           <form className="form-grid" onSubmit={handlePassword}>
             <div className="field"><label>Password Lama</label><div className="input-wrap"><input type="password" placeholder="Password lama" required /></div></div>
             <div className="field"><label>Password Baru</label><div className="input-wrap"><input name="newPass" type="password" placeholder="Password baru" required /></div></div>
@@ -76,7 +75,7 @@ export default function Profil() {
         </div>
       </section>
       <section className="panel account-actions">
-        <div className="panel-head"><div><h2>Aksi Akun</h2><p>Pakai ini untuk pindah dari dashboard ke landing atau keluar dan membuka popup login lagi.</p></div></div>
+        <div className="panel-head"><div><h2>Aksi Akun</h2></div></div>
         <div className="form-actions">
           <Link className="btn btn-ghost" to="/">Kembali ke Landing Page</Link>
           <button className="btn btn-primary" type="button" onClick={handleLogout}>Keluar dari Dashboard</button>

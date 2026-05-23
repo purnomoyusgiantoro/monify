@@ -26,7 +26,7 @@ export default function Prediksi() {
   const getStatus = () => {
     if (s.risk >= 100) return <><span className="badge danger">Over budget</span><p className="help">Prediksi pengeluaran melewati budget. Kurangi kategori terbesar sekarang.</p></>;
     if (s.risk >= 80) return <><span className="badge warn">Rawan boros</span><p className="help">Masih bisa diselamatkan kalau pengeluaran non-prioritas dikurangi minggu ini.</p></>;
-    return <><span className="badge">Aman</span><p className="help">Budget masih sehat. Tetap catat transaksi supaya prediksi tidak ngawur.</p></>;
+    return <><span className="badge">Aman</span><p className="help">Budget masih sehat. Tetap catat transaksi kamu</p></>;
   };
 
   const recos = [
@@ -38,16 +38,15 @@ export default function Prediksi() {
 
   return (
     <>
-      <Topbar 
-        setMobileMenuOpen={setMobileMenuOpen} 
-        title="Prediksi AI" 
-        desc="Empat fitur utama: kategori otomatis, prediksi bulanan, over budget, dan safe-to-spend." 
-        extraAction={<><button className="btn btn-primary" onClick={() => { setAiStamp(`Rekomendasi terakhir diperbarui: ${timestamp()}.`); toast('Prediksi AI diperbarui.'); }}>Update Prediksi</button><Link className="btn btn-ghost" to="/transaksi">Tambah Data</Link></>} 
+      <Topbar
+        setMobileMenuOpen={setMobileMenuOpen}
+        title="Prediksi AI"
+        extraAction={<><button className="btn btn-primary" onClick={() => { setAiStamp(`Rekomendasi terakhir diperbarui: ${timestamp()}.`); toast('Prediksi AI diperbarui.'); }}>Update Prediksi</button><Link className="btn btn-ghost" to="/transaksi">Tambah Data</Link></>}
       />
-      <section className="feature-grid" style={{marginBottom: '20px'}}>
-        <div className="feature-card"><i><Tags size={24}/></i><h3>Klasifikasi Otomatis</h3><p>Deskripsi transaksi dibaca lalu diarahkan ke kategori seperti makanan, transport, belanja, hiburan, internet, atau lainnya.</p></div>
-        <div className="feature-card"><i><TrendingUp size={24}/></i><h3>Prediksi Pengeluaran</h3><p>Riwayat transaksi dipakai untuk memperkirakan pengeluaran sampai akhir bulan.</p></div>
-        <div className="feature-card"><i><ShieldAlert size={24}/></i><h3>Deteksi Over Budget</h3><p>Prediksi dibandingkan dengan budget. Kalau risiko tinggi, user diberi sinyal sebelum uang keburu habis.</p></div>
+      <section className="feature-grid" style={{ marginBottom: '20px' }}>
+        <div className="feature-card"><i><Tags size={24} /></i><h3>Klasifikasi Otomatis</h3><p>Deskripsi transaksi dibaca lalu diarahkan ke kategori seperti makanan, transport, belanja, hiburan, internet, atau lainnya.</p></div>
+        <div className="feature-card"><i><TrendingUp size={24} /></i><h3>Prediksi Pengeluaran</h3><p>Riwayat transaksi dipakai untuk memperkirakan pengeluaran sampai akhir bulan.</p></div>
+        <div className="feature-card"><i><ShieldAlert size={24} /></i><h3>Deteksi Over Budget</h3><p>Prediksi dibandingkan dengan budget. Kalau risiko tinggi, user diberi sinyal sebelum uang keburu habis.</p></div>
       </section>
       <section className="insight-board">
         <div className="prediction-card">
@@ -63,13 +62,13 @@ export default function Prediksi() {
         <div className="prediction-card">
           <h3>Risiko Over Budget</h3><p className="help">Semakin tinggi, semakin besar peluang pengeluaran melewati budget.</p>
           <div className="big-number">{s.risk}%</div>
-          <div className="progress warn"><span style={{width: `${Math.min(100, s.risk)}%`}}></span></div>
-          <div style={{marginTop: '14px'}}>{getStatus()}</div>
+          <div className="progress warn"><span style={{ width: `${Math.min(100, s.risk)}%` }}></span></div>
+          <div style={{ marginTop: '14px' }}>{getStatus()}</div>
         </div>
         <div className="prediction-card">
           <h3>Rekomendasi MONIFY</h3><p className="help">{aiStamp}</p>
           <div className="reco-list">
-            {recos.map((text, i) => <div className="reco" key={i}><i>{[<Target size={18}/>, <Calculator size={18}/>, <Receipt size={18}/>, <Heart size={18}/>][i]}</i><span>{text}</span></div>)}
+            {recos.map((text, i) => <div className="reco" key={i}><i>{[<Target size={18} />, <Calculator size={18} />, <Receipt size={18} />, <Heart size={18} />][i]}</i><span>{text}</span></div>)}
           </div>
         </div>
       </section>

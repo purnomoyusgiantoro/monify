@@ -15,12 +15,12 @@ import {
 export default function Transaksi() {
   const { setMobileMenuOpen } = useOutletContext();
   const [loading, setLoading] = useState(true);
-  
+
   const [transactions, setTransactions] = useState([]);
   const [incomeCats, setIncomeCats] = useState([]);
   const [expenseCats, setExpenseCats] = useState([]);
-  
-  const [form, setForm] = useState({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0,10), note: '' });
+
+  const [form, setForm] = useState({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0, 10), note: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadData = async () => {
@@ -62,7 +62,7 @@ export default function Transaksi() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    
+
     setIsSubmitting(true);
     try {
       let income_category_id = null;
@@ -80,17 +80,17 @@ export default function Transaksi() {
         const aiRes = await apiClassify(form.title, Number(form.amount));
         let aiCategoryName = 'Lainnya';
         if (aiRes.ok && aiRes.data.data) {
-           aiCategoryName = aiRes.data.data.kategori_ai;
+          aiCategoryName = aiRes.data.data.kategori_ai;
         }
 
         // Map AI result to database ID
         let cat = expenseCats.find(c => c.name.toLowerCase() === aiCategoryName.toLowerCase());
         if (!cat) {
-            cat = expenseCats.find(c => c.name.toLowerCase() === 'lainnya') || expenseCats[0];
+          cat = expenseCats.find(c => c.name.toLowerCase() === 'lainnya') || expenseCats[0];
         }
         if (cat) {
-            expense_category_id = cat.id;
-            predictedCategoryName = cat.name;
+          expense_category_id = cat.id;
+          predictedCategoryName = cat.name;
         }
       }
 
@@ -108,21 +108,21 @@ export default function Transaksi() {
       if (form.id) {
         const res = await apiUpdateTransaction(form.id, payload);
         if (res.ok) {
-            toast(`Transaksi diperbarui. Kategori: ${predictedCategoryName}.`);
-            handleCancel();
+          toast(`Transaksi diperbarui. Kategori: ${predictedCategoryName}.`);
+          handleCancel();
         } else {
-            toast(res.data?.message || 'Gagal memperbarui');
+          toast(res.data?.message || 'Gagal memperbarui');
         }
       } else {
         const res = await apiCreateTransaction(payload);
         if (res.ok) {
-            toast(`Transaksi disimpan. AI: ${predictedCategoryName}.`);
-            handleCancel();
+          toast(`Transaksi disimpan. AI: ${predictedCategoryName}.`);
+          handleCancel();
         } else {
-            toast(res.data?.message || 'Gagal menyimpan');
+          toast(res.data?.message || 'Gagal menyimpan');
         }
       }
-      
+
       loadData();
     } catch (err) {
       toast('Terjadi kesalahan server');
@@ -132,13 +132,13 @@ export default function Transaksi() {
   };
 
   const handleEdit = (trx) => {
-    setForm({ 
-        id: trx.id, 
-        title: trx.description || trx.title || '', 
-        amount: trx.amount, 
-        type: trx.type, 
-        date: trx.transactions_date || trx.date || new Date().toISOString().slice(0,10), 
-        note: trx.note || '' 
+    setForm({
+      id: trx.id,
+      title: trx.description || trx.title || '',
+      amount: trx.amount,
+      type: trx.type,
+      date: trx.transactions_date || trx.date || new Date().toISOString().slice(0, 10),
+      note: trx.note || ''
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -146,40 +146,40 @@ export default function Transaksi() {
   const handleDelete = async (id) => {
     if (!window.confirm('Yakin ingin menghapus transaksi ini?')) return;
     try {
-        const res = await apiDeleteTransaction(id);
-        if (res.ok) {
-            toast('Transaksi berhasil dihapus');
-            loadData();
-        } else {
-            toast(res.data?.message || 'Gagal menghapus');
-        }
+      const res = await apiDeleteTransaction(id);
+      if (res.ok) {
+        toast('Transaksi berhasil dihapus');
+        loadData();
+      } else {
+        toast(res.data?.message || 'Gagal menghapus');
+      }
     } catch (err) {
-        toast('Terjadi kesalahan server');
+      toast('Terjadi kesalahan server');
     }
   };
 
   const handleCancel = () => {
-    setForm({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0,10), note: '' });
+    setForm({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0, 10), note: '' });
   };
 
   return (
     <>
-      <Topbar 
-        setMobileMenuOpen={setMobileMenuOpen} 
-        title="Catat Transaksi" 
-        desc="Masukkan pemasukan atau pengeluaran. Kategori tidak diisi manual karena akan diprediksi otomatis." 
+      <Topbar
+        setMobileMenuOpen={setMobileMenuOpen}
+        title="Catat Transaksi"
+        desc="Masukkan pemasukan atau pengeluaran"
         extraAction={<Link className="btn btn-ghost" to="/dashboard">Kembali</Link>}
       />
       <section className="page-grid">
         <form className="panel" onSubmit={handleSubmit}>
-          <div className="panel-head"><div><h2>{form.id ? 'Edit Transaksi' : 'Form Transaksi'}</h2><p>Catat dulu. Kalau salah nominal, tanggal, atau catatan, pakai tombol edit di riwayat.</p></div></div>
+          <div className="panel-head"><div><h2>{form.id ? 'Edit Transaksi' : 'Form Transaksi'}</h2></div></div>
           <div className="form-grid">
-            <div className="field"><label>Judul Transaksi</label><div className="input-wrap"><input value={form.title} onChange={e=>setForm({...form, title: e.target.value})} placeholder="Contoh: Makan ayam geprek" required disabled={isSubmitting} /></div></div>
-            <div className="field"><label>Nominal</label><div className="input-wrap"><input type="number" value={form.amount} onChange={e=>setForm({...form, amount: e.target.value})} placeholder="28000" required disabled={isSubmitting} /></div></div>
-            <div className="field"><label>Tipe</label><div className="input-wrap"><select value={form.type} onChange={e=>setForm({...form, type: e.target.value})} disabled={isSubmitting}><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></div></div>
-            <div className="ai-category-preview"><span>Prediksi kategori AI</span><strong>{preview}</strong><p>Kategori akan berubah otomatis dari teks transaksi. Di sistem final, AI akan memproses ini saat Anda klik Simpan.</p></div>
-            <div className="field"><label>Tanggal</label><div className="input-wrap"><input type="date" value={form.date} onChange={e=>setForm({...form, date: e.target.value})} required disabled={isSubmitting} /></div></div>
-            <div className="field"><label>Catatan</label><div className="input-wrap"><textarea value={form.note} onChange={e=>setForm({...form, note: e.target.value})} placeholder="Opsional, contoh: makan siang setelah kuliah" disabled={isSubmitting}></textarea></div></div>
+            <div className="field"><label>Judul Transaksi</label><div className="input-wrap"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Contoh: Makan ayam geprek" required disabled={isSubmitting} /></div></div>
+            <div className="field"><label>Nominal</label><div className="input-wrap"><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="28000" required disabled={isSubmitting} /></div></div>
+            <div className="field"><label>Tipe</label><div className="input-wrap"><select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} disabled={isSubmitting}><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></div></div>
+            <div className="ai-category-preview"><span>Prediksi kategori AI</span><strong>{preview}</strong></div>
+            <div className="field"><label>Tanggal</label><div className="input-wrap"><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} required disabled={isSubmitting} /></div></div>
+            <div className="field"><label>Catatan</label><div className="input-wrap"><textarea value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} placeholder="Opsional, contoh: makan siang setelah kuliah" disabled={isSubmitting}></textarea></div></div>
             <div className="form-actions">
               <button className="btn btn-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Memproses AI...' : (form.id ? 'Simpan Perubahan' : 'Simpan Transaksi')}</button>
               {form.id && <button className="btn btn-ghost" type="button" onClick={handleCancel} disabled={isSubmitting}>Batal Edit</button>}
@@ -187,21 +187,21 @@ export default function Transaksi() {
           </div>
         </form>
         <div className="table-card">
-          <div className="panel-head" style={{padding:'22px 22px 0'}}><div><h2>Riwayat Terbaru</h2><p>Gunakan edit kalau ada kesalahan input. Jangan hapus data yang sebenarnya benar karena prediksi AI butuh riwayat.</p></div></div>
+          <div className="panel-head" style={{ padding: '22px 22px 0' }}><div><h2>Riwayat Terbaru</h2><p>Gunakan edit kalau ada kesalahan input. Jangan hapus data yang sebenarnya benar karena prediksi AI butuh riwayat.</p></div></div>
           {loading ? (
-             <div style={{padding: '22px'}}>Memuat data transaksi...</div>
+            <div style={{ padding: '22px' }}>Memuat data transaksi...</div>
           ) : (
             <table>
               <thead><tr><th>Tanggal</th><th>Transaksi</th><th>Kategori AI</th><th>Nominal</th><th>Aksi</th></tr></thead>
               <tbody>
                 {transactions.length === 0 ? (
-                    <tr><td colSpan="5" style={{textAlign:'center'}}>Belum ada transaksi</td></tr>
+                  <tr><td colSpan="5" style={{ textAlign: 'center' }}>Belum ada transaksi</td></tr>
                 ) : transactions.map(x => (
                   <tr key={x.id}>
                     <td>{x.transactions_date || x.date}</td>
-                    <td><strong>{x.description || x.title}</strong><br/><small style={{color:'#6b7b74'}}>{x.note || '-'}</small></td>
-                    <td><span className={`badge ${x.type==='income'?'':'warn'}`}>{x.category_name || x.category}</span></td>
-                    <td className={x.type==='income'?'amount-plus':'amount-minus'}>{x.type==='income'?'+':'-'} {rupiah(x.amount)}</td>
+                    <td><strong>{x.description || x.title}</strong><br /><small style={{ color: '#6b7b74' }}>{x.note || '-'}</small></td>
+                    <td><span className={`badge ${x.type === 'income' ? '' : 'warn'}`}>{x.category_name || x.category}</span></td>
+                    <td className={x.type === 'income' ? 'amount-plus' : 'amount-minus'}>{x.type === 'income' ? '+' : '-'} {rupiah(x.amount)}</td>
                     <td>
                       <div className="row-actions">
                         <button type="button" onClick={() => handleEdit(x)}>Edit</button>
