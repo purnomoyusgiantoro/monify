@@ -24,7 +24,7 @@ export default function Dashboard() {
       ]);
 
       if (sumRes.ok) setSummary(sumRes.data.data);
-      if (catRes.ok) setCategories(catRes.data.data);
+      if (catRes.ok) setCategories(catRes.data.data.categories || []);
     } catch (err) {
       toast('Gagal memuat data dashboard');
     } finally {
