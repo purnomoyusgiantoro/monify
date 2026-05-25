@@ -2,8 +2,100 @@ import React, { useEffect, useState } from 'react';
 import { useStylesheet, useReveal } from '../utils/hooks';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { Search, BarChart3, ShieldAlert, CheckCircle } from 'lucide-react';
-import { apiLogin, apiRegister, setAuth } from '../utils/api';
+import {
+  Search,
+  BarChart3,
+  ShieldCheck,
+  CheckCircle2,
+  WalletCards,
+  FileText,
+  Flag,
+  ArrowRight,
+  Sparkles,
+  X,
+} from 'lucide-react';
+
+const features = [
+  {
+    icon: Search,
+    title: 'Klasifikasi Otomatis',
+    desc: 'Pengeluaran akan dikelompokkan ke dalam kategori yang sesuai agar pengguna lebih mudah membaca pola pengeluaran.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Prediksi Pengeluaran',
+    desc: 'Monify membantu memperkirakan pengeluaran bulanan berdasarkan data transaksi yang telah dicatat.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Deteksi Over Budget',
+    desc: 'Sistem memberikan peringatan ketika pengeluaran mulai melebihi batas budget yang telah ditentukan.',
+  },
+  {
+    icon: CheckCircle2,
+    title: 'Safe to Spend',
+    desc: 'Pengguna dapat melihat perkiraan jumlah uang yang masih aman digunakan dalam satu hari.',
+  },
+];
+
+const problems = [
+  {
+    no: '01',
+    title: 'Transaksi kecil sulit dipantau',
+    desc: 'Pengeluaran harian sering tidak tercatat sehingga pengguna sulit mengetahui total pengeluaran sebenarnya.',
+  },
+  {
+    no: '02',
+    title: 'Kategori pengeluaran tidak rapi',
+    desc: 'Tanpa pengelompokan yang jelas, pengguna sulit mengetahui kategori mana yang paling banyak menghabiskan uang.',
+  },
+  {
+    no: '03',
+    title: 'Budget sering diketahui terlambat',
+    desc: 'Pengguna biasanya baru sadar pengeluaran berlebih setelah saldo mulai menipis.',
+  },
+];
+
+const steps = [
+  {
+    icon: WalletCards,
+    title: 'Masukkan Penghasilan',
+    desc: 'Pengguna mengisi saldo awal, income, dan target budget bulanan.',
+  },
+  {
+    icon: FileText,
+    title: 'Catat Transaksi',
+    desc: 'Transaksi masuk bisa berupa makanan, transport, belanja, hiburan, dan kebutuhan lain.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Masukkan Penghasilan',
+    desc: 'Program mengolah data input, income, dan target budget bulanan.',
+  },
+  {
+    icon: Flag,
+    title: 'Catat Transaksi',
+    desc: 'Transaksi masuk bisa berupa makanan, transport, belanja, hiburan, dan kebutuhan lain.',
+  },
+];
+
+const articles = [
+  {
+    tag: 'Budgeting',
+    title: 'Cara Atur Uang Bulanan ala Gen Z',
+    desc: 'Mulai dari membagi kebutuhan, keinginan, dan tabungan tanpa rumus yang ribet.',
+  },
+  {
+    tag: 'Kebiasaan',
+    title: 'Kenapa Pengeluaran Kecil Bikin Boros',
+    desc: 'Biaya kecil sering tidak terasa karena tidak dilihat sebagai pola berulang.',
+  },
+  {
+    tag: 'AI Insight',
+    title: 'Apa Gunanya Prediksi Pengeluaran',
+    desc: 'Prediksi membantu pengguna mengambil tindakan sebelum saldo benar-benar menipis.',
+  },
+];
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -12,65 +104,12 @@ export default function Landing() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState('login');
   const [showPass, setShowPass] = useState(false);
-  const [authError, setAuthError] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
 
-  const handleAuth = async (e) => {
+  const handleAuth = (e) => {
     e.preventDefault();
-    setAuthError('');
-    setAuthLoading(true);
-
-    try {
-      const formData = new FormData(e.target);
-
-      let result;
-
-      if (authView === 'register') {
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const password = formData.get('password');
-
-        if (!name || !email || !password) {
-          setAuthError('Semua field wajib diisi.');
-          setAuthLoading(false);
-          return;
-        }
-
-        result = await apiRegister(name, email, password);
-      } else {
-        const email = formData.get('email');
-        const password = formData.get('password');
-
-        if (!email || !password) {
-          setAuthError('Email dan password wajib diisi.');
-          setAuthLoading(false);
-          return;
-        }
-
-        result = await apiLogin(email, password);
-      }
-
-      if (result.ok && result.data.success) {
-        // Simpan token & user data
-        setAuth(result.data.data.token, result.data.data.user);
-
-        // Update store user data
-        const { getState, setState } = await import('../utils/store');
-        const st = getState();
-        st.user.name = result.data.data.user.name;
-        st.user.email = result.data.data.user.email;
-        setState(st);
-
-        closeAuth();
-        navigate('/dashboard');
-      } else {
-        setAuthError(result.data.message || 'Terjadi kesalahan. Coba lagi.');
-      }
-    } catch (error) {
-      setAuthError('Tidak bisa terhubung ke server. Pastikan backend berjalan.');
-    }
-
-    setAuthLoading(false);
+    localStorage.setItem('monify_logged_in', 'true');
+    closeAuth();
+    navigate('/dashboard');
   };
 
   const openAuth = (view) => {
@@ -78,7 +117,7 @@ export default function Landing() {
     setAuthOpen(true);
     document.body.classList.add('auth-locked');
   };
-  
+
   const closeAuth = () => {
     setAuthOpen(false);
     document.body.classList.remove('auth-locked');
@@ -118,305 +157,271 @@ export default function Landing() {
   return (
     <>
       <Navbar openAuth={openAuth} />
-      <main>
-        <section className="hero section-pad">
-          <div className="container hero-grid">
-            <div className="hero-copy reveal">
-              <div className="eyebrow">AI Finance Assistant</div>
-              <h1>Kontrol <span>Keuanganmu</span> dengan AI</h1>
+      <main className="landing-page">
+        <section id="beranda" className="landing-hero">
+          <div className="container landing-hero-grid">
+            <div className="landing-hero-copy reveal">
+              <h1>
+                Kelola Keuangan
+                <br />
+                Lebih Mudah
+                <br />
+                dengan <span>Monify</span>
+              </h1>
               <p>
-                Catat, analisis, dan prediksi pengeluaranmu secara otomatis. Gen Z bisa tahu uangnya lari ke mana tanpa ribet bikin tabel manual.
+                Monify adalah aplikasi pencatatan dan analisis keuangan berbasis AI yang membantu pengguna memahami pola pengeluaran, mengatur budget, dan memantau kondisi keuangan secara lebih efisien.
               </p>
-              <div className="hero-actions">
-                <button className="btn btn-primary" onClick={() => openAuth('login')}>Login Sekarang</button>
-                <a className="btn btn-outline" href="#fitur"><span className="play-dot">↓</span> Lihat Fitur</a>
-              </div>
-              <div className="hero-stats" aria-label="Ringkasan fitur Monify">
-                <div><strong>4</strong><span>Fitur AI</span></div>
-                <div><strong>24/7</strong><span>Insight</span></div>
-                <div><strong>1</strong><span>Dashboard</span></div>
+              <div className="landing-hero-actions">
+                <button className="landing-btn-primary" onClick={() => openAuth('login')}>Mulai Sekarang</button>
+                <a className="landing-btn-secondary" href="#fitur">Lihat Fitur</a>
               </div>
             </div>
 
-            <div className="phone-stage reveal delay-1 visible" id="demo">
-              <div className="blob blob-one"></div>
-              <div className="blob blob-two"></div>
-              <div className="phone-card" aria-label="Preview aplikasi Monify">
-                <div className="phone-notch"></div>
-                <div className="phone-top">
-                  <div>
-                    <span>Total Saldo</span>
-                    <h3>Rp 12.450.000</h3>
+            <div className="landing-phone-wrap reveal delay-1">
+              <div className="landing-phone">
+                <div className="landing-phone-notch"></div>
+                <div className="landing-phone-inner">
+                  <div className="landing-phone-head">
+                    <div>
+                      <p>Total Saldo</p>
+                      <h3>Rp 12.450.000</h3>
+                    </div>
+                    <div className="landing-phone-spark">
+                      <Sparkles size={15} />
+                    </div>
                   </div>
-                  <div className="mini-avatar">I</div>
-                </div>
-                <div className="balance-box">
-                  <span>Pengeluaran Bulan Ini</span>
-                  <strong>Rp 3.200.000</strong>
-                  <div className="progress"><i style={{width:'72%'}}></i></div>
-                </div>
-                <div className="chart-box">
-                  <div className="bars">
-                    <i style={{height:'34%'}}></i>
-                    <i style={{height:'52%'}}></i>
-                    <i style={{height:'41%'}}></i>
-                    <i style={{height:'74%'}}></i>
+
+                  <div className="landing-phone-balance">
+                    <div className="landing-phone-balance-head">
+                      <p>Pengeluaran Bulan Ini</p>
+                      <span>*</span>
+                    </div>
+                    <h4>Rp 3.200.000</h4>
+                    <div className="landing-phone-progress">
+                      <i style={{ width: '65%' }}></i>
+                    </div>
                   </div>
-                  <div className="predict-card">Prediksi</div>
-                </div>
-                <div className="ai-note">
-                  <span>✦</span>
-                  <p>AI mendeteksi pengeluaran kopi naik 20% minggu ini. Coba kurangi untuk capai target tabungan.</p>
+
+                  <div className="landing-phone-chart">
+                    {[42, 62, 84, 54].map((height, index) => (
+                      <i key={index} style={{ height: `${height}%` }}></i>
+                    ))}
+                    <b>
+                      <span>Prediksi</span>
+                    </b>
+                  </div>
+
+                  <div className="landing-phone-note">
+                    <span>*</span>
+                    <p>AI mendeteksi pengeluaran kopi naik 20% minggu ini. Coba kurangi untuk capai target tabungan.</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="tools" id="fitur">
+        <section id="fitur" className="landing-features">
           <div className="container">
-            <div className="section-title reveal">
-              <span className="pill">Fitur Unggulan</span>
-              <h2>Smart Tools untuk Uang Pintar</h2>
-              <p>Fitur dibuat langsung untuk masalah utama: boros tanpa sadar, salah kategori belanja, dan budget bocor di akhir bulan.</p>
+            <div className="landing-section-head reveal">
+              <p className="landing-head-kicker">Fitur Utama</p>
+              <h2>Fitur yang Membantu Mengelola Keuangan</h2>
+              <p className="landing-head-desc">
+                Monify menyediakan beberapa fitur utama untuk membantu pengguna mencatat transaksi, melihat ringkasan keuangan, dan mendapatkan gambaran pengeluaran secara lebih jelas.
+              </p>
             </div>
-
-            <div className="feature-grid">
-              <article className="feature-card reveal">
-                <div className="feature-icon"><Search size={24}/></div>
-                <span className="feature-tag">Otomatis</span>
-                <h3>Klasifikasi Otomatis</h3>
-                <p>Tiap transaksi langsung dikategorikan oleh AI tanpa input manual berulang.</p>
-                <div className="chip-row">
-                  <span>Makanan</span><span>Transport</span><span>Hiburan</span>
-                </div>
-              </article>
-
-              <article className="feature-card reveal delay-1">
-                <div className="feature-icon"><BarChart3 size={24}/></div>
-                <span className="feature-tag">Prediktif</span>
-                <h3>Prediksi Pengeluaran</h3>
-                <p>Tahu sebelum kehabisan. AI memprediksi sisa saldo sampai akhir bulan.</p>
-                <div className="mini-bars"><i></i><i></i><i></i><i></i><b></b></div>
-              </article>
-
-              <article className="feature-card reveal delay-2">
-                <div className="feature-icon"><ShieldAlert size={24}/></div>
-                <span className="feature-tag">Proteksi</span>
-                <h3>Deteksi Over Budget</h3>
-                <p>Dapat peringatan dini saat pengeluaran mulai melewati limit kategori.</p>
-                <div className="risk-meter"><span>Budget Makanan</span><strong>78%</strong><i></i></div>
-              </article>
-
-              <article className="feature-card reveal delay-3">
-                <div className="feature-icon"><CheckCircle size={24}/></div>
-                <span className="feature-tag">Harian</span>
-                <h3>Safe to Spend</h3>
-                <p>Lihat batas aman uang yang boleh dipakai hari ini tanpa mengganggu target bulanan.</p>
-                <div className="safe-card"><b>Rp 42.000</b><span>Aman dipakai hari ini</span></div>
-              </article>
+            <div className="landing-feature-grid">
+              {features.map((feature, idx) => {
+                const Icon = feature.icon;
+                return (
+                  <article key={feature.title} className={`landing-feature-card reveal ${idx === 0 ? '' : `delay-${Math.min(idx, 3)}`}`}>
+                    <div className="landing-feature-icon"><Icon size={24} strokeWidth={2.5} /></div>
+                    <h3>{feature.title}</h3>
+                    <p>{feature.desc}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="problem section-pad" id="tentang">
-          <div className="container split-grid">
+        <section id="tentang" className="landing-problems">
+          <div className="container landing-problem-grid">
             <div className="reveal">
-              <span className="pill light">Kenapa Monify?</span>
-              <h2>Masalahnya bukan kurang uang. Seringnya, uang keluar tanpa sadar.</h2>
-              <p className="lead">
-                Banyak aplikasi pencatat keuangan berhenti di input transaksi. Monify dibuat untuk melanjutkan langkah berikutnya: membaca pola, memberi sinyal risiko, dan membantu ambil keputusan harian.
+              <p className="landing-head-kicker landing-kicker-left">Kenapa Monify?</p>
+              <h2>Membantu Pengguna Lebih Sadar terhadap Pengeluaran</h2>
+              <p className="landing-problem-desc">
+                Banyak pengguna tidak menyadari ke mana uang mereka digunakan setiap hari. Pengeluaran kecil seperti makanan, transportasi, belanja online, dan hiburan sering terlihat sepele, tetapi dapat memengaruhi kondisi keuangan jika tidak dipantau dengan baik.
               </p>
             </div>
-            <div className="problem-list">
-              <div className="problem-item reveal delay-1">
-                <span>01</span>
-                <div><h3>Transaksi kecil diremehkan</h3><p>Kopi, jajan, ongkir, dan top up kecil terasa murah sampai totalnya membengkak.</p></div>
-              </div>
-              <div className="problem-item reveal delay-2">
-                <span>02</span>
-                <div><h3>Kategori belanja berantakan</h3><p>Tanpa kategori yang rapi, pengguna sulit tahu pos pengeluaran terbesar.</p></div>
-              </div>
-              <div className="problem-item reveal delay-3">
-                <span>03</span>
-                <div><h3>Budget sadar saat sudah telat</h3><p>Peringatan over budget harus muncul sebelum uang habis, bukan setelah akhir bulan.</p></div>
-              </div>
+            <div className="landing-problem-list">
+              {problems.map((problem, idx) => (
+                <article key={problem.no} className={`landing-problem-card reveal ${idx === 0 ? 'delay-1' : idx === 1 ? 'delay-2' : 'delay-3'}`}>
+                  <span>{problem.no}</span>
+                  <div>
+                    <h3>{problem.title}</h3>
+                    <p>{problem.desc}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="workflow section-pad">
+        <section className="landing-workflow">
           <div className="container">
-            <div className="section-title reveal">
-              <span className="pill">Alur Penggunaan</span>
-              <h2>Dari catatan harian jadi keputusan finansial</h2>
+            <div className="landing-section-head reveal">
+              <p className="landing-head-kicker">Cara Kerja</p>
+              <h2>Dari Pencatatan Harian Menjadi Insight Keuangan</h2>
             </div>
-            <div className="steps">
-              <article className="step-card reveal"><span>1</span><h3>Masukkan Penghasilan</h3><p>Pengguna mengisi saldo awal, income, dan target budget bulanan.</p></article>
-              <article className="step-card reveal delay-1"><span>2</span><h3>Catat Transaksi</h3><p>Transaksi masuk bisa berupa makanan, transport, belanja, hiburan, dan kebutuhan lain.</p></article>
-              <article className="step-card reveal delay-2"><span>3</span><h3>AI Membaca Pola</h3><p>Model memproses kategori, prediksi bulanan, risiko over budget, dan sisa aman harian.</p></article>
-              <article className="step-card reveal delay-3"><span>4</span><h3>Ambil Keputusan</h3><p>Pengguna tahu kapan harus hemat, pos mana yang bocor, dan target mana yang realistis.</p></article>
-            </div>
-          </div>
-        </section>
-
-        <section className="insight section-pad">
-          <div className="container insight-grid">
-            <div className="dashboard reveal">
-              <div className="dash-head"><b>Ringkasan Bulan Ini</b><span>Mei 2026</span></div>
-              <div className="dash-total"><span>Prediksi pengeluaran</span><strong>Rp 4.850.000</strong></div>
-              <div className="dash-bars"><i></i><i></i><i></i><i></i><i></i></div>
-              <div className="dash-row"><span>Makanan</span><b>78%</b></div>
-              <div className="dash-row"><span>Transport</span><b>42%</b></div>
-              <div className="dash-alert">⚠ Budget makanan mulai mendekati batas.</div>
-            </div>
-            <div className="reveal delay-1">
-              <span className="pill light">Dashboard Insight</span>
-              <h2>Satu layar untuk melihat kondisi uangmu.</h2>
-              <p className="lead">Dashboard Monify tidak cuma menampilkan angka. Setiap angka harus punya makna: aman, waspada, atau perlu dikurangi.</p>
-              <div className="check-list">
-                <p>✓ Total pemasukan dan pengeluaran lebih mudah dibaca.</p>
-                <p>✓ Prediksi akhir bulan membantu menghindari keputusan impulsif.</p>
-                <p>✓ Risiko over budget ditampilkan per kategori agar tindakannya jelas.</p>
-              </div>
+            <div className="landing-workflow-grid">
+              {steps.map((step, idx) => {
+                const Icon = step.icon;
+                return (
+                  <article key={`${step.title}-${idx}`} className={`landing-workflow-item reveal ${idx === 0 ? '' : `delay-${Math.min(idx, 3)}`}`}>
+                    <span className="landing-workflow-num">{idx + 1}</span>
+                    <div className="landing-workflow-iconbox">
+                      <Icon size={44} strokeWidth={2} />
+                      {idx < steps.length - 1 && <ArrowRight className="landing-workflow-arrow" size={48} strokeWidth={1.2} />}
+                    </div>
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="articles section-pad">
+        <section className="landing-articles">
           <div className="container">
-            <div className="section-title reveal">
-              <span className="pill">Artikel Finansial</span>
-              <h2>Konten pendek untuk kebiasaan uang yang lebih rapi</h2>
-              <p>Bagian artikel dibuat untuk mendukung edukasi pengguna, bukan sekadar pemanis halaman.</p>
+            <div className="landing-section-head reveal">
+              <p className="landing-head-kicker">Artikel</p>
+              <h2>Artikel Seputar Pengelola Keuangan</h2>
             </div>
-            <div className="article-grid">
-              <article className="article-card reveal">
-                <span>Budgeting</span>
-                <h3>Cara Atur Uang Bulanan ala Gen Z</h3>
-                <p>Mulai dari membagi kebutuhan, keinginan, dan tabungan tanpa rumus yang ribet.</p>
-                <a href="#">Baca ringkasan →</a>
-              </article>
-              <article className="article-card reveal delay-1">
-                <span>Kebiasaan</span>
-                <h3>Kenapa Pengeluaran Kecil Bikin Boros?</h3>
-                <p>Biaya kecil sering tidak terasa karena tidak dilihat sebagai pola berulang.</p>
-                <a href="#">Baca ringkasan →</a>
-              </article>
-              <article className="article-card reveal delay-2">
-                <span>AI Insight</span>
-                <h3>Apa Gunanya Prediksi Pengeluaran?</h3>
-                <p>Prediksi membantu pengguna mengambil tindakan sebelum saldo benar-benar menipis.</p>
-                <a href="#">Baca ringkasan →</a>
-              </article>
+            <div className="landing-article-grid">
+              {articles.map((article, idx) => (
+                <article key={article.title} className={`landing-article-card reveal ${idx === 0 ? '' : `delay-${Math.min(idx, 3)}`}`}>
+                  <span>{article.tag}</span>
+                  <h3>{article.title}</h3>
+                  <p>{article.desc}</p>
+                  <button type="button">Baca ringkasan</button>
+                </article>
+              ))}
             </div>
-          </div>
-        </section>
-
-        <section className="cta section-pad">
-          <div className="container cta-card reveal">
-            <div>
-              <span className="pill light">Mulai Lebih Sadar</span>
-              <h2>Uang tidak akan rapi kalau cuma dicatat. Harus dianalisis.</h2>
-            </div>
-            <button className="btn btn-dark" onClick={() => openAuth('login')}>Login Sekarang</button>
           </div>
         </section>
       </main>
 
-      <footer className="footer" id="kontak">
+      <footer id="kontak" className="footer">
         <div className="container footer-grid">
           <div>
-            <Link className="brand footer-brand" to="/">
-              <span>Monify</span>
-            </Link>
+            <h3>Monify</h3>
             <p>Website pencatatan keuangan berbasis AI untuk membantu Gen Z memahami pola pengeluaran.</p>
           </div>
           <div>
-            <h4>Produk</h4>
-            <a href="#fitur">Fitur AI</a>
+            <h4>Beranda</h4>
             <a href="#tentang">Tentang Monify</a>
-            <a href="#demo">Demo Aplikasi</a>
+            <Link to="/team">Team</Link>
           </div>
           <div>
-            <h4>Edukasi</h4>
-            <a href="#">Budgeting</a>
-            <a href="#">Pengeluaran</a>
-            <a href="#">AI Finance</a>
+            <h4>Kontak</h4>
+            <p>Email: monify.team@gmail.com</p>
+            <p>Telepon: +62 812-3456-7890</p>
+            <p>Lokasi: Jakarta, Indonesia</p>
           </div>
           <div>
-            <h4>Capstone</h4>
-            <p>MONIFY • Coding Camp Capstone Project</p>
-            <p className="muted">© 2026 Monify Team.</p>
+            <h4>Perusahaan</h4>
+            <a href="#">Karir</a>
+            <a href="#">Kebijakan Privasi</a>
+            <a href="#">Syarat &amp; Ketentuan</a>
           </div>
         </div>
       </footer>
 
       {authOpen && (
-        <div className="auth-modal open">
-          <div className="auth-modal-backdrop" onClick={closeAuth}></div>
-          <section className="auth-modal-card">
-            <aside className="auth-modal-brand">
-              <Link className="brand auth-brand-logo" to="/" aria-label="Monify Beranda">
-                <span>Monify</span>
+        <div className="auth-modal open" onMouseDown={closeAuth}>
+          <div className="auth-modal-backdrop"></div>
+          <div className="auth-modal-shell" onMouseDown={(e) => e.stopPropagation()}>
+            <button className="auth-close" onClick={closeAuth} aria-label="Tutup popup"><X size={18} /></button>
+
+            <section className={`auth-modal-card ${authView === 'register' ? 'is-register' : 'is-login'}`}>
+              <Link className="auth-brand-logo" to="/" aria-label="Monify Beranda">
+                <span className="auth-logo-icon" aria-hidden="true">
+                  <svg viewBox="0 0 34 34" className="auth-logo-icon-svg">
+                    <path d="M6.5 23.5L13 17.2L18.8 20.7L27.5 10.2" />
+                    <path d="M22.7 10.2H27.5V15" />
+                  </svg>
+                </span>
+                <span className="auth-logo-text">Mon<span>ify</span></span>
               </Link>
-              <div className="auth-modal-copy">
-                <span>AI Finance Assistant</span>
-                <h2>Masuk dulu, baru uangmu bisa dibaca dengan rapi.</h2>
-                <p>Dashboard akan menampilkan transaksi, budget, prediksi pengeluaran, risiko over budget, dan safe-to-spend harian.</p>
+
+              <div className="auth-heading">
+                <h3>{authView === 'login' ? 'Selamat Datang Kembali' : 'Buat Akun Baru'}</h3>
+                <p>{authView === 'login' ? 'Masuk ke dashboard keuanganmu' : 'Mulai kelola keuanganmu dengan AI'}</p>
               </div>
-              <div className="auth-benefits">
-                <p>✓ Kategori pengeluaran otomatis dari AI</p>
-                <p>✓ Prediksi pengeluaran sampai akhir bulan</p>
-                <p>✓ Rekomendasi kategori yang harus dikurangi</p>
-              </div>
-            </aside>
-            <div className="auth-modal-panel">
-              <button className="auth-close" onClick={closeAuth} aria-label="Tutup popup">×</button>
-              <div className="auth-tabs" role="tablist" aria-label="Pilih autentikasi">
-                <button className={authView === 'login' ? 'active' : ''} onClick={() => setAuthView('login')}>Masuk</button>
-                <button className={authView === 'register' ? 'active' : ''} onClick={() => setAuthView('register')}>Daftar</button>
-              </div>
-              
-              <form className={`auth-form ${authView === 'login' ? 'active' : ''}`} onSubmit={handleAuth}>
-                <div className="auth-heading">
-                  <small>Masuk Akun</small>
-                  <h3>Selamat datang kembali</h3>
-                  <p>Cek kondisi uangmu sebelum membuat keputusan belanja berikutnya.</p>
+
+              {/* Login Form */}
+              <form className={`auth-form ${authView === 'login' ? 'active auth-login' : ''}`} onSubmit={handleAuth}>
+                <div className="auth-field-group">
+                  <label>Email</label>
+                  <div className="auth-field"><input type="email" placeholder="Jhon@Example.com" required /></div>
                 </div>
-                {authError && authView === 'login' && <div className="auth-error" style={{color:'#f45f5f',background:'rgba(244,95,95,0.1)',padding:'10px 14px',borderRadius:'8px',fontSize:'13px',marginBottom:'8px'}}>{authError}</div>}
-                <label>Email</label>
-                <div className="auth-field"><input name="email" type="email" placeholder="nama@email.com" required /></div>
-                <label>Password</label>
-                <div className="auth-field with-action">
-                  <input name="password" type={showPass ? "text" : "password"} placeholder="Masukkan password" required />
-                  <button type="button" onClick={() => setShowPass(!showPass)}>{showPass ? "Tutup" : "Lihat"}</button>
+                <div className="auth-field-group">
+                  <label>Password</label>
+                  <div className="auth-field with-toggle">
+                    <input type={showPass ? 'text' : 'password'} placeholder="Masukan Password" required />
+                    <button type="button" className="auth-eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Lihat password">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <button className="btn btn-primary auth-submit" type="submit" disabled={authLoading}>{authLoading ? 'Memproses...' : 'Masuk ke Dashboard'}</button>
-                <p className="auth-switcher">Belum punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('register'); setAuthError(''); }}>Daftar sekarang</a></p>
+                <button className="auth-submit" type="submit">Masuk</button>
+                <p className="auth-switcher">Belum punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('register'); setShowPass(false); }}>Daftar Sekarang</a></p>
               </form>
-              
-              <form className={`auth-form ${authView === 'register' ? 'active' : ''}`} onSubmit={handleAuth}>
-                <div className="auth-heading">
-                  <small>Buat Akun</small>
-                  <h3>Mulai rapikan uangmu</h3>
-                  <p>Daftar agar transaksi, budget, dan prediksi AI tersimpan di dashboard.</p>
+
+              {/* Register Form */}
+              <form className={`auth-form ${authView === 'register' ? 'active auth-register' : ''}`} onSubmit={handleAuth}>
+                <div className="auth-field-group">
+                  <label>Nama Lengkap</label>
+                  <div className="auth-field"><input type="text" placeholder="Jhon sena" required /></div>
                 </div>
-                {authError && authView === 'register' && <div className="auth-error" style={{color:'#f45f5f',background:'rgba(244,95,95,0.1)',padding:'10px 14px',borderRadius:'8px',fontSize:'13px',marginBottom:'8px'}}>{authError}</div>}
-                <label>Nama Lengkap</label>
-                <div className="auth-field"><input name="name" type="text" placeholder="Contoh: namamu" required /></div>
-                <label>Email</label>
-                <div className="auth-field"><input name="email" type="email" placeholder="nama@email.com" required /></div>
-                <label>Password</label>
-                <div className="auth-field with-action">
-                  <input name="password" type={showPass ? "text" : "password"} placeholder="Minimal 8 karakter" required />
-                  <button type="button" onClick={() => setShowPass(!showPass)}>{showPass ? "Tutup" : "Lihat"}</button>
+                <div className="auth-field-group">
+                  <label>Email</label>
+                  <div className="auth-field"><input type="email" placeholder="Jhon@Example.com" required /></div>
                 </div>
-                <button className="btn btn-primary auth-submit" type="submit" disabled={authLoading}>{authLoading ? 'Memproses...' : 'Daftar & Masuk'}</button>
-                <p className="auth-switcher">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('login'); setAuthError(''); }}>Masuk di sini</a></p>
+                <div className="auth-field-group">
+                  <label>Password</label>
+                  <div className="auth-field with-toggle">
+                    <input type={showPass ? 'text' : 'password'} placeholder="Masukan Password" required />
+                    <button type="button" className="auth-eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Lihat password">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div className="auth-field-group">
+                  <label>Konfirmasi Password</label>
+                  <div className="auth-field with-toggle">
+                    <input type={showPass ? 'text' : 'password'} placeholder="Ulangi Password" required />
+                    <button type="button" className="auth-eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Lihat password">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <button className="auth-submit" type="submit">Daftar</button>
+                <p className="auth-switcher">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('login'); setShowPass(false); }}>Masuk</a></p>
               </form>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       )}
     </>
