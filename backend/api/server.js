@@ -60,18 +60,23 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`✅ MONIFY Backend v2.0 berjalan di http://localhost:${PORT}`);
-    console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
-    console.log('📦 Endpoints:');
-    console.log('   - POST /api/auth/register');
-    console.log('   - POST /api/auth/login');
-    console.log('   - GET  /api/transactions');
-    console.log('   - GET  /api/categories/income');
-    console.log('   - GET  /api/categories/expense');
-    console.log('   - GET  /api/budgets');
-    console.log('   - POST /api/ai/predict');
-    console.log('   - GET  /api/dashboard/summary');
-    console.log('   - GET  /api/reports/monthly');
-});
+// Start server (hanya jalan di lokal, tidak di Vercel)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`✅ MONIFY Backend v2.0 berjalan di http://localhost:${PORT}`);
+        console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
+        console.log('📦 Endpoints:');
+        console.log('   - POST /api/auth/register');
+        console.log('   - POST /api/auth/login');
+        console.log('   - GET  /api/transactions');
+        console.log('   - GET  /api/categories/income');
+        console.log('   - GET  /api/categories/expense');
+        console.log('   - GET  /api/budgets');
+        console.log('   - POST /api/ai/predict');
+        console.log('   - GET  /api/dashboard/summary');
+        console.log('   - GET  /api/reports/monthly');
+    });
+}
+
+// WAJIB UNTUK VERCEL: Export app agar bisa dibaca sebagai Serverless Function
+module.exports = app;
