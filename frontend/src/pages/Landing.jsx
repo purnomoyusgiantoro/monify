@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStylesheet, useReveal } from '../utils/hooks';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { apiLogin, apiRegister, setAuth } from '../utils/api';
 import {
   Search,
   BarChart3,
@@ -105,16 +106,54 @@ export default function Landing() {
   const [authView, setAuthView] = useState('login');
   const [showPass, setShowPass] = useState(false);
 
-  const handleAuth = (e) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleAuth = async (e) => {
     e.preventDefault();
-    localStorage.setItem('monify_logged_in', 'true');
-    closeAuth();
-    navigate('/dashboard');
+    setErrorMsg('');
+    setLoading(true);
+
+    try {
+      if (authView === 'login') {
+        const { ok, data } = await apiLogin(email, password);
+        if (ok && data.success) {
+          setAuth(data.data.token, data.data.user);
+          closeAuth();
+          navigate('/dashboard');
+        } else {
+          setErrorMsg(data.message || 'Login gagal.');
+        }
+      } else {
+        if (password !== confirmPassword) {
+          setErrorMsg('Password dan konfirmasi password tidak cocok.');
+          setLoading(false);
+          return;
+        }
+        const { ok, data } = await apiRegister(name, email, password);
+        if (ok && data.success) {
+          setAuth(data.data.token, data.data.user);
+          closeAuth();
+          navigate('/dashboard');
+        } else {
+          setErrorMsg(data.message || 'Registrasi gagal.');
+        }
+      }
+    } catch (err) {
+      setErrorMsg('Terjadi kesalahan koneksi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const openAuth = (view) => {
     setAuthView(view);
     setAuthOpen(true);
+    setErrorMsg('');
     document.body.classList.add('auth-locked');
   };
 
@@ -363,14 +402,15 @@ export default function Landing() {
 
               {/* Login Form */}
               <form className={`auth-form ${authView === 'login' ? 'active auth-login' : ''}`} onSubmit={handleAuth}>
+                {errorMsg && authView === 'login' && <div className="auth-error" style={{color: '#ff4d4f', background: '#ffe5e5', padding: '10px', borderRadius: '8px', fontSize: '14px', marginBottom: '16px'}}>{errorMsg}</div>}
                 <div className="auth-field-group">
                   <label>Email</label>
-                  <div className="auth-field"><input type="email" placeholder="Jhon@Example.com" required /></div>
+                  <div className="auth-field"><input type="email" placeholder="Jhon@Example.com" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                 </div>
                 <div className="auth-field-group">
                   <label>Password</label>
                   <div className="auth-field with-toggle">
-                    <input type={showPass ? 'text' : 'password'} placeholder="Masukan Password" required />
+                    <input type={showPass ? 'text' : 'password'} placeholder="Masukan Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                     <button type="button" className="auth-eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Lihat password">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -379,24 +419,25 @@ export default function Landing() {
                     </button>
                   </div>
                 </div>
-                <button className="auth-submit" type="submit">Masuk</button>
-                <p className="auth-switcher">Belum punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('register'); setShowPass(false); }}>Daftar Sekarang</a></p>
+                <button className="auth-submit" type="submit" disabled={loading}>{loading ? 'Memproses...' : 'Masuk'}</button>
+                <p className="auth-switcher">Belum punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('register'); setShowPass(false); setErrorMsg(''); }}>Daftar Sekarang</a></p>
               </form>
 
               {/* Register Form */}
               <form className={`auth-form ${authView === 'register' ? 'active auth-register' : ''}`} onSubmit={handleAuth}>
+                {errorMsg && authView === 'register' && <div className="auth-error" style={{color: '#ff4d4f', background: '#ffe5e5', padding: '10px', borderRadius: '8px', fontSize: '14px', marginBottom: '16px'}}>{errorMsg}</div>}
                 <div className="auth-field-group">
                   <label>Nama Lengkap</label>
-                  <div className="auth-field"><input type="text" placeholder="Jhon sena" required /></div>
+                  <div className="auth-field"><input type="text" placeholder="Jhon sena" required value={name} onChange={(e) => setName(e.target.value)} /></div>
                 </div>
                 <div className="auth-field-group">
                   <label>Email</label>
-                  <div className="auth-field"><input type="email" placeholder="Jhon@Example.com" required /></div>
+                  <div className="auth-field"><input type="email" placeholder="Jhon@Example.com" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                 </div>
                 <div className="auth-field-group">
                   <label>Password</label>
                   <div className="auth-field with-toggle">
-                    <input type={showPass ? 'text' : 'password'} placeholder="Masukan Password" required />
+                    <input type={showPass ? 'text' : 'password'} placeholder="Masukan Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                     <button type="button" className="auth-eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Lihat password">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -408,7 +449,7 @@ export default function Landing() {
                 <div className="auth-field-group">
                   <label>Konfirmasi Password</label>
                   <div className="auth-field with-toggle">
-                    <input type={showPass ? 'text' : 'password'} placeholder="Ulangi Password" required />
+                    <input type={showPass ? 'text' : 'password'} placeholder="Ulangi Password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                     <button type="button" className="auth-eye-btn" onClick={() => setShowPass(!showPass)} aria-label="Lihat password">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -417,8 +458,8 @@ export default function Landing() {
                     </button>
                   </div>
                 </div>
-                <button className="auth-submit" type="submit">Daftar</button>
-                <p className="auth-switcher">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('login'); setShowPass(false); }}>Masuk</a></p>
+                <button className="auth-submit" type="submit" disabled={loading}>{loading ? 'Memproses...' : 'Daftar'}</button>
+                <p className="auth-switcher">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setAuthView('login'); setShowPass(false); setErrorMsg(''); }}>Masuk</a></p>
               </form>
             </section>
           </div>
