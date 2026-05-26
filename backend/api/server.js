@@ -60,7 +60,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start server (hanya jalan di lokal, tidak di Vercel)
+
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
         console.log(`✅ MONIFY Backend v2.0 berjalan di http://localhost:${PORT}`);
