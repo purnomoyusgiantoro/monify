@@ -70,13 +70,13 @@ const steps = [
   },
   {
     icon: BarChart3,
-    title: 'Masukkan Penghasilan',
-    desc: 'Program mengolah data input, income, dan target budget bulanan.',
+    title: 'Menganalisis Data',
+    desc: 'Monify mengolah data transaksi untuk melihat pola pengeluaran dan resiko over budget',
   },
   {
     icon: Flag,
-    title: 'Catat Transaksi',
-    desc: 'Transaksi masuk bisa berupa makanan, transport, belanja, hiburan, dan kebutuhan lain.',
+    title: 'Mengambil Keputusan',
+    desc: 'Hasil analisis membantu pengguna menentukan pengeluaran yang perlu diperhatikan.',
   },
 ];
 

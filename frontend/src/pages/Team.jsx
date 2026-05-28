@@ -3,131 +3,211 @@ import { useStylesheet, useReveal } from '../utils/hooks';
 import Navbar from '../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 
+const stats = [
+  { value: '6', label: 'Anggota Aktif' },
+  { value: '3', label: 'Role Utama' },
+  { value: '4', label: 'Fitur AI' },
+];
+
+const roles = [
+  {
+    no: '01',
+    title: 'Data Scientist',
+    desc: 'Mengolah data transaksi, membersihkan dataset, menyiapkan fitur, dan membaca pola pengeluaran.',
+  },
+  {
+    no: '02',
+    title: 'AI Engineer',
+    desc: 'Membangun model klasifikasi dan prediksi agar hasil analisis bisa dipakai di aplikasi.',
+  },
+  {
+    no: '03',
+    title: 'Full-Stack Web',
+    desc: 'Mengerjakan tampilan, backend API, database, autentikasi, dan integrasi service AI.',
+  },
+];
+
+const members = [
+  {
+    name: 'Kristina Ester',
+    id: 'CDCC245D6X1272',
+    role: 'Ketua Tim & Data Scientist',
+    university: 'Universitas Kristen Satya Wacana',
+    major: 'Teknologi Informasi',
+    skills: ['Data', 'EDA', 'Leadership'],
+    img: 'kristina.jpg',
+  },
+  {
+    name: 'Chenida Rira Verlyta',
+    id: 'CDCC427D6X2669',
+    role: 'Data Scientist',
+    university: 'Universitas Bina Insan',
+    major: 'Informatika',
+    skills: ['Data', 'Analysis', 'Feature'],
+    img: 'chenida.jpg',
+  },
+  {
+    name: 'Faradila Octavia Nabila',
+    id: 'CACC245D6X1982',
+    role: 'AI Engineer',
+    university: 'Universitas Kristen Satya Wacana',
+    major: 'Teknik Komputer',
+    skills: ['Model', 'Training', 'Inference'],
+    img: 'faradila.jpg',
+  },
+  {
+    name: 'Mohamad Fajar Mutaqin',
+    id: 'CACC452D6Y1178',
+    role: 'AI Engineer',
+    university: 'Universitas Muhammadiyah Jakarta',
+    major: 'Teknik Informatika',
+    skills: ['Data', 'EDA', 'Leadership'],
+    img: 'fajar.jpg',
+  },
+  {
+    name: 'Purnomo Yusgiantoro',
+    id: 'CFCC702D6Y1121',
+    role: 'Full-Stack Web Developer',
+    university: 'Universitas Putra Bangsa',
+    major: 'Ilmu Komputer',
+    skills: ['React', 'API', 'Database'],
+    img: 'purnomo.jpg',
+  },
+  {
+    name: 'Indra Fata Nizar Azizi',
+    id: 'CFCC702D6Y1551',
+    role: 'Full-Stack Web Developer',
+    university: 'Universitas Putra Bangsa',
+    major: 'Ilmu Komputer',
+    skills: ['Backend', 'Express', 'Integrasi AI'],
+    img: 'indra.jpg',
+  },
+];
+
 export default function Team() {
-  useStylesheet('/style.css');
+  useStylesheet('/team.css');
   useReveal();
   const navigate = useNavigate();
-  
+
   return (
     <>
       <Navbar openAuth={() => navigate('/?auth=login')} />
-      <main>
-        <section className="team-hero section-pad">
+
+      <main className="team-page">
+        <section className="team-hero">
           <div className="container team-hero-grid">
             <div className="reveal">
-              <span className="pill">MONIFY TEAM</span>
-              <h1>Tim kecil dengan tugas yang jelas</h1>
+              <span className="team-kicker">TIM MONIFY</span>
+              <h1>Tim dibalik Monify</h1>
               <p>
-                Monify dikembangkan oleh 6 anggota dengan pembagian kerja Data Scientist, AI Engineer, dan Full-Stack Web Developer. Fokusnya bukan banyak fitur, tapi fitur yang nyambung dari data, model AI, sampai antarmuka pengguna.
+                Monify dikembangkan oleh 6 anggota dengan pembagian kerja Data Scientist, AI Engineer,
+                dan Full-Stack Web Developer. Fokusnya bukan hanya fitur, tapi fitur yang nyambung dari
+                data, model AI, sampai antarmuka pengguna.
               </p>
             </div>
-            <div className="team-summary reveal delay-1">
-              <div><strong>6</strong><span>Anggota aktif</span></div>
-              <div><strong>3</strong><span>Role utama</span></div>
-              <div><strong>4</strong><span>Fitur AI</span></div>
-            </div>
-          </div>
-        </section>
 
-        <section className="role-section">
-          <div className="container role-grid">
-            <article className="role-card reveal">
-              <span>01</span>
-              <h3>Data Scientist</h3>
-              <p>Mengolah data transaksi, membersihkan dataset, menyiapkan fitur, dan membaca pola pengeluaran.</p>
-            </article>
-            <article className="role-card reveal delay-1">
-              <span>02</span>
-              <h3>AI Engineer</h3>
-              <p>Membangun model klasifikasi dan prediksi agar hasil analisis bisa dipakai di aplikasi.</p>
-            </article>
-            <article className="role-card reveal delay-2">
-              <span>03</span>
-              <h3>Full-Stack Web</h3>
-              <p>Mengerjakan tampilan, backend API, database, autentikasi, dan integrasi service AI.</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="members section-pad">
-          <div className="container">
-            <div className="section-title reveal">
-              <span className="pill">Anggota Tim</span>
-              <h2>Orang di balik Monify</h2>
-              <p>Setiap anggota dibuat jelas posisinya supaya halaman tim tidak cuma berisi nama.</p>
-            </div>
-
-            <div className="member-grid">
-              {[
-                { name: "Kristina Ester", role: "Ketua Tim & Data Scientist", initials: "KE", color: "green", img: "kristina.jpg", skills: ["Data", "EDA", "Leadership"] },
-                { name: "Chenida Rira Verlyta", role: "Data Scientist", initials: "CV", color: "mint", img: "chenida.jpg", skills: ["Dataset", "Analysis", "Feature"] },
-                { name: "Faradila Octavia Nabila", role: "AI Engineer", initials: "FO", color: "blue", img: "faradila.jpg", skills: ["Model", "Training", "Inference"] },
-                { name: "Mohamad Fajar Mutaqin", role: "AI Engineer", initials: "MF", color: "purple", img: "fajar.jpg", skills: ["AI Service", "Predict", "Testing"] },
-                { name: "Purnomo Yusgiantoro", role: "Full-Stack Web Developer", initials: "PY", color: "orange", img: "purnomo.jpg", skills: ["React", "API", "Database"] },
-                { name: "Indra Fata Nizar Azizi", role: "Full-Stack Web Developer / Backend Developer", initials: "IF", color: "dark", img: "indra.jpg", skills: ["Backend", "Express", "Integrasi AI"], highlight: true },
-              ].map((m, i) => (
-                <article key={i} className={`member-card reveal ${i > 0 ? `delay-${i % 4}` : ''} ${m.highlight ? 'highlight-member' : ''}`}>
-                  <div className="member-top">
-                    <div className={`avatar avatar-${m.color}`}>
-                      <img 
-                        src={`/TeamImages/${m.img}`} 
-                        alt={m.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit', position: 'absolute', inset: 0 }}
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
-                      {m.initials}
-                    </div>
-                    <span className="status">Aktif</span>
-                  </div>
-                  <h3>{m.name}</h3>
-                  <p>{m.role}</p>
-                  <div className="member-skills">
-                    {m.skills.map(s => <span key={s}>{s}</span>)}
-                  </div>
+            <div className="team-stats reveal delay-1">
+              {stats.map((stat) => (
+                <article key={stat.label} className="team-stat-card">
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="collab section-pad">
-          <div className="container collab-card reveal">
-            <div>
-              <span className="pill light">Cara Kerja Tim</span>
-              <h2>Frontend tidak berdiri sendiri. Data, AI, dan backend harus nyambung.</h2>
-              <p>Alur kerja Monify: Data Scientist menyiapkan data, AI Engineer membangun model, Full-Stack Web menghubungkan model ke fitur pengguna.</p>
+        <section className="team-roles">
+          <div className="container">
+            <div className="team-role-grid">
+              {roles.map((role, index) => (
+                <article
+                  key={role.no}
+                  className={`team-role-card reveal ${index > 0 ? `delay-${Math.min(index, 3)}` : ''}`}
+                >
+                  <span className="team-role-number">{role.no}</span>
+                  <h2>{role.title}</h2>
+                  <p>{role.desc}</p>
+                </article>
+              ))}
             </div>
-            <div className="flow-mini">
-              <span>Data</span><i></i><span>AI</span><i></i><span>API</span><i></i><span>Web</span>
+          </div>
+        </section>
+
+        <section className="team-members" id="team">
+          <div className="container">
+            <div className="team-members-head reveal">
+              <span>Anggota Tim</span>
+            </div>
+
+            <div className="team-member-grid">
+              {members.map((member, index) => (
+                <article
+                  key={member.id}
+                  className={`team-member-card reveal ${index > 0 ? `delay-${index % 4 || 1}` : ''}`}
+                >
+                  <div className="team-photo-box">
+                    <img
+                      src={`/TeamImages/${member.img}`}
+                      alt={member.name}
+                      onError={(e) => {
+                        e.currentTarget.classList.add('image-fallback');
+                      }}
+                    />
+                  </div>
+                  <span className="team-photo-source">Monify Team</span>
+                  <h3>{member.name}</h3>
+                  <p className="team-member-id">ID : {member.id}</p>
+                  <span className="team-person-role">{member.role}</span>
+                  <p className="team-university">{member.university}</p>
+                  <p className="team-major">{member.major}</p>
+                  <div className="team-skills">
+                    {member.skills.map((skill) => (
+                      <span key={skill} className="team-skill">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="footer" id="kontak">
-        <div className="container footer-grid">
+      <footer id="kontak" className="team-footer">
+        <div className="container team-footer-grid">
           <div>
-            <Link className="brand footer-brand" to="/">
-              <span>Monify</span>
+            <Link className="team-footer-brand" to="/">
+              Monify
             </Link>
-            <p>Capstone project pencatatan keuangan berbasis AI.</p>
+            <p>
+              Website pencatat keuangan berbasis
+              <br />
+              AI untuk membantu Gen Z memahami
+              <br />
+              pola pengeluaran
+            </p>
           </div>
+
           <div>
-            <h4>Role</h4>
-            <a href="#">Data Scientist</a>
-            <a href="#">AI Engineer</a>
-            <a href="#">Full-Stack Web</a>
+            <h4>Beranda</h4>
+            <a href="/#tentang">Tentang Monify</a>
+            <a href="#team">Team</a>
           </div>
+
           <div>
-            <h4>Fitur</h4>
-            <a href="/#fitur">Klasifikasi</a>
-            <a href="/#fitur">Prediksi</a>
-            <a href="/#fitur">Over Budget</a>
+            <h4>Kontak</h4>
+            <p>Email: monify.team@gmail.com</p>
+            <p>Telepon: +62 812-3456-7890</p>
+            <p>Lokasi: Jakarta, Indonesia</p>
           </div>
+
           <div>
-            <h4>Capstone</h4>
-            <p>MONIFY • Coding Camp Capstone Project</p>
-            <p className="muted">© 2026 Monify Team.</p>
+            <h4>Perusahaan</h4>
+            <a href="#">Karir</a>
+            <a href="#">Kebijakan Privasi</a>
+            <a href="#">Syarat &amp; Ketentuan</a>
           </div>
         </div>
       </footer>
