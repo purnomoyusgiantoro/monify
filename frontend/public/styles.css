@@ -112,34 +112,47 @@ button {
 
 .sidebar__profile {
   margin-top: auto;
-  min-height: 66px;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: -24px;
+  min-height: 76px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
+  gap: 14px;
+  padding: 16px 28px;
   background: var(--surface-soft);
-  border-top: 2px solid var(--line);
+  border-top: 1px solid var(--line);
 }
 
 .sidebar__profile img {
-  width: 46px;
-  height: 53px;
-  border-radius: 999px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   object-fit: cover;
+  background: var(--surface-soft);
+  flex-shrink: 0;
+}
+
+.sidebar__profile div {
+  overflow: hidden;
 }
 
 .sidebar__profile strong,
 .sidebar__profile span {
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar__profile strong {
-  font-size: 16px;
+  font-size: 15px;
+  color: var(--text);
 }
 
 .sidebar__profile span {
-  margin-top: 4px;
-  color: #17212b;
+  margin-top: 2px;
+  color: var(--muted);
   font-size: 13px;
 }
 
