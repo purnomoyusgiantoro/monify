@@ -1,19 +1,25 @@
+import DateButton from './DateButton.jsx';
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Menu } from 'lucide-react';
-
-export default function Topbar({ setMobileMenuOpen, title, desc, extraAction }) {
+export default function Topbar({
+  title = 'Dashboard',
+  description = 'Pantau kondisi keuanganmu di sini',
+  selectedDate,
+  showDate = true,
+  action = null,
+}) {
   return (
     <header className="topbar">
       <div>
-        <button className="icon-btn mobile-menu" onClick={() => setMobileMenuOpen(prev => !prev)}><Menu size={20} /></button>
         <h1>{title}</h1>
-        <p>{desc}</p>
+        <p>{description}</p>
       </div>
-      <div className="top-actions">
-        {extraAction}
-      </div>
+
+      {(showDate || action) ? (
+        <div className="topbar-actions">
+          {action}
+          {showDate ? <DateButton date={selectedDate} /> : null}
+        </div>
+      ) : null}
     </header>
   );
 }

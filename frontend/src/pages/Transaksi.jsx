@@ -1,240 +1,133 @@
-import React, { useEffect, useState } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
-import Topbar from '../components/Topbar';
-import { rupiah, toast } from '../utils/store';
-import { Search } from 'lucide-react';
-import {
-  apiGetTransactions,
-  apiCreateTransaction,
-  apiUpdateTransaction,
-  apiDeleteTransaction,
-  apiGetIncomeCategories,
-  apiGetExpenseCategories,
-  apiClassify
-} from '../utils/api';
+import { useMemo, useState } from 'react';
+import Topbar from '../components/Topbar.jsx';
+import TransactionTabs from '../components/transactions/TransactionTabs.jsx';
+import TransactionForm from '../components/transactions/TransactionForm.jsx';
+import TransactionList from '../components/transactions/TransactionList.jsx';
+import DeleteConfirmModal from '../components/transactions/DeleteConfirmModal.jsx';
+import { initialTransactions, suggestCategory } from '../data/transactionData.js';
+
+const today = '2026-06-22';
+const emptyForm = {
+  type: 'income',
+  name: '',
+  amount: '',
+  date: today,
+  category: '',
+  note: '',
+};
 
 export default function Transaksi() {
-  const { setMobileMenuOpen } = useOutletContext();
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
+  const [transactions, setTransactions] = useState(initialTransactions);
+  const [formData, setFormData] = useState(emptyForm);
+  const [editingId, setEditingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const [transactions, setTransactions] = useState([]);
-  const [incomeCats, setIncomeCats] = useState([]);
-  const [expenseCats, setExpenseCats] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const filteredTransactions = useMemo(() => {
+    if (activeTab === 'all') return transactions;
+    return transactions.filter((transaction) => transaction.type === activeTab);
+  }, [activeTab, transactions]);
 
-  const [form, setForm] = useState({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0, 10), note: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  function handleFormChange(name, value) {
+    setFormData((current) => {
+      const next = { ...current, [name]: value };
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [trxRes, incRes, expRes] = await Promise.all([
-        apiGetTransactions({ limit: 12 }),
-        apiGetIncomeCategories(),
-        apiGetExpenseCategories()
-      ]);
-
-      if (trxRes.ok) setTransactions(trxRes.data.data);
-      if (incRes.ok) setIncomeCats(incRes.data.data);
-      if (expRes.ok) setExpenseCats(expRes.data.data);
-    } catch (err) {
-      toast('Gagal memuat data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  // For preview only, we use a simple local guess to avoid spamming the API on every keystroke
-  const guessLocal = (text) => {
-    const t = text.toLowerCase();
-    if (/makan|ayam|kopi|nasi|bakso|mie|jajan|minum|food|resto|geprek/.test(t)) return 'Makanan';
-    if (/gojek|grab|bensin|parkir|ojek|bus|kereta|transport|angkot/.test(t)) return 'Transport';
-    if (/baju|skincare|sepatu|belanja|marketplace|shopee|tokopedia|barang/.test(t)) return 'Belanja';
-    if (/netflix|game|spotify|bioskop|hiburan|nongkrong|langganan|top up/.test(t)) return 'Hiburan';
-    if (/kuota|internet|wifi|pulsa|indihome|paket data/.test(t)) return 'Internet';
-    return 'Lainnya';
-  };
-
-  const preview = form.type === 'income' ? 'Pemasukan' : (form.title.trim() ? guessLocal(form.title) : 'Isi judul transaksi dulu');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-    try {
-      let income_category_id = null;
-      let expense_category_id = null;
-      let predictedCategoryName = '';
-
-      if (form.type === 'income') {
-        // Find default income category
-        const defaultInc = incomeCats.find(c => c.name.toLowerCase() === 'gaji') || incomeCats[0];
-        if (defaultInc) income_category_id = defaultInc.id;
-        predictedCategoryName = defaultInc ? defaultInc.name : 'Pemasukan';
-      } else {
-        // Call AI API
-        toast('Sedang mengklasifikasikan transaksi dengan AI...');
-        const aiRes = await apiClassify(form.title, Number(form.amount));
-        let aiCategoryName = 'Lainnya';
-        if (aiRes.ok && aiRes.data.data) {
-          aiCategoryName = aiRes.data.data.kategori_ai;
-        }
-
-        // Map AI result to database ID
-        let cat = expenseCats.find(c => c.name.toLowerCase() === aiCategoryName.toLowerCase());
-        if (!cat) {
-          cat = expenseCats.find(c => c.name.toLowerCase() === 'lainnya') || expenseCats[0];
-        }
-        if (cat) {
-          expense_category_id = cat.id;
-          predictedCategoryName = cat.name;
-        }
+      if (name === 'type') {
+        next.category = '';
       }
 
-      const payload = {
-        type: form.type,
-        amount: Number(form.amount),
-        description: form.title.trim(),
-        transactions_date: form.date,
-        income_category_id,
-        expense_category_id,
-        category_method: 'ai',
-        note: form.note.trim()
-      };
-
-      if (form.id) {
-        const res = await apiUpdateTransaction(form.id, payload);
-        if (res.ok) {
-          toast(`Transaksi diperbarui. Kategori: ${predictedCategoryName}.`);
-          handleCancel();
-        } else {
-          toast(res.data?.message || 'Gagal memperbarui');
-        }
-      } else {
-        const res = await apiCreateTransaction(payload);
-        if (res.ok) {
-          toast(`Transaksi disimpan. AI: ${predictedCategoryName}.`);
-          handleCancel();
-        } else {
-          toast(res.data?.message || 'Gagal menyimpan');
-        }
+      if ((name === 'name' || name === 'type') && next.name.trim()) {
+        next.category = suggestCategory(next.name, next.type);
       }
 
-      loadData();
-    } catch (err) {
-      toast('Terjadi kesalahan server');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleEdit = (trx) => {
-    setForm({
-      id: trx.id,
-      title: trx.description || trx.title || '',
-      amount: trx.amount,
-      type: trx.type,
-      date: trx.transactions_date || trx.date || new Date().toISOString().slice(0, 10),
-      note: trx.note || ''
+      return next;
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Yakin ingin menghapus transaksi ini?')) return;
-    try {
-      const res = await apiDeleteTransaction(id);
-      if (res.ok) {
-        toast('Transaksi berhasil dihapus');
-        loadData();
-      } else {
-        toast(res.data?.message || 'Gagal menghapus');
-      }
-    } catch (err) {
-      toast('Terjadi kesalahan server');
+  function resetForm() {
+    setFormData(emptyForm);
+    setEditingId(null);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const name = formData.name.trim();
+    const amount = Number(formData.amount);
+
+    if (!name || !amount || amount <= 0) {
+      alert('Nama transaksi dan nominal wajib diisi dengan benar.');
+      return;
     }
-  };
 
-  const handleCancel = () => {
-    setForm({ id: '', title: '', amount: '', type: 'expense', date: new Date().toISOString().slice(0, 10), note: '' });
-  };
+    const payload = {
+      ...formData,
+      id: editingId ?? Date.now(),
+      name,
+      amount,
+      category: formData.category || suggestCategory(name, formData.type),
+    };
 
-  const filteredTransactions = transactions.filter(x => {
-    const desc = (x.description || x.title || '').toLowerCase();
-    const q = searchQuery.toLowerCase();
-    return desc.includes(q);
-  });
+    if (editingId) {
+      setTransactions((current) => current.map((transaction) => (transaction.id === editingId ? payload : transaction)));
+    } else {
+      setTransactions((current) => [payload, ...current]);
+    }
+
+    resetForm();
+  }
+
+  function handleEdit(transaction) {
+    setEditingId(transaction.id);
+    setFormData({
+      type: transaction.type,
+      name: transaction.name,
+      amount: String(transaction.amount),
+      date: transaction.date,
+      category: transaction.category,
+      note: transaction.note ?? '',
+    });
+  }
+
+  function handleDelete() {
+    setTransactions((current) => current.filter((transaction) => transaction.id !== deleteTarget.id));
+    if (editingId === deleteTarget.id) resetForm();
+    setDeleteTarget(null);
+  }
 
   return (
-    <>
+    <main className="page-main transaksi-main">
       <Topbar
-        setMobileMenuOpen={setMobileMenuOpen}
-        title="Catat Transaksi"
-        desc="Masukkan pemasukan atau pengeluaran"
-        extraAction={
-          <>
-            <div className="search-box">
-              <Search size={18} /> 
-              <input 
-                value={searchQuery} 
-                onChange={(e) => setSearchQuery(e.target.value)} 
-                placeholder="Cari transaksi..." 
-              />
-            </div>
-            <Link className="btn btn-ghost" to="/dashboard">Kembali</Link>
-          </>
-        }
+        title="Transaksi"
+        description="Catat pemasukan dan pengeluaranmu di satu tempat"
+        selectedDate={today}
+        showDate={false}
       />
-      <section className="page-grid">
-        <form className="panel" onSubmit={handleSubmit}>
-          <div className="panel-head"><div><h2>{form.id ? 'Edit Transaksi' : 'Form Transaksi'}</h2></div></div>
-          <div className="form-grid">
-            <div className="field"><label>Judul Transaksi</label><div className="input-wrap"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Contoh: Makan ayam geprek" required disabled={isSubmitting} /></div></div>
-            <div className="field"><label>Nominal</label><div className="input-wrap"><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="28000" required disabled={isSubmitting} /></div></div>
-            <div className="field"><label>Tipe</label><div className="input-wrap"><select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} disabled={isSubmitting}><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></div></div>
-            <div className="ai-category-preview"><span>Prediksi kategori AI</span><strong>{preview}</strong></div>
-            <div className="field"><label>Tanggal</label><div className="input-wrap"><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} required disabled={isSubmitting} /></div></div>
-            <div className="field"><label>Catatan</label><div className="input-wrap"><textarea value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} placeholder="Opsional, contoh: makan siang setelah kuliah" disabled={isSubmitting}></textarea></div></div>
-            <div className="form-actions">
-              <button className="btn btn-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Memproses AI...' : (form.id ? 'Simpan Perubahan' : 'Simpan Transaksi')}</button>
-              {form.id && <button className="btn btn-ghost" type="button" onClick={handleCancel} disabled={isSubmitting}>Batal Edit</button>}
-            </div>
-          </div>
-        </form>
-        <div className="table-card">
-          <div className="panel-head" style={{ padding: '22px 22px 0' }}><div><h2>Riwayat Terbaru</h2><p>Gunakan edit kalau ada kesalahan input. Jangan hapus data yang sebenarnya benar karena prediksi AI butuh riwayat.</p></div></div>
-          {loading ? (
-            <div style={{ padding: '22px' }}>Memuat data transaksi...</div>
-          ) : (
-            <table>
-              <thead><tr><th>Tanggal</th><th>Transaksi</th><th>Kategori AI</th><th>Nominal</th><th>Aksi</th></tr></thead>
-              <tbody>
-                {filteredTransactions.length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: 'center' }}>{searchQuery ? 'Transaksi tidak ditemukan' : 'Belum ada transaksi'}</td></tr>
-                ) : filteredTransactions.map(x => (
-                  <tr key={x.id}>
-                    <td>{x.transactions_date || x.date}</td>
-                    <td><strong>{x.description || x.title}</strong><br /><small style={{ color: '#6b7b74' }}>{x.note || '-'}</small></td>
-                    <td><span className={`badge ${x.type === 'income' ? '' : 'warn'}`}>{x.category_name || x.category}</span></td>
-                    <td className={x.type === 'income' ? 'amount-plus' : 'amount-minus'}>{x.type === 'income' ? '+' : '-'} {rupiah(x.amount)}</td>
-                    <td>
-                      <div className="row-actions">
-                        <button type="button" onClick={() => handleEdit(x)}>Edit</button>
-                        <button type="button" onClick={() => handleDelete(x.id)} className="danger">Hapus</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+
+      <TransactionTabs activeTab={activeTab} onChange={setActiveTab} />
+
+      <section className="transaction-layout">
+        <TransactionForm
+          formData={formData}
+          onChange={handleFormChange}
+          onSubmit={handleSubmit}
+          editingId={editingId}
+          onCancelEdit={resetForm}
+        />
+
+        <TransactionList
+          transactions={filteredTransactions}
+          selectedDate={today}
+          onEdit={handleEdit}
+          onAskDelete={setDeleteTarget}
+        />
       </section>
-    </>
+
+      <DeleteConfirmModal
+        transaction={deleteTarget}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+      />
+    </main>
   );
 }

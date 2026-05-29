@@ -1,54 +1,71 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PlusCircle, Target, Bot, BarChart2, Settings } from 'lucide-react';
+import { getUser } from '../utils/api';
 import { getState } from '../utils/store';
 
-export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
-  const [user, setUser] = useState(null);
-  const location = useLocation();
+const sidebarMenus = [
+  { label: 'Dashboard', icon: '/assets/icon-dashboard.png', path: '/dashboard' },
+  { label: 'Transaksi', icon: '/assets/icon-transaksi.png', path: '/transaksi' },
+  { label: 'Budget', icon: '/assets/icon-budget.png', path: '/budget' },
+  { label: 'Prediksi AI', icon: '/assets/icon-prediksi-ai.png', path: '/prediksi' },
+  { label: 'Setting', icon: '/assets/icon-setting.png', path: '/setting' },
+];
 
-  useEffect(() => {
-    setUser(getState().user);
-    const handleState = () => setUser(getState().user);
-    window.addEventListener('statechange', handleState);
-    return () => window.removeEventListener('statechange', handleState);
-  }, []);
-
-  const navs = [
-    { path: '/dashboard', icon: <Home size={22} strokeWidth={2.5} />, label: 'Dashboard' },
-    { path: '/transaksi', icon: <PlusCircle size={22} strokeWidth={2.5} />, label: 'Transaksi' },
-    { path: '/budget', icon: <Target size={22} strokeWidth={2.5} />, label: 'Budget' },
-    { path: '/prediksi', icon: <Bot size={22} strokeWidth={2.5} />, label: 'Prediksi AI' },
-    { path: '/laporan', icon: <BarChart2 size={22} strokeWidth={2.5} />, label: 'Laporan' },
-    { path: '/profil', icon: <Settings size={22} strokeWidth={2.5} />, label: 'Profil' },
-  ];
-
-  let sideCard = null;
-  switch (location.pathname) {
-    case '/dashboard': sideCard = <><strong>Jangan cuma lihat saldo.</strong><p>Catat transaksi kecil. Di situlah kebocoran uang biasanya kelihatan.</p></>; break;
-    case '/transaksi': sideCard = <><strong>Fitur inti Monify.</strong><p>User cukup input transaksi. Kategori pengeluaran diprediksi otomatis oleh AI, lalu bisa diedit kalau nominal atau catatannya salah.</p></>; break;
-    case '/budget': sideCard = <><strong>Budget harus fleksibel.</strong><p>Limit per kategori bisa diubah sesuai kebutuhan user. Kalau angka tidak realistis, prediksi AI juga ikut menipu.</p></>; break;
-    case '/prediksi': sideCard = <><strong>Ini bagian AI utama.</strong><p>Di backend asli, angka ini harus datang dari service Python/FastAPI, bukan cuma JS.</p></>; break;
-    case '/laporan': sideCard = <><strong>Filter laporan.</strong><p>Pilih harian, bulan ini, atau tahun ini. Laporan akan menampilkan total pengeluaran dan kategori terbesar.</p></>; break;
-    case '/profil': sideCard = <><strong>Pengaturan akun.</strong><p>Profil, ganti password, kembali ke landing page, dan keluar dari dashboard.</p></>; break;
-    default: sideCard = <><strong>Penting!</strong><p>Catat transaksi kecil.</p></>;
+function resolveUser() {
+  const authUser = getUser();
+  if (authUser) {
+    return {
+      name: authUser.name || 'Pengguna',
+      email: authUser.email || 'user@example.com',
+      avatar: '/assets/icon-profile.png',
+    };
   }
 
+  const localUser = getState().user;
+  return {
+    name: localUser?.name || 'Pengguna',
+    email: localUser?.email || 'user@example.com',
+    avatar: '/assets/icon-profile.png',
+  };
+}
+
+export default function Sidebar() {
+  const location = useLocation();
+  const [user, setUser] = useState(resolveUser());
+
+  useEffect(() => {
+    const syncUser = () => setUser(resolveUser());
+    syncUser();
+    window.addEventListener('statechange', syncUser);
+    return () => window.removeEventListener('statechange', syncUser);
+  }, []);
+
   return (
-    <aside className={"sidebar" + (mobileMenuOpen ? ' open' : '')}>
-      <Link className="logo" to="/dashboard"><span>Monify<small>AI Finance</small></span></Link>
-      <div className="profile-mini">
-        <div className="avatar">IF</div>
-        <div><strong>{user?.name || 'namamu'}</strong><span>Gen Z Finance User</span></div>
+    <aside className="sidebar" aria-label="Menu utama">
+      <div className="sidebar__brand">
+        <img src="/assets/logo-monify.png" alt="Monify" />
       </div>
-      <nav className="nav-menu">
-        {navs.map(nav => (
-          <Link key={nav.path} to={nav.path} className={"nav-link" + (location.pathname === nav.path ? ' active' : '')} onClick={() => setMobileMenuOpen(false)}>
-            <i>{nav.icon}</i> {nav.label}
+
+      <nav className="sidebar__nav">
+        {sidebarMenus.map((menu) => (
+          <Link
+            key={menu.path}
+            to={menu.path}
+            className={`sidebar__item ${location.pathname === menu.path ? 'is-active' : ''}`}
+          >
+            <img src={menu.icon} alt="" aria-hidden="true" />
+            <span>{menu.label}</span>
           </Link>
         ))}
       </nav>
-      <div className="side-card">{sideCard}</div>
+
+      <section className="sidebar__profile" aria-label="Profil pengguna">
+        <img src={user.avatar} alt="Avatar pengguna" />
+        <div>
+          <strong>{user.name}</strong>
+          <span>{user.email}</span>
+        </div>
+      </section>
     </aside>
   );
 }

@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
 import Landing from './pages/Landing';
 import Team from './pages/Team';
@@ -7,8 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Transaksi from './pages/Transaksi';
 import Budget from './pages/Budget';
 import Prediksi from './pages/Prediksi';
-import Laporan from './pages/Laporan';
-import Profil from './pages/Profil';
+import Setting from './pages/Setting';
 
 function App() {
   return (
@@ -21,8 +20,9 @@ function App() {
           <Route path="/transaksi" element={<Transaksi />} />
           <Route path="/budget" element={<Budget />} />
           <Route path="/prediksi" element={<Prediksi />} />
-          <Route path="/laporan" element={<Laporan />} />
-          <Route path="/profil" element={<Profil />} />
+          <Route path="/setting" element={<Setting />} />
+          <Route path="/profil" element={<Navigate to="/setting" replace />} />
+          <Route path="/laporan" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
     </Router>

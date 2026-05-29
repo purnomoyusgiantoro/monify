@@ -386,13 +386,7 @@ export default function Landing() {
 
             <section className={`auth-modal-card ${authView === 'register' ? 'is-register' : 'is-login'}`}>
               <Link className="auth-brand-logo" to="/" aria-label="Monify Beranda">
-                <span className="auth-logo-icon" aria-hidden="true">
-                  <svg viewBox="0 0 34 34" className="auth-logo-icon-svg">
-                    <path d="M6.5 23.5L13 17.2L18.8 20.7L27.5 10.2" />
-                    <path d="M22.7 10.2H27.5V15" />
-                  </svg>
-                </span>
-                <span className="auth-logo-text">Mon<span>ify</span></span>
+                <img className="auth-logo-image" src="/monify-logo.png" alt="Monify" />
               </Link>
 
               <div className="auth-heading">

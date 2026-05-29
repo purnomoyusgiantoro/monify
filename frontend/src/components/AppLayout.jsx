@@ -1,12 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useStylesheet } from '../utils/hooks';
 import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { isAuthenticated } from '../utils/api';
 
 export default function AppLayout() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isLoggedIn = isAuthenticated();
   useStylesheet('/styles.css');
 
@@ -21,9 +20,9 @@ export default function AppLayout() {
   return (
     <div className="app-body">
       <div className="app-shell">
-        <Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
-        <main className="main" onClick={() => { if(mobileMenuOpen) setMobileMenuOpen(false) }}>
-          <Outlet context={{ setMobileMenuOpen }} />
+        <Sidebar />
+        <main className="main">
+          <Outlet />
         </main>
       </div>
     </div>
