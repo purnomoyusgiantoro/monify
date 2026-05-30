@@ -51,15 +51,6 @@ export function toast(message) {
   setTimeout(() => el.classList.remove('show'), 2300);
 }
 
-export function classify(text = '') {
-  const t = text.toLowerCase();
-  if (/makan|ayam|kopi|nasi|bakso|mie|jajan|minum|food|resto|geprek/.test(t)) return 'Makanan';
-  if (/gojek|grab|bensin|parkir|ojek|bus|kereta|transport|angkot/.test(t)) return 'Transport';
-  if (/baju|skincare|sepatu|belanja|marketplace|shopee|tokopedia|barang/.test(t)) return 'Belanja';
-  if (/netflix|game|spotify|bioskop|hiburan|nongkrong|langganan|top up game/.test(t)) return 'Hiburan';
-  if (/kuota|internet|wifi|pulsa|indihome|paket data/.test(t)) return 'Internet';
-  return 'Lainnya';
-}
 
 export function summary(state = getState(), transactions = state.transactions) {
   const today = new Date();

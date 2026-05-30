@@ -4,7 +4,7 @@ import TransactionTabs from '../components/transactions/TransactionTabs.jsx';
 import TransactionForm from '../components/transactions/TransactionForm.jsx';
 import TransactionList from '../components/transactions/TransactionList.jsx';
 import DeleteConfirmModal from '../components/transactions/DeleteConfirmModal.jsx';
-import { initialTransactions, suggestCategory } from '../data/transactionData.js';
+import { initialTransactions } from '../data/transactionData.js';
 import {
   apiGetTransactions,
   apiCreateTransaction,
@@ -132,9 +132,6 @@ export default function Transaksi() {
       }
 
       if ((name === 'name' || name === 'type') && next.name.trim()) {
-        // Local suggestion immediately
-        next.category = suggestCategory(next.name, next.type);
-
         // AI classify (debounced) — only for expense
         if (next.type === 'expense' && next.name.trim().length >= 3) {
           if (classifyTimeout) clearTimeout(classifyTimeout);

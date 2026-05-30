@@ -26,15 +26,41 @@ router.post('/classify', authMiddleware, async (req, res) => {
                 ? { 'Authorization': `Bearer ${process.env.HUGGINGFACE_API_TOKEN}` } 
                 : {};
 
-            const aiResponse = await axios.post(url, {
-                data: [deskripsi] // Payload standar Gradio
+            // Ambil base URL (menghapus path belakang jika ada)
+            let baseUrl = process.env.AI_SERVICE_URL || 'https://pxy18-ai-v4.hf.space';
+            baseUrl = baseUrl.split('/run/')[0].split('/api/')[0].split('/gradio_api/')[0];
+            
+            const callUrl = `${baseUrl}/gradio_api/call/predict_api`;
+
+            // 1. Mulai prediksi dan dapatkan Event ID
+            const initResponse = await axios.post(callUrl, {
+                data: [deskripsi]
             }, { 
                 headers,
-                timeout: 10000 // Beri waktu ekstra untuk API eksternal
+                timeout: 10000 
             });
 
-            // Gradio merespons di dalam array 'data'
-            const resultData = aiResponse.data.data[0]; 
+            const eventId = initResponse.data.event_id;
+            if (!eventId) throw new Error("Gagal mendapatkan event_id dari Hugging Face");
+
+            // 2. Ambil hasil dari stream SSE
+            const streamUrl = `${callUrl}/${eventId}`;
+            const streamResponse = await axios.get(streamUrl, {
+                headers,
+                timeout: 15000,
+                responseType: 'text'
+            });
+
+            const dataStr = streamResponse.data;
+            const match = dataStr.match(/event: complete\ndata: (.*)/);
+
+            if (!match) {
+                console.error("Gradio stream data:", dataStr);
+                throw new Error("Gagal membaca hasil klasifikasi (event: complete tidak ditemukan).");
+            }
+
+            const resultArr = JSON.parse(match[1]);
+            const resultData = resultArr[0] || {}; 
 
             res.json({
                 success: true,
