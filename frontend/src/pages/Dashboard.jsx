@@ -9,9 +9,24 @@ import { dashboardData as staticDashboardData } from '../data/dashboardData.js';
 import { apiGetDashboardSummary, apiGetExpenseByCategory, apiGetTransactionHistory } from '../utils/api.js';
 
 export default function Dashboard() {
-  const [data, setData] = useState(staticDashboardData);
+  const [data, setData] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cache_dashboard');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return staticDashboardData;
+  });
   const [chartDays, setChartDays] = useState('7');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cache_dashboard');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.selectedDate) return parsed.selectedDate;
+      }
+    } catch {}
+    return new Date().toISOString().slice(0, 10);
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -110,6 +125,7 @@ export default function Dashboard() {
             onFilterChange: setChartDays,
           };
 
+          localStorage.setItem('cache_dashboard', JSON.stringify(next));
           return next;
         });
       } catch {
