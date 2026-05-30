@@ -89,28 +89,31 @@ export default function Dashboard() {
             next.transactions = mapped.slice(0, 5);
 
             // Chart needs filtered points
-            const dailyMap = {};
+            const chartPoints = [];
             const today = new Date();
-            const daysLimit = Number(chartDays);
+            const daysLimit = Number(chartDays) || 7;
             
+            // 1. Generate an array of dates for the last `daysLimit` days
+            for (let i = daysLimit - 1; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const dayString = String(d.getDate()).padStart(2, '0');
+                const fullDateString = `${year}-${month}-${dayString}`;
+                chartPoints.push({ day: dayString, fullDate: fullDateString, value: 0 });
+            }
+            
+            // 2. Add amounts from transactions
             mapped.forEach((t) => {
-              if (t.type === 'expense') {
-                const txDate = new Date(t.date);
-                const diffTime = Math.abs(today - txDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                
-                if (diffDays <= daysLimit) {
-                  const day = (t.date || '').slice(8, 10);
-                  if (day) {
-                    dailyMap[day] = (dailyMap[day] || 0) + t.amount;
-                  }
-                }
+              if (t.type === 'expense' && t.date) {
+                 const tDate = t.date.slice(0, 10);
+                 const point = chartPoints.find(p => p.fullDate === tDate);
+                 if (point) {
+                     point.value += t.amount;
+                 }
               }
             });
-            
-            const chartPoints = Object.entries(dailyMap)
-              .sort((a, b) => a[0].localeCompare(b[0]))
-              .map(([day, value]) => ({ day, value }));
               
             next.chart = { ...prev.chart, points: chartPoints };
           }
