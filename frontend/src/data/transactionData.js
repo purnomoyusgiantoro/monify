@@ -9,7 +9,7 @@ export const transactionTypes = [
   { label: 'Pengeluaran', value: 'expense', icon: '/assets/icon-pengeluaran.png' },
 ];
 
-export const incomeCategories = ['Gaji', 'Bonus', 'Investasi', 'Hadiah', 'Lainnya'];
+export const incomeCategories = ['Gaji', 'Bonus', 'Investasi'];
 
 export const expenseCategories = [
   'Makanan',

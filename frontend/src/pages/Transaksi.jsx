@@ -108,7 +108,7 @@ export default function Transaksi() {
   const incomeCategoryNames = useMemo(() => {
     return incomeCategories.length > 0
       ? incomeCategories.map((c) => c.name)
-      : ['Gaji', 'Bonus', 'Investasi', 'Hadiah', 'Lainnya'];
+      : ['Gaji', 'Bonus', 'Investasi',];
   }, [incomeCategories]);
 
   const expenseCategoryNames = useMemo(() => {
