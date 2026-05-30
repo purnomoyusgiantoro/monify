@@ -17,13 +17,7 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
     return getPredictionMetrics(initialBudgets, initialTransactions, predictionConfig.currentDate);
   }, []);
 
-  const [metrics, setMetrics] = useState(() => {
-    try {
-      const cached = localStorage.getItem('cache_prediksi');
-      if (cached) return JSON.parse(cached);
-    } catch {}
-    return localMetrics;
-  });
+  const [metrics, setMetrics] = useState(localMetrics);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,7 +77,6 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
             // Rebuild suggestions based on new data
             next.suggestions = buildApiSuggestions(next);
 
-            localStorage.setItem('cache_prediksi', JSON.stringify(next));
             return next;
           });
         }
