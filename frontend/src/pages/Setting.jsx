@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar.jsx';
 import { getState, setState, toast } from '../utils/store';
-import { apiLogout, apiUpdatePassword, apiUpdateProfile } from '../utils/api';
+import { apiLogout, apiUpdatePassword, apiUpdateProfile, apiGetMe } from '../utils/api';
 
 export default function Setting() {
   const navigate = useNavigate();
@@ -12,11 +12,31 @@ export default function Setting() {
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
-    const localUser = getState().user;
-    setUser({
-      name: localUser?.name || '',
-      email: localUser?.email || '',
-    });
+    async function fetchUser() {
+      try {
+        const res = await apiGetMe();
+        if (res.ok && res.data.data) {
+          setUser({
+            name: res.data.data.name || '',
+            email: res.data.data.email || '',
+          });
+          // Sync to local state
+          const next = getState();
+          next.user.name = res.data.data.name || next.user.name;
+          next.user.email = res.data.data.email || next.user.email;
+          setState(next);
+          return;
+        }
+      } catch {
+        // Fallback to local
+      }
+      const localUser = getState().user;
+      setUser({
+        name: localUser?.name || '',
+        email: localUser?.email || '',
+      });
+    }
+    fetchUser();
   }, []);
 
   async function handleProfileSubmit(event) {

@@ -1,7 +1,8 @@
 import { budgetCategories } from '../../data/budgetData.js';
 import { formatPeriod } from '../../utils/formatters.js';
 
-export default function BudgetForm({ formData, onChange, onSubmit }) {
+export default function BudgetForm({ formData, onChange, onSubmit, categories: categoriesProp }) {
+  const categoryList = categoriesProp && categoriesProp.length > 0 ? categoriesProp : budgetCategories;
   function handleChange(event) {
     const { name, value } = event.target;
     onChange(name, value);
@@ -15,7 +16,7 @@ export default function BudgetForm({ formData, onChange, onSubmit }) {
         <label className="form-field form-field--wide">
           <span>Kategori</span>
           <select name="category" value={formData.category} onChange={handleChange}>
-            {budgetCategories.map((category) => (
+            {categoryList.map((category) => (
               <option key={category} value={category}>{category}</option>
             ))}
           </select>

@@ -1,8 +1,8 @@
 import { getCategoriesByType, transactionTypes } from '../../data/transactionData.js';
 import { formatCompactDate } from '../../utils/formatters.js';
 
-export default function TransactionForm({ formData, onChange, onSubmit, editingId, onCancelEdit }) {
-  const categories = getCategoriesByType(formData.type);
+export default function TransactionForm({ formData, onChange, onSubmit, editingId, onCancelEdit, categories: categoriesProp }) {
+  const categories = categoriesProp && categoriesProp.length > 0 ? categoriesProp : getCategoriesByType(formData.type);
   const selectedType = transactionTypes.find((type) => type.value === formData.type) ?? transactionTypes[0];
 
   function handleChange(event) {
