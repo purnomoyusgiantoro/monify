@@ -142,41 +142,45 @@ export default function Transaksi() {
             if (res.ok && res.data.data?.kategori_ai) {
               setFormData((prev) => {
                 if (prev.name === next.name) {
-                  let aiCatRaw = res.data.data.kategori_ai.toLowerCase();
-                  let isIncome = ['gaji', 'bonus', 'investasi', 'pemasukan', 'income'].some(k => aiCatRaw.includes(k));
-                  let mappedCat = '';
+                  try {
+                    let aiCatRaw = (res.data.data.kategori_ai || 'Lainnya').toLowerCase();
+                    let isIncome = ['gaji', 'bonus', 'investasi', 'pemasukan', 'income'].some(k => aiCatRaw.includes(k));
+                    let mappedCat = '';
 
-                  if (isIncome) {
-                    const match = incomeCategoryNames.find(c => aiCatRaw.includes(c.toLowerCase()) || c.toLowerCase().includes(aiCatRaw));
-                    mappedCat = match || incomeCategoryNames[0];
-                  } else {
-                    const match = expenseCategoryNames.find(c => aiCatRaw.includes(c.toLowerCase()) || c.toLowerCase().includes(aiCatRaw));
-                    if (match) {
-                      mappedCat = match;
+                    if (isIncome) {
+                      const match = incomeCategoryNames.find(c => c && (aiCatRaw.includes(c.toLowerCase()) || c.toLowerCase().includes(aiCatRaw)));
+                      mappedCat = match || incomeCategoryNames[0];
                     } else {
-                      // Alias tambahan jika Hugging Face memberi nama lain
-                      if (aiCatRaw.includes('belanja')) {
-                         mappedCat = expenseCategoryNames.find(c => c.toLowerCase().includes('kebutuhan')) || 'Lainnya';
+                      const match = expenseCategoryNames.find(c => c && (aiCatRaw.includes(c.toLowerCase()) || c.toLowerCase().includes(aiCatRaw)));
+                      if (match) {
+                        mappedCat = match;
                       } else {
-                         mappedCat = expenseCategoryNames.includes('Lainnya') ? 'Lainnya' : expenseCategoryNames[0];
+                        if (aiCatRaw.includes('belanja')) {
+                           mappedCat = expenseCategoryNames.find(c => c && c.toLowerCase().includes('kebutuhan')) || 'Lainnya';
+                        } else {
+                           mappedCat = expenseCategoryNames.includes('Lainnya') ? 'Lainnya' : expenseCategoryNames[0];
+                        }
                       }
                     }
-                  }
 
-                  return { 
-                    ...prev, 
-                    category: mappedCat,
-                    type: isIncome ? 'income' : 'expense'
-                  };
+                    return { 
+                      ...prev, 
+                      category: mappedCat || 'Lainnya',
+                      type: isIncome ? 'income' : 'expense'
+                    };
+                  } catch (e) {
+                    console.error('Mapping error:', e);
+                    return { ...prev, category: expenseCategoryNames.includes('Lainnya') ? 'Lainnya' : expenseCategoryNames[0] };
+                  }
                 }
                 return prev;
               });
             } else {
-              setFormData(prev => prev.name === next.name ? { ...prev, category: '' } : prev);
+              setFormData(prev => prev.name === next.name ? { ...prev, category: expenseCategoryNames.includes('Lainnya') ? 'Lainnya' : expenseCategoryNames[0] } : prev);
             }
-          } catch {
-            // Fallback
-            setFormData(prev => prev.name === next.name ? { ...prev, category: '' } : prev);
+          } catch (e) {
+            console.error('API Error:', e);
+            setFormData(prev => prev.name === next.name ? { ...prev, category: expenseCategoryNames.includes('Lainnya') ? 'Lainnya' : expenseCategoryNames[0] } : prev);
           }
         }, 250);
         setClassifyTimeout(timeout);
