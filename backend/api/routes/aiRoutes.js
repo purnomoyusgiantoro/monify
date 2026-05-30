@@ -40,18 +40,17 @@ router.post('/classify', authMiddleware, async (req, res) => {
                 success: true,
                 data: {
                     deskripsi: deskripsi,
-                    kategori_ai: resultData.category || resultData.kategori_ai || classifyLocal(deskripsi),
+                    kategori_ai: resultData.category || resultData.kategori_ai || 'Lainnya',
                     akurasi: resultData.confidence || resultData.akurasi || 0.75,
                     source: 'huggingface_model'
                 }
             });
         } catch (apiError) {
-            console.error('Hugging Face API error, fallback to local:', apiError.message);
-            const kategori = classifyLocal(deskripsi);
+            console.error('Hugging Face API error:', apiError.message);
             res.json({
                 success: true,
-                data: { deskripsi, kategori_ai: kategori, akurasi: 0.75, source: 'fallback_rules' },
-                message: 'AI Service tidak aktif atau error. Menggunakan klasifikasi lokal.'
+                data: { deskripsi, kategori_ai: 'Lainnya', akurasi: 0, source: 'fallback_default' },
+                message: 'AI Service tidak aktif atau error.'
             });
         }
     } catch (error) {
@@ -381,17 +380,6 @@ router.get('/overbudget', authMiddleware, async (req, res) => {
     }
 });
 
-function classifyLocal(text) {
-    const t = text.toLowerCase();
-    if (/makan|ayam|kopi|nasi|bakso|mie|jajan|minum|food|resto|geprek|warung/.test(t)) return 'Makanan';
-    if (/gojek|grab|bensin|parkir|ojek|bus|kereta|transport|angkot/.test(t)) return 'Transport';
-    if (/baju|skincare|sepatu|belanja|marketplace|shopee|tokopedia|barang|beli|toko|mall/.test(t)) return 'Belanja';
-    if (/netflix|game|spotify|bioskop|hiburan|nongkrong|langganan/.test(t)) return 'Hiburan';
-    if (/kuota|internet|wifi|pulsa|indihome|paket data|listrik|air/.test(t)) return 'Internet';
-    if (/obat|dokter|rumah sakit|apotek|kesehatan/.test(t)) return 'Kesehatan';
-    if (/kursus|buku|kuliah|sekolah|pendidikan/.test(t)) return 'Pendidikan';
-    return 'Lainnya';
-}
 
 function generateRecommendation(status, risk, safe, monthExpenses, currentMonth) {
     const byCategory = {};
