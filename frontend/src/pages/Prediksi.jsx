@@ -11,13 +11,17 @@ import {
   apiGetSafeToSpend,
   apiGetOverbudget,
 } from '../utils/api.js';
+import { getCache, setCache } from '../utils/cache.js';
 
 export default function PredictionAI({ onAddTransaction = () => {} }) {
   const localMetrics = useMemo(() => {
     return getPredictionMetrics(initialBudgets, initialTransactions, predictionConfig.currentDate);
   }, []);
 
-  const [metrics, setMetrics] = useState(localMetrics);
+  const [metrics, setMetrics] = useState(() => {
+    const cached = getCache('prediksi');
+    return cached ? cached : localMetrics;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -77,6 +81,7 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
             // Rebuild suggestions based on new data
             next.suggestions = buildApiSuggestions(next);
 
+            setCache('prediksi', next);
             return next;
           });
         }

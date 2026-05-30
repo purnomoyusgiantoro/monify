@@ -1,3 +1,5 @@
+import { clearCache } from './cache.js';
+
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
@@ -23,6 +25,7 @@ export function clearAuth() {
     localStorage.removeItem('monify_token');
     localStorage.removeItem('monify_logged_in');
     localStorage.removeItem('monify_user');
+    clearCache();
 }
 
 /**

@@ -6,11 +6,12 @@ import BudgetList from '../components/budget/BudgetList.jsx';
 import { getBudgetSummary, initialBudgets } from '../data/budgetData.js';
 import { initialTransactions } from '../data/transactionData.js';
 import {
-  apiGetBudgets,
   apiCreateBudget,
-  apiUpdateBudget,
+  apiGetBudgets,
   apiGetExpenseCategories,
+  apiUpdateBudget,
 } from '../utils/api.js';
+import { clearCache, getCache, setCache } from '../utils/cache.js';
 
 const activePeriod = new Date().toISOString().slice(0, 7);
 const emptyForm = {
@@ -20,7 +21,10 @@ const emptyForm = {
 };
 
 export default function Budget() {
-  const [budgets, setBudgets] = useState(initialBudgets);
+  const [budgets, setBudgets] = useState(() => {
+    const cached = getCache('budgets');
+    return cached ? cached : initialBudgets;
+  });
   const [formData, setFormData] = useState(emptyForm);
   const [apiCategories, setApiCategories] = useState([]);
   const [useApi, setUseApi] = useState(false);
@@ -47,6 +51,7 @@ export default function Budget() {
             used: Number(b.used_amount) || 0,
             _expense_category_id: b.expense_category_id || null,
           }));
+          setCache('budgets', mapped);
           setBudgets(mapped);
           setUseApi(true);
         }
@@ -185,6 +190,7 @@ export default function Budget() {
       }
     }
 
+    clearCache();
     setFormData((current) => ({ ...current, limit: '' }));
   }
 

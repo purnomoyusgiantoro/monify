@@ -14,6 +14,7 @@ import {
   apiGetExpenseCategories,
   apiClassify,
 } from '../utils/api.js';
+import { clearCache, getCache, setCache } from '../utils/cache.js';
 
 const today = new Date().toISOString().slice(0, 10);
 const emptyForm = {
@@ -27,7 +28,10 @@ const emptyForm = {
 
 export default function Transaksi() {
   const [activeTab, setActiveTab] = useState('all');
-  const [transactions, setTransactions] = useState(initialTransactions);
+  const [transactions, setTransactions] = useState(() => {
+    const cached = getCache('transactions');
+    return cached ? cached : initialTransactions;
+  });
   const [formData, setFormData] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -63,6 +67,7 @@ export default function Transaksi() {
             _income_category_id: t.income_category_id || null,
             _expense_category_id: t.expense_category_id || null,
           }));
+          setCache('transactions', mapped);
           setTransactions(mapped);
         } else {
           setTransactions(initialTransactions);
@@ -276,6 +281,7 @@ export default function Transaksi() {
       }
     }
 
+    clearCache();
     resetForm();
   }
 
@@ -304,6 +310,7 @@ export default function Transaksi() {
       setTransactions((current) => current.filter((t) => t.id !== deleteTarget.id));
     }
 
+    clearCache();
     if (editingId === deleteTarget.id) resetForm();
     setDeleteTarget(null);
   }

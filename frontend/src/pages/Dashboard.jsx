@@ -7,9 +7,13 @@ import BudgetSection from '../components/BudgetSection.jsx';
 import TransactionSection from '../components/TransactionSection.jsx';
 import { dashboardData as staticDashboardData } from '../data/dashboardData.js';
 import { apiGetDashboardSummary, apiGetExpenseByCategory, apiGetTransactionHistory } from '../utils/api.js';
+import { getCache, setCache } from '../utils/cache.js';
 
 export default function Dashboard() {
-  const [data, setData] = useState(staticDashboardData);
+  const [data, setData] = useState(() => {
+    const cached = getCache('dashboard');
+    return cached ? cached : staticDashboardData;
+  });
   const [chartDays, setChartDays] = useState('7');
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(true);
@@ -110,6 +114,7 @@ export default function Dashboard() {
             onFilterChange: setChartDays,
           };
 
+          setCache('dashboard', next);
           return next;
         });
       } catch {
