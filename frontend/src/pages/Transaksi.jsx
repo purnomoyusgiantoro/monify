@@ -134,6 +134,8 @@ export default function Transaksi() {
       if ((name === 'name' || name === 'type') && next.name.trim()) {
         // AI classify (debounced) — only for expense
         if (next.type === 'expense' && next.name.trim().length >= 3) {
+          next.category = 'Sedang Memprediksi AI...';
+          
           if (classifyTimeout) clearTimeout(classifyTimeout);
           const timeout = setTimeout(async () => {
             try {

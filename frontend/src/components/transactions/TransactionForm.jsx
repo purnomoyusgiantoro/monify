@@ -71,6 +71,9 @@ export default function TransactionForm({ formData, onChange, onSubmit, editingI
           <span>Kategori</span>
           <select name="category" value={formData.category} onChange={handleChange}>
             <option value="">Kategori akan dibantu AI</option>
+            {formData.category === 'Sedang Memprediksi AI...' && (
+              <option value="Sedang Memprediksi AI...">Sedang Memprediksi AI...</option>
+            )}
             {categories.map((category) => (
               <option key={category} value={category}>{category}</option>
             ))}
