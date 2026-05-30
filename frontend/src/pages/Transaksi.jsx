@@ -131,30 +131,37 @@ export default function Transaksi() {
         next.category = '';
       }
 
-      if ((name === 'name' || name === 'type') && next.name.trim()) {
-        // AI classify (debounced) — only for expense
-        if (next.type === 'expense' && next.name.trim().length >= 3) {
-          next.category = 'Sedang Memprediksi AI...';
-          
-          if (classifyTimeout) clearTimeout(classifyTimeout);
-          const timeout = setTimeout(async () => {
-            try {
-              const res = await apiClassify(next.name, Number(next.amount) || 0);
-              if (res.ok && res.data.data?.kategori_ai) {
-                setFormData((prev) => {
-                  // Only update if user hasn't manually changed it
-                  if (prev.name === next.name) {
-                    return { ...prev, category: res.data.data.kategori_ai };
-                  }
-                  return prev;
-                });
-              }
-            } catch {
-              // Fallback
+      if (name === 'name' && next.name.trim().length >= 3) {
+        // AI classify (debounced) — berlaku untuk semua tipe transaksi
+        next.category = 'Sedang Memprediksi AI...';
+        
+        if (classifyTimeout) clearTimeout(classifyTimeout);
+        const timeout = setTimeout(async () => {
+          try {
+            const res = await apiClassify(next.name, Number(next.amount) || 0);
+            if (res.ok && res.data.data?.kategori_ai) {
+              setFormData((prev) => {
+                // Only update if user hasn't manually changed it
+                if (prev.name === next.name) {
+                  const aiCat = res.data.data.kategori_ai;
+                  const isIncome = ['Gaji', 'Bonus', 'Investasi'].includes(aiCat);
+                  return { 
+                    ...prev, 
+                    category: aiCat,
+                    type: isIncome ? 'income' : 'expense'
+                  };
+                }
+                return prev;
+              });
+            } else {
+              setFormData(prev => prev.name === next.name ? { ...prev, category: '' } : prev);
             }
-          }, 250);
-          setClassifyTimeout(timeout);
-        }
+          } catch {
+            // Fallback
+            setFormData(prev => prev.name === next.name ? { ...prev, category: '' } : prev);
+          }
+        }, 250);
+        setClassifyTimeout(timeout);
       }
 
       return next;
