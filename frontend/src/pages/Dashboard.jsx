@@ -73,9 +73,6 @@ export default function Dashboard() {
               used: cat.amount || 0,
               limit: cat.budget_limit || 0,
             }));
-            if (next.budgets.length === 0) {
-              next.budgets = prev.budgets;
-            }
           }
 
           // Map transactions
@@ -90,40 +87,32 @@ export default function Dashboard() {
             
             // List only needs top 5
             next.transactions = mapped.slice(0, 5);
-            if (next.transactions.length === 0) {
-              next.transactions = prev.transactions;
-            }
 
             // Chart needs filtered points
-            if (mapped.length > 0) {
-              const dailyMap = {};
-              const today = new Date();
-              const daysLimit = Number(chartDays);
-              
-              mapped.forEach((t) => {
-                if (t.type === 'expense') {
-                  const txDate = new Date(t.date);
-                  const diffTime = Math.abs(today - txDate);
-                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                  
-                  if (diffDays <= daysLimit) {
-                    const day = (t.date || '').slice(8, 10);
-                    if (day) {
-                      dailyMap[day] = (dailyMap[day] || 0) + t.amount;
-                    }
+            const dailyMap = {};
+            const today = new Date();
+            const daysLimit = Number(chartDays);
+            
+            mapped.forEach((t) => {
+              if (t.type === 'expense') {
+                const txDate = new Date(t.date);
+                const diffTime = Math.abs(today - txDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                if (diffDays <= daysLimit) {
+                  const day = (t.date || '').slice(8, 10);
+                  if (day) {
+                    dailyMap[day] = (dailyMap[day] || 0) + t.amount;
                   }
                 }
-              });
-              
-              const chartPoints = Object.entries(dailyMap)
-                .sort((a, b) => a[0].localeCompare(b[0]))
-                .map(([day, value]) => ({ day, value }));
-                
-              // Only update if we have points, otherwise keep previous (static)
-              if (chartPoints.length > 0) {
-                next.chart = { ...prev.chart, points: chartPoints };
               }
-            }
+            });
+            
+            const chartPoints = Object.entries(dailyMap)
+              .sort((a, b) => a[0].localeCompare(b[0]))
+              .map(([day, value]) => ({ day, value }));
+              
+            next.chart = { ...prev.chart, points: chartPoints };
           }
 
           // Pass filter handlers

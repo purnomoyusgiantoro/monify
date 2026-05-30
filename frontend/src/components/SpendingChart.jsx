@@ -25,7 +25,9 @@ export default function SpendingChart({ chart }) {
   }));
 
   const linePath = buildLinePath(points);
-  const areaPath = `${linePath} L ${points.at(-1).x} ${padding.top + plotHeight} L ${points[0].x} ${padding.top + plotHeight} Z`;
+  const areaPath = points.length > 0
+    ? `${linePath} L ${points.at(-1).x} ${padding.top + plotHeight} L ${points[0].x} ${padding.top + plotHeight} Z`
+    : '';
 
   return (
     <section className="chart-card">
