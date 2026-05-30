@@ -46,7 +46,9 @@ export default function Dashboard() {
               incomeTrend: prev.summary.incomeTrend,
               expenseTrend: prev.summary.expenseTrend,
             };
-            next.selectedDate = new Date().toISOString().slice(0, 10);
+            if (!next.selectedDate) {
+              next.selectedDate = new Date().toISOString().slice(0, 10);
+            }
           }
 
           // Map budgets from category breakdown
@@ -114,7 +116,10 @@ export default function Dashboard() {
   return (
     <>
       <main className="page-main dashboard-main">
-        <Topbar selectedDate={data.selectedDate} />
+        <Topbar 
+          selectedDate={data.selectedDate} 
+          onChangeDate={(newDate) => setData(prev => ({ ...prev, selectedDate: newDate }))} 
+        />
 
         <section className="summary-grid summary-grid--top">
           <StatCard

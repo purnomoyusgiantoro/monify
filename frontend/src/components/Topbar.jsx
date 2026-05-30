@@ -4,6 +4,7 @@ export default function Topbar({
   title = 'Dashboard',
   description = 'Pantau kondisi keuanganmu di sini',
   selectedDate,
+  onChangeDate,
   showDate = true,
   action = null,
 }) {
@@ -17,7 +18,7 @@ export default function Topbar({
       {(showDate || action) ? (
         <div className="topbar-actions">
           {action}
-          {showDate ? <DateButton date={selectedDate} /> : null}
+          {showDate ? <DateButton date={selectedDate} onChange={onChangeDate} /> : null}
         </div>
       ) : null}
     </header>

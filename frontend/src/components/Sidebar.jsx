@@ -8,6 +8,7 @@ const sidebarMenus = [
   { label: 'Transaksi', icon: '/assets/icon-transaksi.png', path: '/transaksi' },
   { label: 'Budget', icon: '/assets/icon-budget.png', path: '/budget' },
   { label: 'Prediksi AI', icon: '/assets/icon-prediksi-ai.png', path: '/prediksi' },
+  { label: 'Sertifikat', icon: '/assets/icon-target.png', path: '/sertifikat' },
   { label: 'Setting', icon: '/assets/icon-setting.png', path: '/setting' },
 ];
 

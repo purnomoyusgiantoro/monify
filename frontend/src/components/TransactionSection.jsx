@@ -1,11 +1,13 @@
 import { formatCurrency, formatDate } from '../utils/formatters.js';
+import { useNavigate } from 'react-router-dom';
 
 export default function TransactionSection({ transactions }) {
+  const navigate = useNavigate();
   return (
     <section className="panel-card">
       <div className="section-head">
         <h2>Transaksi terbaru</h2>
-        <button type="button" className="small-button">Lihat semua</button>
+        <button type="button" className="small-button" onClick={() => navigate('/transaksi')}>Lihat semua</button>
       </div>
 
       <div className="transaction-list">

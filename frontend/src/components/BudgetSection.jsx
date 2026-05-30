@@ -1,7 +1,9 @@
 import ProgressBar from './ProgressBar.jsx';
 import { formatCurrency, getBudgetStatus } from '../utils/formatters.js';
+import { useNavigate } from 'react-router-dom';
 
 export default function BudgetSection({ budgets }) {
+  const navigate = useNavigate();
   const totalBudget = budgets.reduce((total, item) => total + item.limit, 0);
   const totalUsed = budgets.reduce((total, item) => total + item.used, 0);
   const totalPercent = totalBudget > 0 ? Math.round((totalUsed / totalBudget) * 100) : 0;
@@ -10,7 +12,7 @@ export default function BudgetSection({ budgets }) {
     <section className="panel-card">
       <div className="section-head">
         <h2>Budget bulan ini</h2>
-        <button type="button" className="small-button">Lihat semua</button>
+        <button type="button" className="small-button" onClick={() => navigate('/budget')}>Lihat semua</button>
       </div>
 
       <div className="budget-list">

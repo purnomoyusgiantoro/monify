@@ -34,6 +34,7 @@ export default function Transaksi() {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [classifyTimeout, setClassifyTimeout] = useState(null);
+  const [filterDate, setFilterDate] = useState(''); // Empty means all dates
 
   // Fetch transactions + categories on mount
   useEffect(() => {
@@ -83,9 +84,15 @@ export default function Transaksi() {
   }, []);
 
   const filteredTransactions = useMemo(() => {
-    if (activeTab === 'all') return transactions;
-    return transactions.filter((transaction) => transaction.type === activeTab);
-  }, [activeTab, transactions]);
+    let result = transactions;
+    if (activeTab !== 'all') {
+      result = result.filter((t) => t.type === activeTab);
+    }
+    if (filterDate) {
+      result = result.filter((t) => t.date === filterDate);
+    }
+    return result;
+  }, [activeTab, filterDate, transactions]);
 
   // Derive category names from API data
   const incomeCategoryNames = useMemo(() => {
@@ -327,7 +334,8 @@ export default function Transaksi() {
 
         <TransactionList
           transactions={filteredTransactions}
-          selectedDate={today}
+          selectedDate={filterDate || today}
+          onChangeDate={setFilterDate}
           onEdit={handleEdit}
           onAskDelete={setDeleteTarget}
         />

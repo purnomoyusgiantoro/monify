@@ -1,12 +1,12 @@
 import DateButton from '../DateButton.jsx';
 import { formatCurrency, formatDate } from '../../utils/formatters.js';
 
-export default function TransactionList({ transactions, selectedDate, onEdit, onAskDelete }) {
+export default function TransactionList({ transactions, selectedDate, onChangeDate, onEdit, onAskDelete }) {
   return (
     <section className="transaction-card transaction-card--list">
       <div className="transaction-list-head">
         <h2>Daftar Transaksi</h2>
-        <DateButton date={selectedDate} label="Filter tanggal transaksi" />
+        <DateButton date={selectedDate} onChange={onChangeDate} label="Filter tanggal transaksi" />
       </div>
 
       <div className="full-transaction-list">
