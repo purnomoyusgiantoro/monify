@@ -223,7 +223,7 @@ export default function Landing() {
                   <div className="landing-phone-head">
                     <div>
                       <p>Total Saldo</p>
-                      <h3>Rp 12.450.000</h3>
+                      <h4>Rp 12.450.000</h4>
                     </div>
                     <div className="landing-phone-spark">
                       <Sparkles size={15} />
