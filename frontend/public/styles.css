@@ -907,11 +907,8 @@ button {
 }
 
 .select-box select,
-.select-box select:focus,
 .amount-input input,
-.amount-input input:focus,
-.date-input input,
-.date-input input:focus {
+.date-input input {
   border: 0;
   min-height: 48px;
   box-shadow: none;
