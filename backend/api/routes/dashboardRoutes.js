@@ -9,7 +9,8 @@ const router = express.Router();
 // ============================================
 router.get('/summary', authMiddleware, async (req, res) => {
     try {
-        const today = new Date();
+        const { date } = req.query;
+        const today = date ? new Date(date) : new Date();
         const currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
         // 1. Fetch month transactions
@@ -90,7 +91,8 @@ router.get('/summary', authMiddleware, async (req, res) => {
 // ============================================
 router.get('/expense-by-category', authMiddleware, async (req, res) => {
     try {
-        const today = new Date();
+        const { date } = req.query;
+        const today = date ? new Date(date) : new Date();
         const currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();

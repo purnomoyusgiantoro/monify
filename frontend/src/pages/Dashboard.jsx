@@ -16,6 +16,17 @@ export default function Dashboard() {
     } catch {}
     return staticDashboardData;
   });
+  const [chartDays, setChartDays] = useState('7');
+  const [selectedDate, setSelectedDate] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cache_dashboard');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.selectedDate) return parsed.selectedDate;
+      }
+    } catch {}
+    return new Date().toISOString().slice(0, 10);
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,9 +35,9 @@ export default function Dashboard() {
     async function fetchDashboard() {
       try {
         const [summaryRes, categoryRes, historyRes] = await Promise.all([
-          apiGetDashboardSummary(),
-          apiGetExpenseByCategory(),
-          apiGetTransactionHistory(5),
+          apiGetDashboardSummary(selectedDate),
+          apiGetExpenseByCategory(selectedDate),
+          apiGetTransactionHistory(50), // Fetch more for charting
         ]);
 
         if (cancelled) return;
@@ -52,9 +63,7 @@ export default function Dashboard() {
               incomeTrend: prev.summary.incomeTrend,
               expenseTrend: prev.summary.expenseTrend,
             };
-            if (!next.selectedDate) {
-              next.selectedDate = new Date().toISOString().slice(0, 10);
-            }
+            next.selectedDate = selectedDate;
           }
 
           // Map budgets from category breakdown
@@ -71,37 +80,58 @@ export default function Dashboard() {
 
           // Map transactions
           if (h && Array.isArray(h)) {
-            next.transactions = h.map((t) => ({
+            const mapped = h.map((t) => ({
               name: t.description || t.name || '',
               date: t.transactions_date || t.date || '',
               category: t.category_name || t.category || 'Lainnya',
               type: t.type || 'expense',
               amount: Number(t.amount) || 0,
             }));
+            
+            // List only needs top 5
+            next.transactions = mapped.slice(0, 5);
             if (next.transactions.length === 0) {
               next.transactions = prev.transactions;
             }
-          }
 
-          // Keep chart as-is (no daily breakdown endpoint available)
-          // Build chart from transaction history if possible
-          if (h && Array.isArray(h) && h.length > 0) {
-            const dailyMap = {};
-            h.forEach((t) => {
-              if (t.type === 'expense') {
-                const day = (t.transactions_date || '').slice(8, 10);
-                if (day) {
-                  dailyMap[day] = (dailyMap[day] || 0) + Number(t.amount || 0);
+            // Chart needs filtered points
+            if (mapped.length > 0) {
+              const dailyMap = {};
+              const today = new Date();
+              const daysLimit = Number(chartDays);
+              
+              mapped.forEach((t) => {
+                if (t.type === 'expense') {
+                  const txDate = new Date(t.date);
+                  const diffTime = Math.abs(today - txDate);
+                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                  
+                  if (diffDays <= daysLimit) {
+                    const day = (t.date || '').slice(8, 10);
+                    if (day) {
+                      dailyMap[day] = (dailyMap[day] || 0) + t.amount;
+                    }
+                  }
                 }
+              });
+              
+              const chartPoints = Object.entries(dailyMap)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([day, value]) => ({ day, value }));
+                
+              // Only update if we have points, otherwise keep previous (static)
+              if (chartPoints.length > 0) {
+                next.chart = { ...prev.chart, points: chartPoints };
               }
-            });
-            const chartPoints = Object.entries(dailyMap)
-              .sort((a, b) => a[0].localeCompare(b[0]))
-              .map(([day, value]) => ({ day, value }));
-            if (chartPoints.length >= 2) {
-              next.chart = { ...prev.chart, points: chartPoints };
             }
           }
+
+          // Pass filter handlers
+          next.chart = {
+            ...next.chart,
+            filterValue: chartDays,
+            onFilterChange: setChartDays,
+          };
 
           localStorage.setItem('cache_dashboard', JSON.stringify(next));
           return next;
@@ -115,7 +145,7 @@ export default function Dashboard() {
 
     fetchDashboard();
     return () => { cancelled = true; };
-  }, []);
+  }, [chartDays, selectedDate]);
 
   const { summary } = data;
   const budgetPercent = summary.budgetTotal > 0 ? Math.round((summary.budgetUsed / summary.budgetTotal) * 100) : 0;
@@ -124,8 +154,8 @@ export default function Dashboard() {
     <>
       <main className="page-main dashboard-main">
         <Topbar 
-          selectedDate={data.selectedDate} 
-          onChangeDate={(newDate) => setData(prev => ({ ...prev, selectedDate: newDate }))} 
+          selectedDate={selectedDate} 
+          onChangeDate={setSelectedDate} 
         />
 
         <section className="summary-grid summary-grid--top">

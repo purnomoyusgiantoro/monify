@@ -339,4 +339,58 @@ function generateRecommendation(status, risk, safe, monthExpenses, currentMonth)
     return recommendations.join(' ');
 }
 
+// ============================================
+// POST /api/ai/chat
+// ============================================
+router.post('/chat', authMiddleware, async (req, res) => {
+    try {
+        const { message, metrics } = req.body;
+        const apiKey = process.env.OPENROUTER_API_KEY;
+
+        if (!apiKey) {
+            return res.status(500).json({ success: false, message: 'OpenRouter API Key belum dikonfigurasi.' });
+        }
+
+        const systemPrompt = `Kamu adalah "Monify Bot", seorang Asisten Keuangan Pribadi yang profesional, ramah, dan solutif.
+Pekerjaanmu adalah membantu pengguna mengelola keuangan mereka dengan bijak, hemat, dan menghindari overbudget.
+Karakter: Ramah, menggunakan sapaan akrab namun sopan (menggunakan bahasa Indonesia santai). Selalu memberikan saran praktis dan langkah nyata.
+
+Berikut adalah kondisi keuangan pengguna saat ini:
+- Total Budget: ${metrics.totalBudget ? `Rp ${metrics.totalBudget.toLocaleString('id-ID')}` : 'Belum diatur'}
+- Pengeluaran Saat Ini: ${metrics.monthlyExpense ? `Rp ${metrics.monthlyExpense.toLocaleString('id-ID')}` : '0'}
+- Sisa Budget: ${metrics.remainingBudget ? `Rp ${metrics.remainingBudget.toLocaleString('id-ID')}` : '0'}
+- Prediksi Akhir Bulan: ${metrics.monthlyPrediction ? `Rp ${metrics.monthlyPrediction.toLocaleString('id-ID')}` : '0'}
+- Safe to Spend Hari Ini: ${metrics.safeToSpendToday ? `Rp ${metrics.safeToSpendToday.toLocaleString('id-ID')}` : '0'}
+- Risiko Overbudget: ${metrics.riskPercent || 0}%
+
+Instruksi:
+1. Jawablah pertanyaan pengguna secara singkat, padat, dan jelas.
+2. Jika pengguna meminta saran, berikan 1-2 poin langkah nyata berdasarkan metrik keuangan mereka.
+3. Jangan pernah memberikan saran investasi berisiko tinggi.
+4. Jangan menjawab pertanyaan yang sama sekali tidak berhubungan dengan keuangan atau aplikasi Monify.
+`;
+
+        const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+            model: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001',
+            max_tokens: 1500,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: message }
+            ]
+        }, {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const reply = response.data.choices[0].message.content;
+        res.json({ success: true, data: { reply } });
+
+    } catch (error) {
+        console.error('Chat AI error:', error.response ? error.response.data : error.message);
+        res.status(500).json({ success: false, message: 'Gagal menghubungi AI Chat Service.' });
+    }
+});
+
 module.exports = router;

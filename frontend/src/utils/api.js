@@ -185,12 +185,12 @@ export async function apiUpdateBudget(id, data) {
 // DASHBOARD API
 // ============================================
 
-export async function apiGetDashboardSummary() {
-    return apiFetch('/dashboard/summary');
+export async function apiGetDashboardSummary(date) {
+    return apiFetch(`/dashboard/summary${date ? `?date=${date}` : ''}`);
 }
 
-export async function apiGetExpenseByCategory() {
-    return apiFetch('/dashboard/expense-by-category');
+export async function apiGetExpenseByCategory(date) {
+    return apiFetch(`/dashboard/expense-by-category${date ? `?date=${date}` : ''}`);
 }
 
 export async function apiGetTransactionHistory(limit = 10) {
@@ -222,6 +222,13 @@ export async function apiGetSafeToSpend() {
 
 export async function apiGetOverbudget() {
     return apiFetch('/ai/overbudget');
+}
+
+export async function apiChatBot(message, metrics) {
+    return apiFetch('/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message, metrics })
+    });
 }
 
 // ============================================

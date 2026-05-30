@@ -34,7 +34,21 @@ export default function SpendingChart({ chart }) {
           <h2>{chart.title}</h2>
           <p>{chart.subtitle}</p>
         </div>
-        <button type="button" className="filter-button">{chart.filterLabel} <span aria-hidden="true">⌄</span></button>
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <button type="button" className="filter-button">
+            {chart.filterValue === '30' ? '30 Hari Terakhir' : chart.filterValue === '14' ? '14 Hari Terakhir' : '7 Hari Terakhir'}
+          </button>
+          <select
+            value={chart.filterValue || '7'}
+            onChange={(e) => chart.onFilterChange && chart.onFilterChange(e.target.value)}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+            aria-label="Filter periode grafik"
+          >
+            <option value="7">7 Hari Terakhir</option>
+            <option value="14">14 Hari Terakhir</option>
+            <option value="30">30 Hari Terakhir</option>
+          </select>
+        </div>
       </div>
 
       <div className="chart-card__canvas" role="img" aria-label="Grafik pengeluaran tujuh hari terakhir">
