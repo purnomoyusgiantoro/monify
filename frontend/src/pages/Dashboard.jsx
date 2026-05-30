@@ -22,6 +22,12 @@ export default function Dashboard() {
     let cancelled = false;
 
     async function fetchDashboard() {
+      const cached = getCache('dashboard');
+      if (cached) {
+        if (!cancelled) setLoading(false);
+        return; // Skip fetch karena cache masih valid
+      }
+
       try {
         const [summaryRes, categoryRes, historyRes] = await Promise.all([
           apiGetDashboardSummary(selectedDate),

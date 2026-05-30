@@ -34,6 +34,11 @@ export default function Budget() {
     let cancelled = false;
 
     async function fetchData() {
+      const cached = getCache('budgets');
+      if (cached) {
+        return; // Skip fetch karena cache masih valid
+      }
+
       try {
         const [budgetRes, catRes] = await Promise.all([
           apiGetBudgets(),
