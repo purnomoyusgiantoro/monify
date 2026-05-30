@@ -9,7 +9,13 @@ import { dashboardData as staticDashboardData } from '../data/dashboardData.js';
 import { apiGetDashboardSummary, apiGetExpenseByCategory, apiGetTransactionHistory } from '../utils/api.js';
 
 export default function Dashboard() {
-  const [data, setData] = useState(staticDashboardData);
+  const [data, setData] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cache_dashboard');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return staticDashboardData;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -97,6 +103,7 @@ export default function Dashboard() {
             }
           }
 
+          localStorage.setItem('cache_dashboard', JSON.stringify(next));
           return next;
         });
       } catch {

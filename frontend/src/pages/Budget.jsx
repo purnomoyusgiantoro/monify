@@ -20,7 +20,13 @@ const emptyForm = {
 };
 
 export default function Budget() {
-  const [budgets, setBudgets] = useState(initialBudgets);
+  const [budgets, setBudgets] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cache_budgets');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return initialBudgets;
+  });
   const [formData, setFormData] = useState(emptyForm);
   const [apiCategories, setApiCategories] = useState([]);
   const [useApi, setUseApi] = useState(false);
@@ -47,6 +53,7 @@ export default function Budget() {
             used: Number(b.used_amount) || 0,
             _expense_category_id: b.expense_category_id || null,
           }));
+          localStorage.setItem('cache_budgets', JSON.stringify(mapped));
           setBudgets(mapped);
           setUseApi(true);
         }

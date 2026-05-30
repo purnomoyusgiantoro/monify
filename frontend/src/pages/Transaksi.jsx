@@ -27,7 +27,13 @@ const emptyForm = {
 
 export default function Transaksi() {
   const [activeTab, setActiveTab] = useState('all');
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cache_transactions');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return initialTransactions;
+  });
   const [formData, setFormData] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -63,6 +69,7 @@ export default function Transaksi() {
             _income_category_id: t.income_category_id || null,
             _expense_category_id: t.expense_category_id || null,
           }));
+          localStorage.setItem('cache_transactions', JSON.stringify(mapped));
           setTransactions(mapped);
         } else {
           setTransactions(initialTransactions);
