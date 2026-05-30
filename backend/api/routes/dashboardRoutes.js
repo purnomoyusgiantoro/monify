@@ -112,7 +112,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
                 total_income: totalIncome,
                 total_expense: totalExpense,
                 total_budget: totalBudget,
-                projected_expense: projected,
+                projected_expense: totalProjected,
                 risk_percentage: risk || 0,
                 safe_to_spend: safeToSpend,
                 days_remaining: remaining,
