@@ -16,13 +16,12 @@ router.get('/summary', authMiddleware, async (req, res) => {
         // 1. Fetch month transactions
         const { data: monthTransactions, error: trxError } = await supabase
             .from('transactions')
-            .select('type, amount')
+            .select('type, amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${currentMonthPrefix}-01`)
             .lte('transactions_date', `${currentMonthPrefix}-31`);
 
         if (trxError) throw trxError;
-
 
         // 2. Fetch budgets for the current month
         const currentMonthNum = today.getMonth() + 1;
@@ -30,7 +29,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
         
         const { data: userBudgets, error: budgetError } = await supabase
             .from('budgets')
-            .select('amount')
+            .select('amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .eq('month', currentMonthNum)
             .eq('year', currentYear);
@@ -42,20 +41,69 @@ router.get('/summary', authMiddleware, async (req, res) => {
             .filter(t => t.type === 'income')
             .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-        const totalExpense = monthTransactions
-            .filter(t => t.type === 'expense')
-            .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-
+        const expenses = monthTransactions.filter(t => t.type === 'expense');
+        const totalExpense = expenses.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        const totalBudget = userBudgets.reduce((sum, b) => sum + Number(b.amount || 0), 0);
         const balance = totalIncome - totalExpense;
 
-        // Budget metrics
-        const totalBudget = userBudgets.reduce((sum, b) => sum + Number(b.amount || 0), 0);
         const day = Math.max(1, today.getDate());
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
         const remaining = Math.max(1, daysInMonth - day);
-        const projected = Math.round((totalExpense / day) * daysInMonth);
-        const risk = Math.min(140, Math.round((projected / Math.max(1, totalBudget)) * 100));
-        const safeToSpend = Math.max(0, Math.floor((totalBudget - totalExpense) / remaining));
+
+        // Calculate AI Predictions based on Fixed vs Variable
+        const expenseByCat = {};
+        expenses.forEach(t => {
+            const catId = t.expense_category_id || 'unknown';
+            if (!expenseByCat[catId]) {
+                expenseByCat[catId] = { spent: 0, name: t.expense_categories?.name || 'Lainnya' };
+            }
+            expenseByCat[catId].spent += Number(t.amount || 0);
+        });
+
+        let totalProjected = 0;
+        let variableRemainingBudget = 0;
+
+        // 1. Calculate for budgeted categories
+        userBudgets.forEach(b => {
+            const catId = b.expense_category_id;
+            const catName = (b.expense_categories?.name || '').toLowerCase();
+            const budgetLimit = Number(b.amount || 0);
+            const spent = expenseByCat[catId] ? expenseByCat[catId].spent : 0;
+            
+            const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+
+            if (isFixed) {
+                totalProjected += Math.max(budgetLimit, spent);
+            } else {
+                const projectedVariable = Math.round((spent / day) * daysInMonth);
+                totalProjected += Math.max(spent, projectedVariable);
+                variableRemainingBudget += Math.max(0, budgetLimit - spent);
+            }
+        });
+
+        // 2. Calculate for unbudgeted categories (expenses that happened but have no budget limit)
+        Object.keys(expenseByCat).forEach(catId => {
+            const hasBudget = userBudgets.some(b => b.expense_category_id === catId);
+            if (!hasBudget) {
+                const spent = expenseByCat[catId].spent;
+                const catName = (expenseByCat[catId].name || '').toLowerCase();
+                const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+                
+                if (isFixed) {
+                    totalProjected += spent;
+                } else {
+                    const projectedVariable = Math.round((spent / day) * daysInMonth);
+                    totalProjected += Math.max(spent, projectedVariable);
+                }
+            }
+        });
+
+        const risk = Math.min(140, Math.round((totalProjected / Math.max(1, totalBudget)) * 100));
+        
+        // Safe to spend should prioritize remaining variable budget. If no budget at all, fallback to overall remaining
+        const safeToSpend = totalBudget > 0 
+            ? Math.max(0, Math.floor(variableRemainingBudget / remaining))
+            : Math.max(0, Math.floor((totalBudget - totalExpense) / remaining));
 
         res.json({
             success: true,

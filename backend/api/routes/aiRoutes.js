@@ -186,7 +186,7 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
 
         const { data: transactions, error: trxError } = await supabase
             .from('transactions')
-            .select('amount')
+            .select('amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .eq('type', 'expense')
             .gte('transactions_date', `${currentMonth}-01`)
@@ -196,7 +196,7 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
 
         const { data: userBudgets, error: budgetError } = await supabase
             .from('budgets')
-            .select('amount')
+            .select('amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .eq('month', currentMonthNum)
             .eq('year', currentYear);
@@ -208,7 +208,31 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
         const remaining = Math.max(1, daysInMonth - today.getDate());
 
-        const safe_to_spend = Math.max(0, Math.floor((totalBudget - monthlyExpenses) / remaining));
+        const expenseByCat = {};
+        transactions.forEach(t => {
+            const catId = t.expense_category_id || 'unknown';
+            if (!expenseByCat[catId]) {
+                expenseByCat[catId] = { spent: 0, name: t.expense_categories?.name || 'Lainnya' };
+            }
+            expenseByCat[catId].spent += Number(t.amount || 0);
+        });
+
+        let variableRemainingBudget = 0;
+        userBudgets.forEach(b => {
+            const catId = b.expense_category_id;
+            const catName = (b.expense_categories?.name || '').toLowerCase();
+            const budgetLimit = Number(b.amount || 0);
+            const spent = expenseByCat[catId] ? expenseByCat[catId].spent : 0;
+            
+            const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+            if (!isFixed) {
+                variableRemainingBudget += Math.max(0, budgetLimit - spent);
+            }
+        });
+
+        const safe_to_spend = totalBudget > 0 
+            ? Math.max(0, Math.floor(variableRemainingBudget / remaining))
+            : Math.max(0, Math.floor((totalBudget - monthlyExpenses) / remaining));
 
         res.json({
             success: true,
@@ -237,7 +261,7 @@ router.get('/overbudget', authMiddleware, async (req, res) => {
 
         const { data: transactions, error: trxError } = await supabase
             .from('transactions')
-            .select('amount, expense_category_id')
+            .select('amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .eq('type', 'expense')
             .gte('transactions_date', `${currentMonth}-01`)
@@ -259,8 +283,53 @@ router.get('/overbudget', authMiddleware, async (req, res) => {
         
         const day = Math.max(1, today.getDate());
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const projected = Math.round((monthlyExpenses / day) * daysInMonth);
-        const riskPercentage = Math.min(140, Math.round((projected / Math.max(1, totalBudget)) * 100));
+
+        const expenseByCat = {};
+        transactions.forEach(t => {
+            const catId = t.expense_category_id || 'unknown';
+            if (!expenseByCat[catId]) {
+                expenseByCat[catId] = { spent: 0, name: t.expense_categories?.name || 'Lainnya' };
+            }
+            expenseByCat[catId].spent += Number(t.amount || 0);
+        });
+
+        let totalProjected = 0;
+
+        // 1. Budgeted categories
+        userBudgets.forEach(b => {
+            const catId = b.expense_category_id;
+            const catName = (b.expense_categories?.name || '').toLowerCase();
+            const budgetLimit = Number(b.amount || 0);
+            const spent = expenseByCat[catId] ? expenseByCat[catId].spent : 0;
+            
+            const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+
+            if (isFixed) {
+                totalProjected += Math.max(budgetLimit, spent);
+            } else {
+                const projectedVariable = Math.round((spent / day) * daysInMonth);
+                totalProjected += Math.max(spent, projectedVariable);
+            }
+        });
+
+        // 2. Unbudgeted categories
+        Object.keys(expenseByCat).forEach(catId => {
+            const hasBudget = userBudgets.some(b => b.expense_category_id === catId);
+            if (!hasBudget) {
+                const spent = expenseByCat[catId].spent;
+                const catName = (expenseByCat[catId].name || '').toLowerCase();
+                const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+                
+                if (isFixed) {
+                    totalProjected += spent;
+                } else {
+                    const projectedVariable = Math.round((spent / day) * daysInMonth);
+                    totalProjected += Math.max(spent, projectedVariable);
+                }
+            }
+        });
+
+        const riskPercentage = Math.min(140, Math.round((totalProjected / Math.max(1, totalBudget)) * 100));
 
         let status;
         if (riskPercentage >= 100) status = 'over_budget';
@@ -287,7 +356,7 @@ router.get('/overbudget', authMiddleware, async (req, res) => {
             data: {
                 risk_percentage: riskPercentage || 0,
                 status,
-                projected_expense: projected,
+                projected_expense: totalProjected,
                 total_budget: totalBudget,
                 current_expense: monthlyExpenses,
                 category_breakdown: categoryBreakdown
