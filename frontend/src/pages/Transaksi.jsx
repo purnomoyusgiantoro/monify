@@ -141,13 +141,31 @@ export default function Transaksi() {
             const res = await apiClassify(next.name, Number(next.amount) || 0);
             if (res.ok && res.data.data?.kategori_ai) {
               setFormData((prev) => {
-                // Only update if user hasn't manually changed it
                 if (prev.name === next.name) {
-                  const aiCat = res.data.data.kategori_ai;
-                  const isIncome = ['Gaji', 'Bonus', 'Investasi'].includes(aiCat);
+                  let aiCatRaw = res.data.data.kategori_ai.toLowerCase();
+                  let isIncome = ['gaji', 'bonus', 'investasi', 'pemasukan', 'income'].some(k => aiCatRaw.includes(k));
+                  let mappedCat = '';
+
+                  if (isIncome) {
+                    const match = incomeCategoryNames.find(c => aiCatRaw.includes(c.toLowerCase()) || c.toLowerCase().includes(aiCatRaw));
+                    mappedCat = match || incomeCategoryNames[0];
+                  } else {
+                    const match = expenseCategoryNames.find(c => aiCatRaw.includes(c.toLowerCase()) || c.toLowerCase().includes(aiCatRaw));
+                    if (match) {
+                      mappedCat = match;
+                    } else {
+                      // Alias tambahan jika Hugging Face memberi nama lain
+                      if (aiCatRaw.includes('belanja')) {
+                         mappedCat = expenseCategoryNames.find(c => c.toLowerCase().includes('kebutuhan')) || 'Lainnya';
+                      } else {
+                         mappedCat = expenseCategoryNames.includes('Lainnya') ? 'Lainnya' : expenseCategoryNames[0];
+                      }
+                    }
+                  }
+
                   return { 
                     ...prev, 
-                    category: aiCat,
+                    category: mappedCat,
                     type: isIncome ? 'income' : 'expense'
                   };
                 }
