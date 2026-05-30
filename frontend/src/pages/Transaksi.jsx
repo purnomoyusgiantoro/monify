@@ -148,9 +148,9 @@ export default function Transaksi() {
                 });
               }
             } catch {
-              // Fallback: keep local suggestion
+              // Fallback
             }
-          }, 600);
+          }, 250);
           setClassifyTimeout(timeout);
         }
       }
