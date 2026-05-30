@@ -19,26 +19,39 @@ router.post('/classify', authMiddleware, async (req, res) => {
         }
 
         try {
-            const aiResponse = await axios.post(`${AI_SERVICE_URL}/predict-category`, {
-                deskripsi,
-                jumlah: jumlah || 0
-            }, { timeout: 5000 });
+            // Mencoba memanggil Hugging Face Space API (Gradio format)
+            // Jika Anda menggunakan custom FastAPI, ubah payload dan URL sesuai kebutuhan.
+            const url = process.env.AI_SERVICE_URL || 'https://pxy18-ai-v4.hf.space/run/predict';
+            const headers = process.env.HUGGINGFACE_API_TOKEN 
+                ? { 'Authorization': `Bearer ${process.env.HUGGINGFACE_API_TOKEN}` } 
+                : {};
+
+            const aiResponse = await axios.post(url, {
+                data: [deskripsi] // Payload standar Gradio
+            }, { 
+                headers,
+                timeout: 10000 // Beri waktu ekstra untuk API eksternal
+            });
+
+            // Gradio merespons di dalam array 'data'
+            const resultData = aiResponse.data.data[0]; 
 
             res.json({
                 success: true,
                 data: {
-                    deskripsi: aiResponse.data.deskripsi,
-                    kategori_ai: aiResponse.data.kategori_ai,
-                    akurasi: aiResponse.data.akurasi,
-                    source: 'ai_model'
+                    deskripsi: deskripsi,
+                    kategori_ai: resultData.category || resultData.kategori_ai || classifyLocal(deskripsi),
+                    akurasi: resultData.confidence || resultData.akurasi || 0.75,
+                    source: 'huggingface_model'
                 }
             });
-        } catch {
+        } catch (apiError) {
+            console.error('Hugging Face API error, fallback to local:', apiError.message);
             const kategori = classifyLocal(deskripsi);
             res.json({
                 success: true,
                 data: { deskripsi, kategori_ai: kategori, akurasi: 0.75, source: 'fallback_rules' },
-                message: 'AI Service tidak aktif. Menggunakan klasifikasi lokal.'
+                message: 'AI Service tidak aktif atau error. Menggunakan klasifikasi lokal.'
             });
         }
     } catch (error) {
