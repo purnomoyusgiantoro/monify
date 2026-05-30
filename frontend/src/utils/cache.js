@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'monify_cache_';
-const TTL_SECONDS = 10;
+const TTL_SECONDS = 120;
 
 export function setCache(key, data) {
   try {
