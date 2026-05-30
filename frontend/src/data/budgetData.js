@@ -1,9 +1,4 @@
-export const initialBudgets = [
-  { id: 1, category: 'Makanan', limit: 1000000, period: '2026-06' },
-  { id: 2, category: 'Transport', limit: 500000, period: '2026-06' },
-  { id: 3, category: 'Hiburan', limit: 400000, period: '2026-06' },
-  { id: 4, category: 'Lainnya', limit: 600000, period: '2026-06' },
-];
+export const initialBudgets = [];
 
 export const budgetCategories = [
   'Makanan',

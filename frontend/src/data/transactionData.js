@@ -22,16 +22,7 @@ export const expenseCategories = [
   'Lainnya',
 ];
 
-export const initialTransactions = [
-  { id: 1, name: 'Gaji Bulanan', date: '2026-06-20', category: 'Gaji', type: 'income', amount: 3000000, note: 'Gaji bulan Juni' },
-  { id: 2, name: 'Ayam goreng', date: '2026-06-21', category: 'Makanan', type: 'expense', amount: 20000, note: '' },
-  { id: 3, name: 'Gojek', date: '2026-06-21', category: 'Transport', type: 'expense', amount: 30000, note: '' },
-  { id: 4, name: 'Netflix', date: '2026-06-21', category: 'Hiburan', type: 'expense', amount: 20000, note: '' },
-  { id: 5, name: 'Top up Dana', date: '2026-06-21', category: 'Lainnya', type: 'expense', amount: 10000, note: '' },
-  { id: 6, name: 'Tagihan Wifi', date: '2026-06-21', category: 'Tagihan', type: 'expense', amount: 150000, note: '' },
-  { id: 7, name: 'Saham BBC A', date: '2026-06-21', category: 'Investasi', type: 'income', amount: 200000, note: '' },
-  { id: 8, name: 'Baju baru', date: '2026-06-21', category: 'Pakaian', type: 'expense', amount: 30000, note: '' },
-];
+export const initialTransactions = [];
 
 const keywordCategoryRules = [
   { category: 'Makanan', keywords: ['ayam', 'makan', 'nasi', 'kopi', 'bakso', 'mie', 'warung', 'resto'] },
