@@ -41,7 +41,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <aside className="sidebar" aria-label="Menu utama">
+    <aside className="sidebar sidebar--app-nav" aria-label="Menu utama">
       <div className="sidebar__brand">
         <img src="/assets/logo-monify.png" alt="Monify" />
       </div>

@@ -16,7 +16,7 @@ export default function Topbar({
       </div>
 
       {(showDate || action) ? (
-        <div className="topbar-actions">
+        <div className="topbar__actions topbar-actions">
           {action}
           {showDate ? <DateButton date={selectedDate} onChange={onChangeDate} /> : null}
         </div>

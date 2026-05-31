@@ -868,12 +868,6 @@ button { cursor: pointer; }
   .auth-shell { grid-template-columns:1fr; min-height:0; }
   .auth-brand { min-height:360px; }
   .auth-copy { margin-top:80px; }
-  .app-shell { grid-template-columns:1fr; }
-  .sidebar {
-    position: fixed; inset: 0 auto 0 0; width: 288px; z-index: 50;
-    transform: translateX(-105%); transition:.25s ease;
-  }
-  .sidebar.open { transform: translateX(0); }
   .mobile-menu { display:grid; }
   .hero-dashboard, .content-grid, .page-grid { grid-template-columns:1fr; }
   .stats-grid { grid-template-columns:repeat(2, minmax(0,1fr)); }

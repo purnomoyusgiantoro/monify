@@ -1,13 +1,20 @@
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useStylesheet } from '../utils/hooks';
 import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { isAuthenticated } from '../utils/api';
+import Toast from './ui/Toast';
 
 export default function AppLayout() {
   const isLoggedIn = isAuthenticated();
   useStylesheet('/styles.css');
+
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((type, message) => {
+    setToast({ id: Date.now(), type, message });
+  }, []);
 
   React.useEffect(() => {
     document.body.classList.remove('auth-locked');
@@ -21,10 +28,9 @@ export default function AppLayout() {
     <div className="app-body">
       <div className="app-shell">
         <Sidebar />
-        <main className="main">
-          <Outlet />
-        </main>
+        <Outlet context={{ showToast }} />
       </div>
+      <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

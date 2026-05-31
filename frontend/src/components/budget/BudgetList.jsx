@@ -1,5 +1,5 @@
 import ProgressBar from '../ProgressBar.jsx';
-import { getBudgetStatus } from '../../utils/formatters.js';
+import { formatCurrency, getBudgetStatus } from '../../utils/formatters.js';
 
 export default function BudgetList({ rows }) {
   return (
@@ -15,13 +15,16 @@ export default function BudgetList({ rows }) {
 
             return (
               <article className="budget-page-row" key={`${row.period}-${row.category}`}>
-                <strong>{row.category}</strong>
-                <ProgressBar
-                  value={row.used}
-                  max={row.limit}
-                  tone={status.tone}
-                  label={`${row.category} terpakai ${row.percent}%`}
-                />
+                <strong className="budget-page-row__category">{row.category}</strong>
+                <div className="budget-page-row__usage">
+                  <span>{formatCurrency(row.used)} / {formatCurrency(row.limit)}</span>
+                  <ProgressBar
+                    value={row.used}
+                    max={row.limit}
+                    tone={status.tone}
+                    label={`${row.category} terpakai ${row.percent}%`}
+                  />
+                </div>
                 <span className={`budget-row__percent budget-row__percent--${status.tone}`}>{row.percent}%</span>
                 <span className={`status-pill status-pill--${status.tone}`}>{status.label}</span>
               </article>
