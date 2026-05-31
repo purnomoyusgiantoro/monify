@@ -5978,3 +5978,282 @@ body {
     white-space: nowrap !important;
   }
 }
+
+/* Dashboard visual revision only: Budget Bulan Ini, Budget stat card, and Transaksi Terbaru. */
+.summary-grid--bottom .stat-card:nth-child(2) .stat-card__value {
+  text-align: left !important;
+}
+
+.summary-grid--bottom .stat-card:nth-child(2) .stat-card__description {
+  margin-top: 20px !important;
+  text-align: left !important;
+  line-height: 1.35 !important;
+}
+
+.summary-grid--bottom .stat-card:nth-child(2) .progress {
+  width: min(174px, 100%) !important;
+  max-width: 174px !important;
+  margin: 12px 0 0 !important;
+}
+
+.dashboard-budget-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(82px, auto) !important;
+  grid-template-areas:
+    "category status"
+    "usage percent"
+    "progress progress" !important;
+  align-items: center !important;
+  gap: 4px 16px !important;
+  min-height: auto !important;
+  padding: 12px 16px 14px !important;
+}
+
+.dashboard-budget-row > * {
+  min-width: 0 !important;
+}
+
+.dashboard-budget-row__category {
+  grid-area: category !important;
+  align-self: end !important;
+  line-height: 1.25 !important;
+}
+
+.dashboard-budget-row__usage {
+  grid-area: usage !important;
+  justify-self: start !important;
+  align-self: start !important;
+  text-align: left !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  line-height: 1.25 !important;
+}
+
+.dashboard-budget-row__status {
+  grid-area: status !important;
+  justify-self: end !important;
+  align-self: end !important;
+  margin: 0 !important;
+}
+
+.dashboard-budget-row__percent {
+  grid-area: percent !important;
+  justify-self: end !important;
+  align-self: start !important;
+  text-align: right !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+}
+
+.dashboard-budget-row .progress {
+  grid-area: progress !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 8px 0 0 !important;
+}
+
+.dashboard-budget-summary {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: start !important;
+  gap: 12px !important;
+  padding: 16px 10px 4px !important;
+}
+
+.dashboard-budget-summary__item {
+  min-width: 0 !important;
+  text-align: left !important;
+}
+
+.dashboard-budget-summary__item span,
+.dashboard-budget-summary__item strong {
+  display: block !important;
+  overflow-wrap: anywhere !important;
+}
+
+.dashboard-budget-summary__item--percent {
+  display: block !important;
+  justify-items: initial !important;
+  text-align: left !important;
+}
+
+.dashboard-panels > .panel-card:nth-child(2) .section-head {
+  align-items: center !important;
+  margin-bottom: 14px !important;
+  padding: 0 8px 0 12px !important;
+}
+
+.dashboard-panels > .panel-card:nth-child(2) .section-head h2 {
+  line-height: 1.2 !important;
+}
+
+.dashboard-panels > .panel-card:nth-child(2) .small-button {
+  min-height: 42px !important;
+  height: 42px !important;
+  min-width: 100px !important;
+  padding-inline: 16px !important;
+  border-radius: 14px !important;
+  white-space: nowrap !important;
+}
+
+.dashboard-panels .transaction-list {
+  gap: 10px !important;
+}
+
+.dashboard-panels .transaction-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(84px, auto) !important;
+  grid-template-areas:
+    "name amount"
+    "date category" !important;
+  align-items: start !important;
+  gap: 4px 14px !important;
+  min-height: auto !important;
+  padding: 10px 18px !important;
+}
+
+.dashboard-panels .transaction-row > strong:first-child {
+  grid-area: name !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  line-height: 1.25 !important;
+}
+
+.dashboard-panels .transaction-row > span:not(.transaction-row__category) {
+  grid-area: date !important;
+  min-width: 0 !important;
+  line-height: 1.25 !important;
+}
+
+.dashboard-panels .transaction-row__category {
+  grid-area: category !important;
+  justify-self: end !important;
+  text-align: right !important;
+  line-height: 1.25 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.dashboard-panels .transaction-row .amount {
+  grid-area: amount !important;
+  justify-self: end !important;
+  align-self: start !important;
+  text-align: right !important;
+  line-height: 1.25 !important;
+}
+
+@media (max-width: 920px) {
+  .dashboard-budget-row {
+    grid-template-columns: minmax(0, 1fr) minmax(78px, auto) !important;
+    gap: 5px 14px !important;
+    padding: 12px 14px 14px !important;
+  }
+
+  .dashboard-budget-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px 14px !important;
+    padding: 16px 8px 2px !important;
+  }
+
+  .dashboard-budget-summary__item--percent {
+    grid-column: 1 / -1 !important;
+    text-align: center !important;
+  }
+
+  .dashboard-budget-summary__item--percent strong {
+    margin-top: 6px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .summary-grid--bottom .stat-card:nth-child(2) .stat-card__description {
+    margin-top: 16px !important;
+  }
+
+  .summary-grid--bottom .stat-card:nth-child(2) .progress {
+    width: min(174px, 100%) !important;
+  }
+
+  .dashboard-budget-head h2 {
+    font-size: 24px !important;
+  }
+
+  .dashboard-budget-action,
+  .dashboard-panels > .panel-card:nth-child(2) .small-button {
+    min-height: 40px !important;
+    height: 40px !important;
+    min-width: 100px !important;
+    border-radius: 14px !important;
+    padding-inline: 14px !important;
+  }
+
+  .dashboard-budget-row {
+    grid-template-columns: minmax(0, 1fr) minmax(74px, auto) !important;
+    gap: 5px 10px !important;
+    padding: 12px !important;
+  }
+
+  .dashboard-budget-row__usage {
+    font-size: 12px !important;
+  }
+
+  .dashboard-budget-row__status {
+    min-width: 76px !important;
+    min-height: 28px !important;
+  }
+
+  .dashboard-budget-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    padding: 16px 4px 0 !important;
+  }
+
+  .dashboard-budget-summary__item span {
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+  }
+
+  .dashboard-budget-summary__item strong {
+    margin-top: 6px !important;
+    font-size: 16px !important;
+    line-height: 1.25 !important;
+  }
+
+  .dashboard-budget-summary__item--percent {
+    grid-column: 1 / -1 !important;
+    text-align: center !important;
+  }
+
+  .dashboard-panels .transaction-row {
+    grid-template-columns: minmax(0, 1fr) minmax(76px, auto) !important;
+    gap: 4px 10px !important;
+    padding: 10px 12px !important;
+  }
+
+  .dashboard-panels .transaction-row .amount,
+  .dashboard-panels .transaction-row__category {
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-budget-row {
+    grid-template-columns: minmax(0, 1fr) minmax(70px, auto) !important;
+  }
+
+  .dashboard-budget-row__status {
+    min-width: 70px !important;
+  }
+
+  .dashboard-budget-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .dashboard-panels .transaction-row {
+    grid-template-columns: minmax(0, 1fr) minmax(70px, auto) !important;
+  }
+}
