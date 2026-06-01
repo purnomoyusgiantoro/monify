@@ -94,6 +94,7 @@ router.post('/predict', authMiddleware, async (req, res) => {
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
+        const lastDay = new Date(currentYear, currentMonthNum, 0).getDate();
 
         // Ambil transaksi bulan ini
         const { data: monthTransactions, error: trxError } = await supabase
@@ -101,7 +102,7 @@ router.post('/predict', authMiddleware, async (req, res) => {
             .select('amount, type, expense_category_id')
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${currentMonth}-01`)
-            .lte('transactions_date', `${currentMonth}-31`);
+            .lte('transactions_date', `${currentMonth}-${String(lastDay).padStart(2, '0')}`);
 
         if (trxError) throw trxError;
 
@@ -221,6 +222,7 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
+        const lastDay = new Date(currentYear, currentMonthNum, 0).getDate();
 
         const { data: transactions, error: trxError } = await supabase
             .from('transactions')
@@ -228,7 +230,7 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
             .eq('user_id', req.user.id)
             .eq('type', 'expense')
             .gte('transactions_date', `${currentMonth}-01`)
-            .lte('transactions_date', `${currentMonth}-31`);
+            .lte('transactions_date', `${currentMonth}-${String(lastDay).padStart(2, '0')}`);
 
         if (trxError) throw trxError;
 
@@ -296,6 +298,7 @@ router.get('/overbudget', authMiddleware, async (req, res) => {
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
+        const lastDay = new Date(currentYear, currentMonthNum, 0).getDate();
 
         const { data: transactions, error: trxError } = await supabase
             .from('transactions')
@@ -303,7 +306,7 @@ router.get('/overbudget', authMiddleware, async (req, res) => {
             .eq('user_id', req.user.id)
             .eq('type', 'expense')
             .gte('transactions_date', `${currentMonth}-01`)
-            .lte('transactions_date', `${currentMonth}-31`);
+            .lte('transactions_date', `${currentMonth}-${String(lastDay).padStart(2, '0')}`);
 
         if (trxError) throw trxError;
 

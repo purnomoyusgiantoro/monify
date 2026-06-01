@@ -48,6 +48,7 @@ router.get('/monthly', authMiddleware, async (req, res) => {
         
         const targetYearNum = parseInt(targetMonth.split('-')[0]);
         const targetMonthNum = parseInt(targetMonth.split('-')[1]);
+        const lastDay = new Date(targetYearNum, targetMonthNum, 0).getDate();
 
         const { data: transactions, error: trxError } = await supabase
             .from('transactions')
@@ -58,7 +59,7 @@ router.get('/monthly', authMiddleware, async (req, res) => {
             `)
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${targetMonth}-01`)
-            .lte('transactions_date', `${targetMonth}-31`);
+            .lte('transactions_date', `${targetMonth}-${String(lastDay).padStart(2, '0')}`);
 
         if (trxError) throw trxError;
 

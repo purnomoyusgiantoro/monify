@@ -94,6 +94,12 @@ export default function Dashboard() {
         const c = categoryRes.ok ? categoryRes.data.data : null;
         const h = historyRes.ok ? historyRes.data.data : null;
 
+        console.log('[Dashboard Debug] selectedDate:', selectedDate);
+        console.log('[Dashboard Debug] summaryRes:', summaryRes);
+        console.log('[Dashboard Debug] categoryRes:', categoryRes);
+        console.log('[Dashboard Debug] historyRes:', historyRes);
+        console.log('[Dashboard Debug] s:', s, 'c:', c, 'h:', h);
+
         setData((prev) => {
           let next = { ...prev };
 

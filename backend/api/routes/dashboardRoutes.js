@@ -10,16 +10,10 @@ const router = express.Router();
 router.get('/summary', authMiddleware, async (req, res) => {
     try {
         const { date } = req.query;
-        // Parse date string directly to avoid timezone issues with new Date()
-        let currentMonthPrefix;
-        let today;
-        if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            currentMonthPrefix = date.slice(0, 7); // "YYYY-MM"
-            today = { getDate: () => parseInt(date.slice(8, 10), 10), getFullYear: () => parseInt(date.slice(0, 4), 10), getMonth: () => parseInt(date.slice(5, 7), 10) - 1 };
-        } else {
-            today = new Date();
-            currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-        }
+        // Append T12:00:00 to avoid timezone day-boundary issues
+        const today = date ? new Date(date + 'T12:00:00') : new Date();
+        const currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
         // 1. Fetch month transactions
         const { data: monthTransactions, error: trxError } = await supabase
@@ -27,7 +21,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
             .select('type, amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${currentMonthPrefix}-01`)
-            .lte('transactions_date', `${currentMonthPrefix}-31`);
+            .lte('transactions_date', `${currentMonthPrefix}-${String(lastDay).padStart(2, '0')}`);
 
         if (trxError) throw trxError;
 
@@ -142,17 +136,11 @@ router.get('/summary', authMiddleware, async (req, res) => {
 router.get('/expense-by-category', authMiddleware, async (req, res) => {
     try {
         const { date } = req.query;
-        let currentMonthPrefix;
-        let today;
-        if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            currentMonthPrefix = date.slice(0, 7);
-            today = { getMonth: () => parseInt(date.slice(5, 7), 10) - 1, getFullYear: () => parseInt(date.slice(0, 4), 10) };
-        } else {
-            today = new Date();
-            currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-        }
+        const today = date ? new Date(date + 'T12:00:00') : new Date();
+        const currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
+        const lastDay = new Date(currentYear, currentMonthNum, 0).getDate();
 
         const { data: monthExpenses, error: trxError } = await supabase
             .from('transactions')
@@ -160,7 +148,7 @@ router.get('/expense-by-category', authMiddleware, async (req, res) => {
             .eq('user_id', req.user.id)
             .eq('type', 'expense')
             .gte('transactions_date', `${currentMonthPrefix}-01`)
-            .lte('transactions_date', `${currentMonthPrefix}-31`);
+            .lte('transactions_date', `${currentMonthPrefix}-${String(lastDay).padStart(2, '0')}`);
 
         if (trxError) throw trxError;
 
