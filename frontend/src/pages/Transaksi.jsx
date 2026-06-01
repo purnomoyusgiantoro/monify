@@ -118,8 +118,14 @@ export default function Transaksi() {
       result = result.filter((t) => String(t.date).slice(0, 10) === filterDate);
     }
     
-    // Urutkan berdasarkan tanggal terbaru di atas
-    result.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Urutkan berdasarkan tanggal terbaru di atas, dan ID jika tanggalnya sama
+    result.sort((a, b) => {
+      const dateDiff = new Date(b.date) - new Date(a.date);
+      if (dateDiff === 0 && a.id && b.id) {
+        return b.id - a.id;
+      }
+      return dateDiff;
+    });
     
     return result;
   }, [activeTab, filterDate, transactions]);
