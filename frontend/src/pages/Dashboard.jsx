@@ -9,6 +9,67 @@ import { dashboardData as staticDashboardData } from '../data/dashboardData.js';
 import { apiGetDashboardSummary, apiGetExpenseByCategory, apiGetTransactionHistory } from '../utils/api.js';
 import { getCache, setCache } from '../utils/cache.js';
 
+function toIsoDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeDashboardTransactions(history = []) {
+  return history.map((t) => ({
+    id: t.id,
+    name: t.description || t.name || '',
+    date: t.transactions_date || t.date || '',
+    category: t.category_name || t.category || 'Lainnya',
+    type: t.type || 'expense',
+    amount: Number(t.amount) || 0,
+  }));
+}
+
+function buildTrendPoints(transactions = [], rangeDays = 7) {
+  const daysLimit = Number(rangeDays) || 7;
+  const today = new Date();
+  const points = [];
+
+  for (let i = daysLimit - 1; i >= 0; i -= 1) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    points.push({
+      day: String(d.getDate()),
+      fullDate: toIsoDate(d),
+      value: 0,
+    });
+  }
+
+  transactions.forEach((transaction) => {
+    if (transaction.type !== 'expense' || !transaction.date) return;
+
+    const transactionDate = String(transaction.date).slice(0, 10);
+    const targetPoint = points.find((point) => point.fullDate === transactionDate);
+    if (targetPoint) {
+      targetPoint.value += Number(transaction.amount) || 0;
+    }
+  });
+
+  return points;
+}
+
+function applyTrendChart(data, transactions, rangeDays) {
+  const daysLimit = Number(rangeDays) || 7;
+  return {
+    ...data,
+    _historyTransactions: transactions,
+    chart: {
+      ...data.chart,
+      subtitle: `Pengeluaran harian selama ${daysLimit} hari terakhir`,
+      filterLabel: `${daysLimit} Hari Terakhir`,
+      monthLabel: `${daysLimit} Hari Terakhir`,
+      points: buildTrendPoints(transactions, daysLimit),
+    },
+  };
+}
+
 export default function Dashboard() {
   const [data, setData] = useState(() => {
     const cached = getCache('dashboard');
@@ -23,16 +84,19 @@ export default function Dashboard() {
 
     async function fetchDashboard() {
       const cached = getCache('dashboard');
-      if (cached) {
-        if (!cancelled) setLoading(false);
-        return; // Skip fetch karena cache masih valid
+      if (cached && Array.isArray(cached._historyTransactions) && cached.selectedDate === selectedDate) {
+        if (!cancelled) {
+          setData(applyTrendChart(cached, cached._historyTransactions, chartDays));
+          setLoading(false);
+        }
+        return;
       }
 
       try {
         const [summaryRes, categoryRes, historyRes] = await Promise.all([
           apiGetDashboardSummary(selectedDate),
           apiGetExpenseByCategory(selectedDate),
-          apiGetTransactionHistory(50), // Fetch more for charting
+          apiGetTransactionHistory(200),
         ]);
 
         if (cancelled) return;
@@ -42,9 +106,8 @@ export default function Dashboard() {
         const h = historyRes.ok ? historyRes.data.data : null;
 
         setData((prev) => {
-          const next = { ...prev };
+          let next = { ...prev };
 
-          // Map summary
           if (s) {
             next.summary = {
               balance: s.balance || 0,
@@ -61,7 +124,6 @@ export default function Dashboard() {
             next.selectedDate = selectedDate;
           }
 
-          // Map budgets from category breakdown
           if (c && c.categories) {
             next.budgets = c.categories.map((cat) => ({
               category: cat.category_name || 'Lainnya',
@@ -70,61 +132,17 @@ export default function Dashboard() {
             }));
           }
 
-          // Map transactions
-          if (h && Array.isArray(h)) {
-            const mapped = h.map((t) => ({
-              name: t.description || t.name || '',
-              date: t.transactions_date || t.date || '',
-              category: t.category_name || t.category || 'Lainnya',
-              type: t.type || 'expense',
-              amount: Number(t.amount) || 0,
-            }));
-            
-            // List only needs top 5
-            next.transactions = mapped.slice(0, 5);
-
-            // Chart needs filtered points
-            const chartPoints = [];
-            const today = new Date();
-            const daysLimit = Number(chartDays) || 7;
-            
-            // 1. Generate an array of dates for the last `daysLimit` days
-            for (let i = daysLimit - 1; i >= 0; i--) {
-                const d = new Date(today);
-                d.setDate(d.getDate() - i);
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const dayString = String(d.getDate()).padStart(2, '0');
-                const fullDateString = `${year}-${month}-${dayString}`;
-                chartPoints.push({ day: dayString, fullDate: fullDateString, value: 0 });
-            }
-            
-            // 2. Add amounts from transactions
-            mapped.forEach((t) => {
-              if (t.type === 'expense' && t.date) {
-                 const tDate = t.date.slice(0, 10);
-                 const point = chartPoints.find(p => p.fullDate === tDate);
-                 if (point) {
-                     point.value += t.amount;
-                 }
-              }
-            });
-              
-            next.chart = { ...prev.chart, points: chartPoints };
+          const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : (prev._historyTransactions || []);
+          if (mappedHistory.length > 0) {
+            next.transactions = mappedHistory.slice(0, 5);
           }
 
-          // Pass filter handlers
-          next.chart = {
-            ...next.chart,
-            filterValue: chartDays,
-            onFilterChange: setChartDays,
-          };
-
+          next = applyTrendChart(next, mappedHistory, chartDays);
           setCache('dashboard', next);
           return next;
         });
       } catch {
-        // Fallback: keep static data
+        setData((prev) => applyTrendChart(prev, prev._historyTransactions || prev.transactions || [], chartDays));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -194,7 +212,7 @@ export default function Dashboard() {
           />
         </section>
 
-        <SpendingChart chart={data.chart} />
+        <SpendingChart chart={{ ...data.chart, filterValue: chartDays, onFilterChange: setChartDays }} />
 
         <section className="dashboard-panels">
           <BudgetSection budgets={data.budgets} />

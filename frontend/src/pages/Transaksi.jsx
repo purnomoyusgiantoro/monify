@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Topbar from '../components/Topbar.jsx';
 import TransactionTabs from '../components/transactions/TransactionTabs.jsx';
 import TransactionForm from '../components/transactions/TransactionForm.jsx';
@@ -27,6 +28,8 @@ const emptyForm = {
 };
 
 export default function Transaksi() {
+  const [searchParams] = useSearchParams();
+  const routeDateFilter = searchParams.get('date') || '';
   const [activeTab, setActiveTab] = useState('all');
   const [transactions, setTransactions] = useState(() => {
     const cached = getCache('transactions');
@@ -38,7 +41,11 @@ export default function Transaksi() {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [classifyTimeout, setClassifyTimeout] = useState(null);
-  const [filterDate, setFilterDate] = useState(''); // Empty means all dates
+  const [filterDate, setFilterDate] = useState(routeDateFilter); // Empty means all dates
+
+  useEffect(() => {
+    setFilterDate(routeDateFilter);
+  }, [routeDateFilter]);
 
   // Fetch transactions + categories on mount
   useEffect(() => {
@@ -99,7 +106,7 @@ export default function Transaksi() {
       result = result.filter((t) => t.type === activeTab);
     }
     if (filterDate) {
-      result = result.filter((t) => t.date === filterDate);
+      result = result.filter((t) => String(t.date).slice(0, 10) === filterDate);
     }
     return result;
   }, [activeTab, filterDate, transactions]);
