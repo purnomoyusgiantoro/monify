@@ -216,20 +216,20 @@ export async function apiClassify(deskripsi, jumlah) {
     });
 }
 
-export async function apiPredict() {
-    return apiFetch('/ai/predict', { method: 'POST' });
+export async function apiPredict(date) {
+    return apiFetch(`/ai/predict${date ? `?date=${date}` : ''}`, { method: 'POST' });
 }
 
 export async function apiGetPredictions(limit = 1) {
     return apiFetch(`/ai/predictions?limit=${limit}`);
 }
 
-export async function apiGetSafeToSpend() {
-    return apiFetch('/ai/safe-to-spend');
+export async function apiGetSafeToSpend(date) {
+    return apiFetch(`/ai/safe-to-spend${date ? `?date=${date}` : ''}`);
 }
 
-export async function apiGetOverbudget() {
-    return apiFetch('/ai/overbudget');
+export async function apiGetOverbudget(date) {
+    return apiFetch(`/ai/overbudget${date ? `?date=${date}` : ''}`);
 }
 
 export async function apiChatBot(message, metrics) {

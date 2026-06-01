@@ -29,10 +29,12 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
     async function fetchPredictions() {
       try {
         // Trigger a new prediction and get overbudget data
+        const localDate = new Date();
+        const dateStr = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
         const [predictRes, safeRes, overbudgetRes] = await Promise.all([
-          apiPredict(),
-          apiGetSafeToSpend(),
-          apiGetOverbudget(),
+          apiPredict(dateStr),
+          apiGetSafeToSpend(dateStr),
+          apiGetOverbudget(dateStr),
         ]);
 
         if (cancelled) return;

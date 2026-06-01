@@ -90,7 +90,8 @@ router.post('/classify', authMiddleware, async (req, res) => {
 // ============================================
 router.post('/predict', authMiddleware, async (req, res) => {
     try {
-        const today = new Date();
+        const { date } = req.query;
+        const today = date ? new Date(date + 'T12:00:00') : new Date();
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
@@ -275,7 +276,8 @@ router.get('/predictions', authMiddleware, async (req, res) => {
 // ============================================
 router.get('/safe-to-spend', authMiddleware, async (req, res) => {
     try {
-        const today = new Date();
+        const { date } = req.query;
+        const today = date ? new Date(date + 'T12:00:00') : new Date();
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
@@ -360,7 +362,8 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
 // ============================================
 router.get('/overbudget', authMiddleware, async (req, res) => {
     try {
-        const today = new Date();
+        const { date } = req.query;
+        const today = date ? new Date(date + 'T12:00:00') : new Date();
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
