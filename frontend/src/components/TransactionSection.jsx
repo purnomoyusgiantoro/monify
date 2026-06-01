@@ -11,7 +11,15 @@ export default function TransactionSection({ transactions }) {
       </div>
 
       <div className="transaction-list">
-        {transactions.map((transaction) => {
+        {[...transactions]
+          .sort((a, b) => {
+            const dateDiff = new Date(b.date) - new Date(a.date);
+            if (dateDiff === 0 && a.id && b.id) {
+              return b.id - a.id;
+            }
+            return dateDiff;
+          })
+          .map((transaction) => {
           const isIncome = transaction.type === 'income';
           return (
             <article className="transaction-row" key={`${transaction.name}-${transaction.amount}-${transaction.date}`}>
