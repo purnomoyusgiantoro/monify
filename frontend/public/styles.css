@@ -6531,45 +6531,83 @@ body {
   }
 }
 
-/* Dashboard "Transaksi terbaru": desktop sejajar, mobile menumpuk */
+/* Dashboard "Transaksi terbaru": source of truth final override */
 @media (min-width: 768px) {
-  .dashboard-panels .transaction-row {
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row {
     display: grid !important;
-    grid-template-columns: minmax(180px, 1.4fr) minmax(130px, 1fr) minmax(140px, 1fr) minmax(150px, auto) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr) minmax(0, 1.1fr) auto !important;
     grid-template-areas: "name date category amount" !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 10px 18px !important;
+    min-height: 48px !important;
+    padding: 9px 18px !important;
   }
 
-  .dashboard-panels .transaction-row > strong:first-child {
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row > strong:first-child {
     grid-area: name !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
   }
 
-  .dashboard-panels .transaction-row > span:not(.transaction-row__category) {
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row > span:not(.transaction-row__category) {
     grid-area: date !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
     text-align: left !important;
+    color: var(--text-soft, #5f6f83) !important;
+    line-height: 1.2 !important;
   }
 
-  .dashboard-panels .transaction-row__category {
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row__category {
     grid-area: category !important;
-    justify-self: start !important;
-    text-align: left !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    justify-self: center !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
   }
 
-  .dashboard-panels .transaction-row .amount {
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row .amount {
     grid-area: amount !important;
+    min-width: 120px !important;
+    white-space: nowrap !important;
     justify-self: end !important;
     text-align: right !important;
+    line-height: 1.2 !important;
   }
 }
 
 @media (max-width: 767px) {
-  .dashboard-panels .transaction-row {
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(78px, auto) !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
     grid-template-areas:
       "name amount"
       "date category" !important;
     align-items: start !important;
+    gap: 5px 10px !important;
+    padding: 11px 12px !important;
+  }
+
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row > strong:first-child,
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row > span:not(.transaction-row__category),
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row__category {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .dashboard-panels > .panel-card:nth-child(2) .transaction-row .amount {
+    white-space: nowrap !important;
+    justify-self: end !important;
   }
 }
