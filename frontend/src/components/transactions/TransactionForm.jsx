@@ -56,12 +56,18 @@ export default function TransactionForm({ formData, onChange, onSubmit, editingI
         <label className="form-field">
           <span>Tanggal</span>
           <div className="date-input">
-            <img src="/assets/icon-calendar.png" alt="" aria-hidden="true" />
+            <img 
+              src="/assets/icon-calendar.png" 
+              alt="" 
+              aria-hidden="true" 
+              style={{ pointerEvents: 'none' }}
+            />
             <input
               name="date"
               type="date"
               value={formData.date}
               onChange={handleChange}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
               aria-label={`Tanggal ${formatCompactDate(formData.date)}`}
             />
           </div>

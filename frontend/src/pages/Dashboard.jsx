@@ -28,19 +28,33 @@ function normalizeDashboardTransactions(history = []) {
   }));
 }
 
-function buildTrendPoints(transactions = [], rangeDays = 7) {
-  const daysLimit = Number(rangeDays) || 7;
-  const today = new Date();
+function buildTrendPoints(transactions = [], rangeDays = 7, referenceDateStr) {
+  const referenceDate = referenceDateStr ? new Date(referenceDateStr) : new Date();
   const points = [];
 
-  for (let i = daysLimit - 1; i >= 0; i -= 1) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    points.push({
-      day: String(d.getDate()),
-      fullDate: toIsoDate(d),
-      value: 0,
-    });
+  if (rangeDays === 'month') {
+    const year = referenceDate.getFullYear();
+    const month = referenceDate.getMonth();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    for (let i = 1; i <= lastDay; i += 1) {
+      const d = new Date(year, month, i);
+      points.push({
+        day: String(d.getDate()),
+        fullDate: toIsoDate(d),
+        value: 0,
+      });
+    }
+  } else {
+    const daysLimit = Number(rangeDays) || 7;
+    for (let i = daysLimit - 1; i >= 0; i -= 1) {
+      const d = new Date(referenceDate);
+      d.setDate(d.getDate() - i);
+      points.push({
+        day: String(d.getDate()),
+        fullDate: toIsoDate(d),
+        value: 0,
+      });
+    }
   }
 
   transactions.forEach((transaction) => {
@@ -56,17 +70,22 @@ function buildTrendPoints(transactions = [], rangeDays = 7) {
   return points;
 }
 
-function applyTrendChart(data, transactions, rangeDays) {
-  const daysLimit = Number(rangeDays) || 7;
+function applyTrendChart(data, transactions, rangeDays, selectedDate) {
+  const points = buildTrendPoints(transactions, rangeDays, selectedDate);
+  const subtitle = rangeDays === 'month' 
+    ? 'Pengeluaran harian sepanjang bulan ini'
+    : `Pengeluaran harian selama ${rangeDays} hari terakhir`;
+  const filterLabel = rangeDays === 'month' ? 'Bulan Ini' : `${rangeDays} Hari Terakhir`;
+  
   return {
     ...data,
     _historyTransactions: transactions,
     chart: {
       ...data.chart,
-      subtitle: `Pengeluaran harian selama ${daysLimit} hari terakhir`,
-      filterLabel: `${daysLimit} Hari Terakhir`,
-      monthLabel: `${daysLimit} Hari Terakhir`,
-      points: buildTrendPoints(transactions, daysLimit),
+      subtitle,
+      filterLabel,
+      monthLabel: filterLabel,
+      points,
     },
   };
 }
@@ -76,7 +95,7 @@ export default function Dashboard() {
     const cached = getCache('dashboard');
     return cached ? cached : staticDashboardData;
   });
-  const [chartDays, setChartDays] = useState('7');
+  const [chartDays, setChartDays] = useState('month');
   const [selectedDate, setSelectedDate] = useState(() => toIsoDate(new Date()));
   const [loading, setLoading] = useState(true);
 
@@ -87,7 +106,7 @@ export default function Dashboard() {
       const cached = getCache('dashboard');
       if (cached && Array.isArray(cached._historyTransactions) && cached.selectedDate === selectedDate) {
         if (!cancelled) {
-          setData(applyTrendChart(cached, cached._historyTransactions, chartDays));
+          setData(applyTrendChart(cached, cached._historyTransactions, chartDays, selectedDate));
           setLoading(false);
         }
         return;
@@ -134,17 +153,18 @@ export default function Dashboard() {
               limit: cat.budget_limit || 0,
             }));
           }
-
+          next.selectedDate = selectedDate;
+          
           const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : [];
           mappedHistory.sort((a, b) => new Date(b.created_at || b.date || 0) - new Date(a.created_at || a.date || 0));
           next.transactions = mappedHistory.slice(0, 5);
 
-          next = applyTrendChart(next, mappedHistory, chartDays);
+          next = applyTrendChart(next, mappedHistory, chartDays, selectedDate);
           setCache('dashboard', next);
           return next;
         });
       } catch {
-        setData((prev) => applyTrendChart(prev, prev._historyTransactions || prev.transactions || [], chartDays));
+        setData((prev) => applyTrendChart(prev, prev._historyTransactions || prev.transactions || [], chartDays, selectedDate));
       } finally {
         if (!cancelled) setLoading(false);
       }

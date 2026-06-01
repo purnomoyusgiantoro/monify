@@ -27,11 +27,6 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
     let cancelled = false;
 
     async function fetchPredictions() {
-      const cached = getCache('prediksi');
-      if (cached) {
-        return; // Skip fetch karena cache masih valid
-      }
-
       try {
         // Trigger a new prediction and get overbudget data
         const [predictRes, safeRes, overbudgetRes] = await Promise.all([

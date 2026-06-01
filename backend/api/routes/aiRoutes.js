@@ -99,7 +99,7 @@ router.post('/predict', authMiddleware, async (req, res) => {
         // Ambil transaksi bulan ini
         const { data: monthTransactions, error: trxError } = await supabase
             .from('transactions')
-            .select('amount, type, expense_category_id')
+            .select('amount, type, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${currentMonth}-01`)
             .lte('transactions_date', `${currentMonth}-${String(lastDay).padStart(2, '0')}`);
@@ -109,23 +109,69 @@ router.post('/predict', authMiddleware, async (req, res) => {
         // Ambil budget bulan ini
         const { data: userBudgets, error: budgetError } = await supabase
             .from('budgets')
-            .select('amount')
+            .select('amount, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .eq('month', currentMonthNum)
             .eq('year', currentYear);
 
         if (budgetError) throw budgetError;
 
-        const monthlyExpenses = monthTransactions
-            .filter(t => t.type === 'expense')
-            .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        const expenses = monthTransactions.filter(t => t.type === 'expense');
+        const monthlyExpenses = expenses.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
         const day = Math.max(1, today.getDate());
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
         const remaining = Math.max(1, daysInMonth - day);
 
-        const predicted_monthly_expense = Math.round((monthlyExpenses / day) * daysInMonth);
         const totalBudget = userBudgets.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+
+        // Calculate AI Predictions based on Fixed vs Variable
+        const expenseByCat = {};
+        expenses.forEach(t => {
+            const catId = t.expense_category_id || 'unknown';
+            if (!expenseByCat[catId]) {
+                expenseByCat[catId] = { spent: 0, name: t.expense_categories?.name || 'Lainnya' };
+            }
+            expenseByCat[catId].spent += Number(t.amount || 0);
+        });
+
+        let predicted_monthly_expense = 0;
+        let variableRemainingBudget = 0;
+
+        // 1. Calculate for budgeted categories
+        userBudgets.forEach(b => {
+            const catId = b.expense_category_id;
+            const catName = (b.expense_categories?.name || '').toLowerCase();
+            const budgetLimit = Number(b.amount || 0);
+            const spent = expenseByCat[catId] ? expenseByCat[catId].spent : 0;
+            
+            const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+
+            if (isFixed) {
+                predicted_monthly_expense += Math.max(budgetLimit, spent);
+            } else {
+                const projectedVariable = Math.round((spent / day) * daysInMonth);
+                predicted_monthly_expense += Math.max(spent, projectedVariable);
+                variableRemainingBudget += Math.max(0, budgetLimit - spent);
+            }
+        });
+
+        // 2. Calculate for unbudgeted categories
+        Object.keys(expenseByCat).forEach(catId => {
+            const hasBudget = userBudgets.some(b => b.expense_category_id === catId);
+            if (!hasBudget) {
+                const spent = expenseByCat[catId].spent;
+                const catName = (expenseByCat[catId].name || '').toLowerCase();
+                const isFixed = catName.includes('tagihan') || catName.includes('cicilan') || catName.includes('asuransi') || catName.includes('investasi');
+                
+                if (isFixed) {
+                    predicted_monthly_expense += spent;
+                } else {
+                    const projectedVariable = Math.round((spent / day) * daysInMonth);
+                    predicted_monthly_expense += Math.max(spent, projectedVariable);
+                }
+            }
+        });
 
         const riskPercentage = Math.min(140, Math.round((predicted_monthly_expense / Math.max(1, totalBudget)) * 100));
         let overbudget_status;
@@ -133,7 +179,9 @@ router.post('/predict', authMiddleware, async (req, res) => {
         else if (riskPercentage >= 80) overbudget_status = 'warning';
         else overbudget_status = 'safe';
 
-        const safe_to_spend_today = Math.max(0, Math.floor((totalBudget - monthlyExpenses) / remaining));
+        const safe_to_spend_today = totalBudget > 0 
+            ? Math.max(0, Math.floor(variableRemainingBudget / remaining))
+            : Math.max(0, Math.floor((totalBudget - monthlyExpenses) / remaining));
 
         const recommendation = generateRecommendation(overbudget_status, riskPercentage, safe_to_spend_today, monthTransactions, currentMonth);
 

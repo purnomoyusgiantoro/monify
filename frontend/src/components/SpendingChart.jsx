@@ -68,14 +68,15 @@ export default function SpendingChart({ chart }) {
         </div>
         <div style={{ position: 'relative', display: 'inline-block' }}>
           <button type="button" className="filter-button">
-            {chart.filterValue === '30' ? '30 Hari Terakhir' : chart.filterValue === '14' ? '14 Hari Terakhir' : '7 Hari Terakhir'}
+            {chart.filterValue === 'month' ? 'Bulan Ini' : chart.filterValue === '30' ? '30 Hari Terakhir' : chart.filterValue === '14' ? '14 Hari Terakhir' : '7 Hari Terakhir'}
           </button>
           <select
-            value={chart.filterValue || '7'}
+            value={chart.filterValue || 'month'}
             onChange={(e) => chart.onFilterChange && chart.onFilterChange(e.target.value)}
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
             aria-label="Filter periode grafik"
           >
+            <option value="month">Bulan Ini</option>
             <option value="7">7 Hari Terakhir</option>
             <option value="14">14 Hari Terakhir</option>
             <option value="30">30 Hari Terakhir</option>
