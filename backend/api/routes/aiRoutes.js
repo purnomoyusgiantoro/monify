@@ -99,7 +99,7 @@ router.post('/predict', authMiddleware, async (req, res) => {
         // Ambil transaksi bulan ini
         const { data: monthTransactions, error: trxError } = await supabase
             .from('transactions')
-            .select('amount, type, expense_category_id, expense_categories(name)')
+            .select('amount, type, transactions_date, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${currentMonth}-01`)
             .lte('transactions_date', `${currentMonth}-${String(lastDay).padStart(2, '0')}`);
@@ -121,7 +121,8 @@ router.post('/predict', authMiddleware, async (req, res) => {
 
         const day = Math.max(1, today.getDate());
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const remaining = Math.max(1, daysInMonth - day);
+        // Include today in remaining days for "safe to spend today"
+        const remaining = Math.max(1, daysInMonth - day + 1);
 
         const totalBudget = userBudgets.reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
@@ -179,21 +180,29 @@ router.post('/predict', authMiddleware, async (req, res) => {
         else if (riskPercentage >= 80) overbudget_status = 'warning';
         else overbudget_status = 'safe';
 
-        const safe_to_spend_today = totalBudget > 0 
+        const safe_to_spend_daily = totalBudget > 0 
             ? Math.max(0, Math.floor(variableRemainingBudget / remaining))
             : Math.max(0, Math.floor((totalBudget - monthlyExpenses) / remaining));
+        const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const expense_today = expenses
+            .filter(t => t.transactions_date === todayIso)
+            .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        const safe_to_spend_today_remaining = Math.max(0, safe_to_spend_daily - expense_today);
 
-        const recommendation = generateRecommendation(overbudget_status, riskPercentage, safe_to_spend_today, monthTransactions, currentMonth);
+        const recommendation = generateRecommendation(overbudget_status, riskPercentage, safe_to_spend_today_remaining, monthTransactions, currentMonth);
 
         const predictionData = {
             predicted_monthly_expense,
-            safe_to_spend_today,
+            safe_to_spend_today: safe_to_spend_today_remaining,
+            safe_to_spend_daily,
+            safe_to_spend_today_remaining,
             overbudget_status,
             recommendation,
             risk_percentage: riskPercentage,
             total_budget: totalBudget,
             current_expense: monthlyExpenses,
-            days_remaining: remaining
+            days_remaining: remaining,
+            expense_today
         };
 
         const newPrediction = {
@@ -274,7 +283,7 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
 
         const { data: transactions, error: trxError } = await supabase
             .from('transactions')
-            .select('amount, expense_category_id, expense_categories(name)')
+            .select('amount, transactions_date, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .eq('type', 'expense')
             .gte('transactions_date', `${currentMonth}-01`)
@@ -294,7 +303,8 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
         const monthlyExpenses = transactions.reduce((sum, t) => sum + Number(t.amount || 0), 0);
         const totalBudget = userBudgets.reduce((sum, b) => sum + Number(b.amount || 0), 0);
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const remaining = Math.max(1, daysInMonth - today.getDate());
+        // Include today in remaining days for "safe to spend today"
+        const remaining = Math.max(1, daysInMonth - today.getDate() + 1);
 
         const expenseByCat = {};
         transactions.forEach(t => {
@@ -318,17 +328,25 @@ router.get('/safe-to-spend', authMiddleware, async (req, res) => {
             }
         });
 
-        const safe_to_spend = totalBudget > 0 
+        const safe_to_spend_daily = totalBudget > 0 
             ? Math.max(0, Math.floor(variableRemainingBudget / remaining))
             : Math.max(0, Math.floor((totalBudget - monthlyExpenses) / remaining));
+        const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const expense_today = transactions
+            .filter(t => t.transactions_date === todayIso)
+            .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        const safe_to_spend_today_remaining = Math.max(0, safe_to_spend_daily - expense_today);
 
         res.json({
             success: true,
             data: {
-                safe_to_spend_today: safe_to_spend,
+                safe_to_spend_today: safe_to_spend_today_remaining,
+                safe_to_spend_daily,
+                safe_to_spend_today_remaining,
                 total_budget: totalBudget,
                 current_expense: monthlyExpenses,
-                days_remaining: remaining
+                days_remaining: remaining,
+                expense_today
             }
         });
     } catch (error) {

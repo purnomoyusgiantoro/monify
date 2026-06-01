@@ -50,10 +50,11 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
               next.monthlyExpense = p.current_expense || prev.monthlyExpense;
               next.totalBudget = p.total_budget || prev.totalBudget;
               next.remainingBudget = Math.max(0, (p.total_budget || 0) - (p.current_expense || 0));
+              next.safeToSpendToday = p.safe_to_spend_today_remaining ?? p.safe_to_spend_today ?? prev.safeToSpendToday;
             }
 
             if (s) {
-              next.safeToSpendToday = s.safe_to_spend_today || prev.safeToSpendToday;
+              next.safeToSpendToday = s.safe_to_spend_today_remaining ?? s.safe_to_spend_today ?? prev.safeToSpendToday;
             }
 
             if (o) {
@@ -146,7 +147,7 @@ function buildApiSuggestions(metrics) {
   }
 
   suggestions.push(
-    'Batas aman belanja hari ini dihitung dari sisa budget dibagi sisa hari dalam bulan berjalan.',
+    'Sisa aman belanja hari ini = jatah harian aman dikurangi total pengeluaran yang sudah terjadi hari ini.',
   );
 
   return suggestions;

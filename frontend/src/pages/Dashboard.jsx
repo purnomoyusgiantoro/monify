@@ -137,7 +137,7 @@ export default function Dashboard() {
               expense: s.total_expense || 0,
               budgetTotal: s.total_budget || 0,
               budgetUsed: s.total_expense || 0,
-              safeToSpendToday: s.safe_to_spend || 0,
+              safeToSpendToday: s.safe_to_spend_today_remaining ?? s.safe_to_spend ?? 0,
               monthlyPrediction: s.projected_expense || 0,
               balanceTrend: prev.summary.balanceTrend,
               incomeTrend: prev.summary.incomeTrend,

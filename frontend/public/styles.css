@@ -6530,3 +6530,46 @@ body {
     font-size: 12px;
   }
 }
+
+/* Dashboard "Transaksi terbaru": desktop sejajar, mobile menumpuk */
+@media (min-width: 768px) {
+  .dashboard-panels .transaction-row {
+    display: grid !important;
+    grid-template-columns: minmax(180px, 1.4fr) minmax(130px, 1fr) minmax(140px, 1fr) minmax(150px, auto) !important;
+    grid-template-areas: "name date category amount" !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .dashboard-panels .transaction-row > strong:first-child {
+    grid-area: name !important;
+  }
+
+  .dashboard-panels .transaction-row > span:not(.transaction-row__category) {
+    grid-area: date !important;
+    text-align: left !important;
+  }
+
+  .dashboard-panels .transaction-row__category {
+    grid-area: category !important;
+    justify-self: start !important;
+    text-align: left !important;
+  }
+
+  .dashboard-panels .transaction-row .amount {
+    grid-area: amount !important;
+    justify-self: end !important;
+    text-align: right !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-panels .transaction-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(78px, auto) !important;
+    grid-template-areas:
+      "name amount"
+      "date category" !important;
+    align-items: start !important;
+  }
+}

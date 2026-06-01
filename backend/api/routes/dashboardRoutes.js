@@ -18,7 +18,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
         // 1. Fetch month transactions
         const { data: monthTransactions, error: trxError } = await supabase
             .from('transactions')
-            .select('type, amount, expense_category_id, expense_categories(name)')
+            .select('type, amount, transactions_date, expense_category_id, expense_categories(name)')
             .eq('user_id', req.user.id)
             .gte('transactions_date', `${currentMonthPrefix}-01`)
             .lte('transactions_date', `${currentMonthPrefix}-${String(lastDay).padStart(2, '0')}`);
@@ -50,7 +50,8 @@ router.get('/summary', authMiddleware, async (req, res) => {
 
         const day = Math.max(1, today.getDate());
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const remaining = Math.max(1, daysInMonth - day);
+        // Include today in remaining days for "safe to spend today"
+        const remaining = Math.max(1, daysInMonth - day + 1);
 
         // Calculate AI Predictions based on Fixed vs Variable
         const expenseByCat = {};
@@ -103,9 +104,14 @@ router.get('/summary', authMiddleware, async (req, res) => {
         const risk = Math.min(140, Math.round((totalProjected / Math.max(1, totalBudget)) * 100));
         
         // Safe to spend should prioritize remaining variable budget. If no budget at all, fallback to overall remaining
-        const safeToSpend = totalBudget > 0 
+        const safeToSpendDaily = totalBudget > 0 
             ? Math.max(0, Math.floor(variableRemainingBudget / remaining))
             : Math.max(0, Math.floor((totalBudget - totalExpense) / remaining));
+        const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const expenseToday = expenses
+            .filter(t => t.transactions_date === todayIso)
+            .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+        const safeToSpend = Math.max(0, safeToSpendDaily - expenseToday);
 
         res.json({
             success: true,
@@ -117,6 +123,9 @@ router.get('/summary', authMiddleware, async (req, res) => {
                 projected_expense: totalProjected,
                 risk_percentage: risk || 0,
                 safe_to_spend: safeToSpend,
+                safe_to_spend_daily: safeToSpendDaily,
+                safe_to_spend_today_remaining: safeToSpend,
+                expense_today: expenseToday,
                 days_remaining: remaining,
                 days_in_month: daysInMonth,
                 current_day: day,
