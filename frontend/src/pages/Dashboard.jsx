@@ -133,9 +133,7 @@ export default function Dashboard() {
           }
 
           const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : (prev._historyTransactions || []);
-          if (mappedHistory.length > 0) {
-            next.transactions = mappedHistory.slice(0, 5);
-          }
+          next.transactions = mappedHistory.slice(0, 5);
 
           next = applyTrendChart(next, mappedHistory, chartDays);
           setCache('dashboard', next);
