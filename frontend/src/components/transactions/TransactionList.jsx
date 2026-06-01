@@ -13,7 +13,15 @@ export default function TransactionList({ transactions, selectedDate, onChangeDa
         {transactions.length === 0 ? (
           <p className="empty-state">Tidak ada transaksi pada filter ini.</p>
         ) : (
-          transactions.map((transaction) => {
+          [...transactions]
+            .sort((a, b) => {
+              const dateDiff = new Date(b.date) - new Date(a.date);
+              if (dateDiff === 0 && a.id && b.id) {
+                return b.id - a.id;
+              }
+              return dateDiff;
+            })
+            .map((transaction) => {
             const isIncome = transaction.type === 'income';
             return (
               <article className="full-transaction-row" key={transaction.id}>
