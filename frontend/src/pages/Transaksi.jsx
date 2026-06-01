@@ -110,13 +110,17 @@ export default function Transaksi() {
   }, []);
 
   const filteredTransactions = useMemo(() => {
-    let result = transactions;
+    let result = [...transactions];
     if (activeTab !== 'all') {
       result = result.filter((t) => t.type === activeTab);
     }
     if (filterDate) {
       result = result.filter((t) => String(t.date).slice(0, 10) === filterDate);
     }
+    
+    // Urutkan berdasarkan tanggal terbaru di atas
+    result.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
     return result;
   }, [activeTab, filterDate, transactions]);
 

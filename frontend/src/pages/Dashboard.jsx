@@ -135,6 +135,7 @@ export default function Dashboard() {
           }
 
           const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : [];
+          mappedHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
           next.transactions = mappedHistory.slice(0, 5);
 
           next = applyTrendChart(next, mappedHistory, chartDays);
