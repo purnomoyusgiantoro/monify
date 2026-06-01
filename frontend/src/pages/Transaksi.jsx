@@ -61,11 +61,6 @@ export default function Transaksi() {
     let cancelled = false;
 
     async function fetchData() {
-      const cached = getCache('transactions');
-      if (cached) {
-        return; // Skip fetch karena cache masih valid
-      }
-
       try {
         const [trxRes, incRes, expRes] = await Promise.all([
           apiGetTransactions(),
