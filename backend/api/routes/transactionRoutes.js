@@ -111,7 +111,8 @@ router.post('/', authMiddleware, async (req, res) => {
             transactions_date,
             income_category_id,
             expense_category_id,
-            category_method
+            category_method,
+            note
         } = req.body;
 
         if (!type || !amount || !description) {
@@ -136,6 +137,7 @@ router.post('/', authMiddleware, async (req, res) => {
             description: description.trim(),
             transactions_date: transactions_date || new Date().toISOString().slice(0, 10),
             category_method: category_method || 'manual',
+            note: note ? note.trim() : null,
             created_at: now(),
             update_at: now()
         };
@@ -169,7 +171,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
             transactions_date,
             income_category_id,
             expense_category_id,
-            category_method
+            category_method,
+            note
         } = req.body;
 
         // Cek existing
@@ -206,6 +209,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
         if (description) updates.description = description.trim();
         if (transactions_date) updates.transactions_date = transactions_date;
         if (category_method) updates.category_method = category_method;
+        if (note !== undefined) updates.note = note ? note.trim() : null;
 
         const { data: updated, error: updateError } = await supabase
             .from('transactions')

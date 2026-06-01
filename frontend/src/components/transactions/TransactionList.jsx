@@ -22,6 +22,11 @@ export default function TransactionList({ transactions, selectedDate, onChangeDa
                 <div className="full-transaction-row__main">
                   <strong>{transaction.name}</strong>
                   <span>{formatDate(transaction.date)}</span>
+                  {transaction.note && (
+                    <small style={{ display: 'block', color: 'var(--muted)', fontSize: '12px', marginTop: '4px' }}>
+                      Catatan: {transaction.note}
+                    </small>
+                  )}
                 </div>
 
                 <strong className="full-transaction-row__category">{transaction.category}</strong>

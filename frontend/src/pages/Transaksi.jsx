@@ -233,6 +233,7 @@ export default function Transaksi() {
           amount,
           transactions_date: formData.date,
           category_method: 'manual',
+          note: formData.note,
         };
 
         const catId = findCategoryId(categoryName, formData.type);
@@ -277,6 +278,7 @@ export default function Transaksi() {
           amount,
           transactions_date: formData.date,
           category_method: 'manual',
+          note: formData.note,
         };
 
         const catId = findCategoryId(categoryName, formData.type);
