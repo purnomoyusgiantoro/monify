@@ -21,6 +21,7 @@ function normalizeDashboardTransactions(history = []) {
     id: t.id,
     name: t.description || t.name || '',
     date: t.transactions_date || t.date || '',
+    created_at: t.created_at || t.transactions_date || t.date || '',
     category: t.category_name || t.category || 'Lainnya',
     type: t.type || 'expense',
     amount: Number(t.amount) || 0,
@@ -135,7 +136,7 @@ export default function Dashboard() {
           }
 
           const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : [];
-          mappedHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+          mappedHistory.sort((a, b) => new Date(b.created_at || b.date || 0) - new Date(a.created_at || a.date || 0));
           next.transactions = mappedHistory.slice(0, 5);
 
           next = applyTrendChart(next, mappedHistory, chartDays);

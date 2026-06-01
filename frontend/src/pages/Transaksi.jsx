@@ -81,6 +81,7 @@ export default function Transaksi() {
             name: t.description || '',
             amount: Number(t.amount) || 0,
             date: t.transactions_date || '',
+            created_at: t.created_at || t.transactions_date || '',
             category: t.category_name || 'Lainnya',
             type: t.type || 'expense',
             note: t.note || '',
@@ -118,14 +119,8 @@ export default function Transaksi() {
       result = result.filter((t) => String(t.date).slice(0, 10) === filterDate);
     }
     
-    // Urutkan berdasarkan tanggal terbaru di atas, dan ID jika tanggalnya sama
-    result.sort((a, b) => {
-      const dateDiff = new Date(b.date) - new Date(a.date);
-      if (dateDiff === 0 && a.id && b.id) {
-        return b.id - a.id;
-      }
-      return dateDiff;
-    });
+    // Urutkan berdasarkan waktu pembuatan terbaru di atas (dari database)
+    result.sort((a, b) => new Date(b.created_at || b.date || 0) - new Date(a.created_at || a.date || 0));
     
     return result;
   }, [activeTab, filterDate, transactions]);
@@ -303,6 +298,7 @@ export default function Transaksi() {
             name,
             amount,
             date: formData.date,
+            created_at: res.data.data.created_at || new Date().toISOString(),
             category: categoryName,
             type: formData.type,
             note: formData.note,
@@ -315,6 +311,7 @@ export default function Transaksi() {
             name,
             amount,
             date: formData.date,
+            created_at: new Date().toISOString(),
             category: categoryName,
             type: formData.type,
             note: formData.note,
@@ -329,6 +326,7 @@ export default function Transaksi() {
         name,
         amount,
         date: formData.date,
+        created_at: new Date().toISOString(),
         category: categoryName,
         type: formData.type,
         note: formData.note,

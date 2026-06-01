@@ -4,7 +4,7 @@
   "private": true,
   "description": "MONIFY Backend API - Personal Finance Management",
   "scripts": {
-    "dev": "node --watch server.js",
+    "dev": "node server.js",
     "start": "node server.js"
   },
   "dependencies": {

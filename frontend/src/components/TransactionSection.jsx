@@ -12,13 +12,7 @@ export default function TransactionSection({ transactions }) {
 
       <div className="transaction-list">
         {[...transactions]
-          .sort((a, b) => {
-            const dateDiff = new Date(b.date) - new Date(a.date);
-            if (dateDiff === 0 && a.id && b.id) {
-              return b.id - a.id;
-            }
-            return dateDiff;
-          })
+          .sort((a, b) => new Date(b.created_at || b.date || 0) - new Date(a.created_at || a.date || 0))
           .map((transaction) => {
           const isIncome = transaction.type === 'income';
           return (
