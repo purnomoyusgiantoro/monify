@@ -7,7 +7,6 @@ import BudgetSection from '../components/BudgetSection.jsx';
 import TransactionSection from '../components/TransactionSection.jsx';
 import { dashboardData as staticDashboardData } from '../data/dashboardData.js';
 import { apiGetDashboardSummary, apiGetExpenseByCategory, apiGetTransactionHistory } from '../utils/api.js';
-import { getCache, setCache } from '../utils/cache.js';
 
 function toIsoDate(date) {
   const year = date.getFullYear();
@@ -71,26 +70,16 @@ function applyTrendChart(data, transactions, rangeDays) {
 }
 
 export default function Dashboard() {
-  const [data, setData] = useState(() => {
-    const cached = getCache('dashboard');
-    return cached ? cached : staticDashboardData;
-  });
+  const [data, setData] = useState(staticDashboardData);
   const [chartDays, setChartDays] = useState('7');
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate] = useState(() => toIsoDate(new Date()));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
     async function fetchDashboard() {
-      const cached = getCache('dashboard');
-      if (cached && Array.isArray(cached._historyTransactions) && cached.selectedDate === selectedDate) {
-        if (!cancelled) {
-          setData(applyTrendChart(cached, cached._historyTransactions, chartDays));
-          setLoading(false);
-        }
-        return;
-      }
+      setLoading(true);
 
       try {
         const [summaryRes, categoryRes, historyRes] = await Promise.all([
@@ -132,11 +121,10 @@ export default function Dashboard() {
             }));
           }
 
-          const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : (prev._historyTransactions || []);
+          const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : [];
           next.transactions = mappedHistory.slice(0, 5);
 
           next = applyTrendChart(next, mappedHistory, chartDays);
-          setCache('dashboard', next);
           return next;
         });
       } catch {

@@ -17,15 +17,24 @@ import {
 } from '../utils/api.js';
 import { clearCache, getCache, setCache } from '../utils/cache.js';
 
-const today = new Date().toISOString().slice(0, 10);
-const emptyForm = {
-  type: 'income',
-  name: '',
-  amount: '',
-  date: today,
-  category: '',
-  note: '',
-};
+function getLocalToday() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function makeEmptyForm() {
+  return {
+    type: 'income',
+    name: '',
+    amount: '',
+    date: getLocalToday(),
+    category: '',
+    note: '',
+  };
+}
 
 export default function Transaksi() {
   const [searchParams] = useSearchParams();
@@ -35,7 +44,7 @@ export default function Transaksi() {
     const cached = getCache('transactions');
     return cached ? cached : initialTransactions;
   });
-  const [formData, setFormData] = useState(emptyForm);
+  const [formData, setFormData] = useState(makeEmptyForm);
   const [editingId, setEditingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [incomeCategories, setIncomeCategories] = useState([]);
@@ -198,7 +207,7 @@ export default function Transaksi() {
   }
 
   function resetForm() {
-    setFormData(emptyForm);
+    setFormData(makeEmptyForm());
     setEditingId(null);
   }
 
@@ -363,7 +372,7 @@ export default function Transaksi() {
       <Topbar
         title="Transaksi"
         description="Catat pemasukan dan pengeluaranmu di satu tempat"
-        selectedDate={today}
+        selectedDate={getLocalToday()}
         showDate={false}
       />
 
@@ -381,7 +390,7 @@ export default function Transaksi() {
 
         <TransactionList
           transactions={filteredTransactions}
-          selectedDate={filterDate || today}
+          selectedDate={filterDate || getLocalToday()}
           onChangeDate={setFilterDate}
           onEdit={handleEdit}
           onAskDelete={setDeleteTarget}

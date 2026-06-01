@@ -10,8 +10,16 @@ const router = express.Router();
 router.get('/summary', authMiddleware, async (req, res) => {
     try {
         const { date } = req.query;
-        const today = date ? new Date(date) : new Date();
-        const currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        // Parse date string directly to avoid timezone issues with new Date()
+        let currentMonthPrefix;
+        let today;
+        if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            currentMonthPrefix = date.slice(0, 7); // "YYYY-MM"
+            today = { getDate: () => parseInt(date.slice(8, 10), 10), getFullYear: () => parseInt(date.slice(0, 4), 10), getMonth: () => parseInt(date.slice(5, 7), 10) - 1 };
+        } else {
+            today = new Date();
+            currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        }
 
         // 1. Fetch month transactions
         const { data: monthTransactions, error: trxError } = await supabase
@@ -134,8 +142,15 @@ router.get('/summary', authMiddleware, async (req, res) => {
 router.get('/expense-by-category', authMiddleware, async (req, res) => {
     try {
         const { date } = req.query;
-        const today = date ? new Date(date) : new Date();
-        const currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        let currentMonthPrefix;
+        let today;
+        if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            currentMonthPrefix = date.slice(0, 7);
+            today = { getMonth: () => parseInt(date.slice(5, 7), 10) - 1, getFullYear: () => parseInt(date.slice(0, 4), 10) };
+        } else {
+            today = new Date();
+            currentMonthPrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        }
         const currentMonthNum = today.getMonth() + 1;
         const currentYear = today.getFullYear();
 
