@@ -126,21 +126,27 @@ export async function apiGetTransactions(params = {}) {
 }
 
 export async function apiCreateTransaction(data) {
-    return apiFetch('/transactions', {
+    const res = await apiFetch('/transactions', {
         method: 'POST',
         body: JSON.stringify(data)
     });
+    if (res.ok) clearCache();
+    return res;
 }
 
 export async function apiUpdateTransaction(id, data) {
-    return apiFetch(`/transactions/${id}`, {
+    const res = await apiFetch(`/transactions/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data)
     });
+    if (res.ok) clearCache();
+    return res;
 }
 
 export async function apiDeleteTransaction(id) {
-    return apiFetch(`/transactions/${id}`, { method: 'DELETE' });
+    const res = await apiFetch(`/transactions/${id}`, { method: 'DELETE' });
+    if (res.ok) clearCache();
+    return res;
 }
 
 // ============================================
@@ -165,17 +171,21 @@ export async function apiGetBudgets(params = {}) {
 }
 
 export async function apiCreateBudget(data) {
-    return apiFetch('/budgets', {
+    const res = await apiFetch('/budgets', {
         method: 'POST',
         body: JSON.stringify(data)
     });
+    if (res.ok) clearCache();
+    return res;
 }
 
 export async function apiUpdateBudget(id, data) {
-    return apiFetch(`/budgets/${id}`, {
+    const res = await apiFetch(`/budgets/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data)
     });
+    if (res.ok) clearCache();
+    return res;
 }
 
 // ============================================
