@@ -36,6 +36,7 @@ export default function BotPopup() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
