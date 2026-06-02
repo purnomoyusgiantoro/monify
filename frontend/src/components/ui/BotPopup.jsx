@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { apiChatBot } from '../../utils/api.js';
 
 export default function BotPopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,24 +9,33 @@ export default function BotPopup() {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const togglePopup = () => setIsOpen(!isOpen);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
     
     const userMsg = { id: Date.now(), sender: 'user', text: input };
-    setMessages([...messages, userMsg]);
+    setMessages(prev => [...prev, userMsg]);
+    const currentInput = input;
     setInput('');
+    setIsLoading(true);
     
-    // Simulate bot response
-    setTimeout(() => {
-      const botMsg = { id: Date.now() + 1, sender: 'bot', text: 'Maaf, fitur tanya-jawab AI saat ini masih dalam tahap pengembangan. Silakan coba lagi nanti!' };
-      setMessages(prev => [...prev, botMsg]);
-    }, 1000);
+    try {
+      const res = await apiChatBot(currentInput, {});
+      let botText = 'Maaf, saya tidak bisa memproses permintaan saat ini.';
+      if (res.ok && res.data && res.data.success) {
+        botText = res.data.data.reply;
+      }
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botText }]);
+    } catch (err) {
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: 'Maaf, terjadi kesalahan jaringan atau layanan sedang sibuk.' }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -123,6 +133,23 @@ export default function BotPopup() {
                 {msg.text}
               </div>
             ))}
+            {isLoading && (
+              <div 
+                style={{
+                  alignSelf: 'flex-start',
+                  maxWidth: '80%',
+                  padding: '12px 16px',
+                  borderRadius: '16px 16px 16px 4px',
+                  backgroundColor: '#fff',
+                  color: '#6b7b74',
+                  border: '1px solid #e5eee9',
+                  fontSize: '13px',
+                  fontStyle: 'italic'
+                }}
+              >
+                Mengetik...
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
