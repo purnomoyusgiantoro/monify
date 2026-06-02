@@ -1,17 +1,14 @@
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const axios = require('axios');
 
-async function run() {
+async function getModels() {
   try {
-    const { data, error } = await supabase.from('transactions').select('*').limit(1);
-    if (error) {
-      console.error('Supabase Error:', error);
-    } else {
-      console.log('Success, data:', data);
-    }
-  } catch (err) {
-    console.error('Catch Error:', err);
+    const response = await axios.get('https://openrouter.ai/api/v1/models');
+    const models = response.data.data.map(m => m.id);
+    const googleModels = models.filter(id => id.includes('gemini'));
+    console.log("Google models:", googleModels);
+  } catch (error) {
+    console.error("Error:", error.message);
   }
 }
-run();
+getModels();

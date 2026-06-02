@@ -539,7 +539,7 @@ Instruksi:
 `;
 
         const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-            model: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001',
+            model: process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash',
             max_tokens: 1500,
             messages: [
                 { role: 'system', content: systemPrompt },
