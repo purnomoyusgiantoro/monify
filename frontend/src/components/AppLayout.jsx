@@ -5,6 +5,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { isAuthenticated } from '../utils/api';
 import Toast from './ui/Toast';
+import BotPopup from './ui/BotPopup';
 
 export default function AppLayout() {
   const isLoggedIn = isAuthenticated();
@@ -31,6 +32,7 @@ export default function AppLayout() {
         <Outlet context={{ showToast }} />
       </div>
       <Toast toast={toast} onClose={() => setToast(null)} />
+      <BotPopup />
     </div>
   );
 }
