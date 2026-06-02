@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { apiChatBot } from '../../utils/api.js';
+import { quickPrompts } from '../../data/predictionData.js';
+import { getCache } from '../../utils/cache.js';
 
 export default function BotPopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,18 +15,25 @@ export default function BotPopup() {
 
   const togglePopup = () => setIsOpen(!isOpen);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (eOrText) => {
+    if (eOrText && eOrText.preventDefault) {
+      eOrText.preventDefault();
+    }
+    
+    const textValue = typeof eOrText === 'string' ? eOrText : input;
+    
+    if (!textValue.trim() || isLoading) return;
 
-    const userMsg = { id: Date.now(), sender: 'user', text: input };
+    const userMsg = { id: Date.now(), sender: 'user', text: textValue };
     setMessages(prev => [...prev, userMsg]);
-    const currentInput = input;
-    setInput('');
+    
+    const currentInput = textValue;
+    setInput(''); // always clear input just in case
     setIsLoading(true);
 
     try {
-      const res = await apiChatBot(currentInput, {});
+      const metrics = getCache('prediksi') || {};
+      const res = await apiChatBot(currentInput, metrics);
       let botText = 'Maaf, saya tidak bisa memproses permintaan saat ini.';
       if (res.ok && res.data && res.data.success) {
         botText = res.data.data.reply;
@@ -115,6 +124,32 @@ return (
             backgroundColor: '#f6fbf8'
           }}
         >
+          {/* Quick Prompts */}
+          {messages.length === 1 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+              {quickPrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  onClick={() => handleSend(prompt)}
+                  style={{
+                    backgroundColor: '#e7f8ef',
+                    border: '1px solid #bfeeda',
+                    color: '#087c67',
+                    borderRadius: '12px',
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    textAlign: 'left'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#d1f4e1'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#e7f8ef'}
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          )}
           {messages.map(msg => (
             <div
               key={msg.id}
