@@ -36,10 +36,11 @@ export default function BotPopup() {
       setIsLoading(false);
     }
   };
-  if (messagesEndRef.current) {
-    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  }
-}, [messages, isOpen]);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen]);
 
 return (
   <div
@@ -230,5 +231,5 @@ return (
       )}
     </button>
   </div>
-);
-
+  );
+}
