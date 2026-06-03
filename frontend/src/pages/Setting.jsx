@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 import Topbar from '../components/Topbar.jsx';
 import { getState, setState, toast } from '../utils/store';
 import { apiLogout, apiUpdatePassword, apiUpdateProfile, apiGetMe } from '../utils/api';
 
 export default function Setting() {
-  const navigate = useNavigate();
   const [user, setUser] = useState({ name: '', email: '' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -20,7 +19,6 @@ export default function Setting() {
             name: res.data.data.name || '',
             email: res.data.data.email || '',
           });
-          // Sync to local state
           const next = getState();
           next.user.name = res.data.data.name || next.user.name;
           next.user.email = res.data.data.email || next.user.email;
@@ -28,14 +26,16 @@ export default function Setting() {
           return;
         }
       } catch {
-        // Fallback to local
+        // Fallback to local state
       }
+
       const localUser = getState().user;
       setUser({
         name: localUser?.name || '',
         email: localUser?.email || '',
       });
     }
+
     fetchUser();
   }, []);
 
@@ -103,37 +103,39 @@ export default function Setting() {
       localStorage.removeItem('monify_logged_in');
       localStorage.removeItem('monify_token');
       localStorage.removeItem('monify_user');
-    } finally {
-      setLoggingOut(false);
-      navigate('/');
+      window.location.href = '/';
+      return;
     }
+
+    window.location.href = '/';
   }
 
   return (
-    <main className="page-main setting-main">
+    <main className="page-main setting-main setting-page-compact">
       <Topbar
         title="Setting"
-        description="Kelola profil, password, dan sesi akun"
+        description="Kelola akun dan keamanan Monify"
         showDate={false}
       />
 
-      <section className="setting-grid">
-        <section className="settings-profile-card" aria-label="Profil pengguna">
-          <img className="settings-profile-card__avatar" src="/assets/setting-avatar.png" alt={`Avatar ${user.name || 'pengguna'}`} />
+      <section className="setting-compact-grid">
+        <section className="setting-compact-card setting-compact-card--profile" aria-label="Profil pengguna">
+          <img className="setting-compact-profile__avatar" src="/assets/setting-avatar.png" alt={`Avatar ${user.name || 'pengguna'}`} />
           <h2>{user.name || 'Pengguna'}</h2>
           <p>{user.email || 'user@example.com'}</p>
-          <button type="button" className="button settings-profile-card__logout" onClick={handleLogout} disabled={loggingOut}>
-            {loggingOut ? 'Keluar...' : 'Keluar'}
-          </button>
+          <div className="setting-compact-profile__status">
+            <span className="setting-compact-profile__status-dot" aria-hidden="true" />
+            <span>Online</span>
+          </div>
         </section>
 
-        <article className="settings-card settings-card--profile-form">
-          <header>
-            <h2>Informasi Profil</h2>
+        <article className="setting-compact-card setting-compact-card--form">
+          <header className="setting-compact-card__header">
+            <h2>Informasi Profile</h2>
             <p>Perbarui informasi dasar akun Anda</p>
           </header>
 
-          <form className="settings-form" onSubmit={handleProfileSubmit}>
+          <form className="setting-compact-form" onSubmit={handleProfileSubmit}>
             <label className="form-field">
               <span>Nama Lengkap</span>
               <input
@@ -152,35 +154,34 @@ export default function Setting() {
                 required
               />
             </label>
-            <div className="settings-form__actions">
+            <div className="setting-compact-form__actions">
               <button type="submit" className="button button--primary" disabled={savingProfile}>
-                {savingProfile ? 'Menyimpan...' : 'Simpan Profil'}
+                {savingProfile ? 'Menyimpan...' : 'Simpan Profile'}
               </button>
             </div>
           </form>
         </article>
 
-        <article className="settings-card settings-card--security">
-          <header>
-            <h2>Keamanan Akun</h2>
+        <article className="setting-compact-card setting-compact-card--security">
+          <header className="setting-compact-card__header">
+            <h2>Keamanan Profile</h2>
             <p>Ubah password secara berkala untuk menjaga akun tetap aman</p>
           </header>
 
-          <form className="security-form" onSubmit={handlePasswordSubmit}>
+          <form className="setting-compact-security" onSubmit={handlePasswordSubmit}>
             <label className="form-field">
               <span>Password Lama</span>
-              <input type="password" name="oldPassword" required />
+              <input type="password" name="oldPassword" placeholder="Masukkan Password Lama" required />
             </label>
             <label className="form-field">
               <span>Password Baru</span>
-              <input type="password" name="newPassword" required />
+              <input type="password" name="newPassword" placeholder="Masukkan Password Baru" required />
             </label>
-            <label className="form-field">
+            <label className="form-field setting-compact-security__confirm">
               <span>Konfirmasi Password Baru</span>
-              <input type="password" name="confirmPassword" required />
+              <input type="password" name="confirmPassword" placeholder="Konfirmasi Password Baru" required />
             </label>
-
-            <div className="security-form__actions">
+            <div className="setting-compact-security__actions">
               <button type="submit" className="button button--primary" disabled={savingPassword}>
                 {savingPassword ? 'Memproses...' : 'Simpan Password'}
               </button>
@@ -188,9 +189,9 @@ export default function Setting() {
           </form>
         </article>
 
-        <section className="danger-zone setting-actions">
-          <header className="danger-zone__header">
-            <div className="danger-zone__icon" aria-hidden="true">
+        <section className="setting-compact-card setting-compact-card--session">
+          <header className="setting-compact-session__header">
+            <div className="setting-compact-session__badge" aria-hidden="true">
               <img src="/assets/icon-zona-akun.png" alt="" />
             </div>
             <div>
@@ -199,11 +200,18 @@ export default function Setting() {
             </div>
           </header>
 
-          <div className="setting-actions__buttons">
-            <button type="button" className="button button--secondary" onClick={() => navigate('/dashboard')}>
-              Kembali ke Dashboard
-            </button>
-            <button type="button" className="button button--danger danger-zone__button" onClick={handleLogout} disabled={loggingOut}>
+          <div className="setting-compact-session__item">
+            <div className="setting-compact-session__item-icon" aria-hidden="true">
+              <LogOut size={16} />
+            </div>
+            <div className="setting-compact-session__item-copy">
+              <strong>Keluar Akun</strong>
+              <span>Kelola navigasi dan sesi akun yang sedang aktif</span>
+            </div>
+          </div>
+
+          <div className="setting-compact-session__actions">
+            <button type="button" className="button button--danger" onClick={handleLogout} disabled={loggingOut}>
               {loggingOut ? 'Keluar...' : 'Keluar Akun'}
             </button>
           </div>
