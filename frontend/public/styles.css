@@ -7100,18 +7100,6 @@ body {
   margin-bottom: 10px;
 }
 
-.setting-page-compact .topbar h1 {
-  font-size: 18px;
-  line-height: 1.2;
-  letter-spacing: 0;
-}
-
-.setting-page-compact .topbar p {
-  margin-top: 4px;
-  font-size: 11px;
-  line-height: 1.4;
-}
-
 .setting-compact-grid {
   display: grid;
   width: min(100%, 1372px);

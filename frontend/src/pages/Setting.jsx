@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import { LogOut } from 'lucide-react';
 import Topbar from '../components/Topbar.jsx';
 import { getState, setState, toast } from '../utils/store';
-import { apiLogout, apiUpdatePassword, apiUpdateProfile, apiGetMe } from '../utils/api';
+import { apiLogout, apiUpdatePassword, apiGetMe } from '../utils/api';
 
 export default function Setting() {
   const [user, setUser] = useState({ name: '', email: '' });
-  const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -38,30 +37,6 @@ export default function Setting() {
 
     fetchUser();
   }, []);
-
-  async function handleProfileSubmit(event) {
-    event.preventDefault();
-    if (savingProfile) return;
-
-    try {
-      setSavingProfile(true);
-      const result = await apiUpdateProfile(user.name, user.email);
-      if (!result.ok) {
-        toast(result.data?.message || 'Gagal menyimpan profil.');
-        return;
-      }
-
-      const next = getState();
-      next.user.name = user.name;
-      next.user.email = user.email;
-      setState(next);
-      toast('Profil berhasil diperbarui.');
-    } catch {
-      toast('Terjadi kesalahan saat menyimpan profil.');
-    } finally {
-      setSavingProfile(false);
-    }
-  }
 
   async function handlePasswordSubmit(event) {
     event.preventDefault();
@@ -132,17 +107,16 @@ export default function Setting() {
         <article className="setting-compact-card setting-compact-card--form">
           <header className="setting-compact-card__header">
             <h2>Informasi Profile</h2>
-            <p>Perbarui informasi dasar akun Anda</p>
+            <p>Informasi dasar akun Anda</p>
           </header>
 
-          <form className="setting-compact-form" onSubmit={handleProfileSubmit}>
+          <form className="setting-compact-form">
             <label className="form-field">
               <span>Nama Lengkap</span>
               <input
                 type="text"
                 value={user.name}
-                onChange={(event) => setUser((current) => ({ ...current, name: event.target.value }))}
-                required
+                readOnly
               />
             </label>
             <label className="form-field">
@@ -150,15 +124,9 @@ export default function Setting() {
               <input
                 type="email"
                 value={user.email}
-                onChange={(event) => setUser((current) => ({ ...current, email: event.target.value }))}
-                required
+                readOnly
               />
             </label>
-            <div className="setting-compact-form__actions">
-              <button type="submit" className="button button--primary" disabled={savingProfile}>
-                {savingProfile ? 'Menyimpan...' : 'Simpan Profile'}
-              </button>
-            </div>
           </form>
         </article>
 

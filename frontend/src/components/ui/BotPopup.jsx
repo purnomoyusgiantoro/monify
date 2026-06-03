@@ -20,12 +20,9 @@ function getDefaultPosition(isOpen = false) {
     return { x: 0, y: 0 };
   }
 
-  const width = isOpen ? POPUP_WIDTH : FAB_SIZE;
-  const height = isOpen ? POPUP_HEIGHT + STACK_GAP + FAB_SIZE : FAB_SIZE;
-
   return {
-    x: Math.max(VIEWPORT_MARGIN, window.innerWidth - width - 30),
-    y: Math.max(VIEWPORT_MARGIN, window.innerHeight - height - 30),
+    x: Math.max(VIEWPORT_MARGIN, window.innerWidth - FAB_SIZE - 30),
+    y: Math.max(VIEWPORT_MARGIN, window.innerHeight - FAB_SIZE - 30),
   };
 }
 
@@ -34,12 +31,15 @@ function normalizePosition(position, isOpen = false) {
     return position;
   }
 
-  const width = isOpen ? POPUP_WIDTH : FAB_SIZE;
-  const height = isOpen ? POPUP_HEIGHT + STACK_GAP + FAB_SIZE : FAB_SIZE;
+  const minX = isOpen ? VIEWPORT_MARGIN + (POPUP_WIDTH - FAB_SIZE) : VIEWPORT_MARGIN;
+  const maxX = Math.max(VIEWPORT_MARGIN, window.innerWidth - FAB_SIZE - VIEWPORT_MARGIN);
+
+  const minY = isOpen ? VIEWPORT_MARGIN + POPUP_HEIGHT + STACK_GAP : VIEWPORT_MARGIN;
+  const maxY = Math.max(VIEWPORT_MARGIN, window.innerHeight - FAB_SIZE - VIEWPORT_MARGIN);
 
   return {
-    x: clamp(position.x, VIEWPORT_MARGIN, Math.max(VIEWPORT_MARGIN, window.innerWidth - width - VIEWPORT_MARGIN)),
-    y: clamp(position.y, VIEWPORT_MARGIN, Math.max(VIEWPORT_MARGIN, window.innerHeight - height - VIEWPORT_MARGIN)),
+    x: clamp(position.x, minX, maxX),
+    y: clamp(position.y, minY, maxY),
   };
 }
 
@@ -200,18 +200,20 @@ return (
       left: `${position.x}px`,
       top: `${position.y}px`,
       zIndex: 9999,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-end',
-      gap: '16px',
+      width: `${FAB_SIZE}px`,
+      height: `${FAB_SIZE}px`,
       cursor: isDragging ? 'grabbing' : 'default'
     }}
   >
     {isOpen && (
       <div
         style={{
-          width: '340px',
-          height: '480px',
+          position: 'absolute',
+          bottom: '100%',
+          right: 0,
+          marginBottom: `${STACK_GAP}px`,
+          width: `${POPUP_WIDTH}px`,
+          height: `${POPUP_HEIGHT}px`,
           backgroundColor: '#fff',
           borderRadius: '24px',
           boxShadow: '0 12px 40px rgba(16, 35, 29, 0.15)',
