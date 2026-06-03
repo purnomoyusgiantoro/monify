@@ -6429,6 +6429,110 @@ body {
   }
 }
 
+@media (min-width: 821px) {
+  :root {
+    --sidebar-width: 304px;
+    --control-left-final: 64px;
+  }
+
+  .app-shell {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) !important;
+  }
+
+  .sidebar,
+  .sidebar--app-nav {
+    position: sticky !important;
+    inset: auto !important;
+    top: 0 !important;
+    width: var(--sidebar-width) !important;
+    min-width: var(--sidebar-width) !important;
+    max-width: var(--sidebar-width) !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding: 0 !important;
+    border-top: 0 !important;
+    border-right: 1px solid var(--line) !important;
+    border-radius: 0 !important;
+    background: var(--surface) !important;
+    box-shadow: none !important;
+  }
+
+  .sidebar .sidebar__brand,
+  .sidebar .sidebar__profile,
+  .sidebar--app-nav .sidebar__brand,
+  .sidebar--app-nav .sidebar__profile {
+    display: flex !important;
+  }
+
+  .sidebar .sidebar__brand,
+  .sidebar--app-nav .sidebar__brand {
+    height: 126px !important;
+    flex: 0 0 126px !important;
+    justify-content: flex-start !important;
+    padding: 18px 28px !important;
+  }
+
+  .sidebar .sidebar__brand img,
+  .sidebar--app-nav .sidebar__brand img {
+    width: 210px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    object-position: left center !important;
+  }
+
+  .sidebar .sidebar__nav,
+  .sidebar--app-nav .sidebar__nav {
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+    gap: 14px !important;
+    padding: 24px 16px !important;
+  }
+
+  .sidebar .sidebar__item,
+  .sidebar--app-nav .sidebar__item {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 0 20px !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+  }
+
+  .sidebar .sidebar__item span,
+  .sidebar--app-nav .sidebar__item span {
+    display: block !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+
+  .sidebar .sidebar__item img,
+  .sidebar--app-nav .sidebar__item img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .sidebar .sidebar__profile,
+  .sidebar--app-nav .sidebar__profile {
+    min-height: 76px !important;
+    justify-content: flex-start !important;
+    padding: 12px 22px !important;
+  }
+
+  .sidebar .sidebar__profile div,
+  .sidebar--app-nav .sidebar__profile div {
+    display: block !important;
+  }
+}
+
 /* Dashboard visual revision only: Budget Bulan Ini and Transaksi Terbaru. */
 
 .dashboard-budget-row {
