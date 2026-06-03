@@ -7174,6 +7174,7 @@ body {
 }
 
 .setting-page-compact .topbar {
+  width: min(100%, 1372px);
   margin-bottom: 10px;
 }
 
@@ -7191,8 +7192,9 @@ body {
 
 .setting-compact-grid {
   display: grid;
-  grid-template-columns: 128px minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 10px;
+  width: min(100%, 1372px);
+  grid-template-columns: 152px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
   align-items: stretch;
 }
 
@@ -7206,7 +7208,7 @@ body {
 .setting-compact-card--profile,
 .setting-compact-card--form,
 .setting-compact-card--security {
-  min-height: 170px;
+  min-height: 182px;
 }
 
 .setting-compact-card--security {
@@ -7221,15 +7223,15 @@ body {
 }
 
 .setting-compact-card--profile {
-  padding: 14px 10px 12px;
+  padding: 16px 12px 14px;
   text-align: center;
 }
 
 .setting-compact-profile__avatar {
-  width: 72px;
-  height: 72px;
+  width: 76px;
+  height: 76px;
   object-fit: contain;
-  margin: 0 auto 8px;
+  margin: 0 auto 10px;
 }
 
 .setting-compact-card--profile h2 {
@@ -7271,7 +7273,7 @@ body {
 .setting-compact-card--form,
 .setting-compact-card--security,
 .setting-compact-card--session {
-  padding: 12px 16px 14px;
+  padding: 14px 18px 16px;
 }
 
 .setting-compact-card__header h2,
@@ -7293,7 +7295,7 @@ body {
 
 .setting-compact-form,
 .setting-compact-security {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .setting-compact-form {
@@ -7309,8 +7311,12 @@ body {
   align-content: start;
 }
 
-.setting-compact-security__confirm {
+.setting-compact-security > .form-field:first-child {
   grid-column: 1 / -1;
+}
+
+.setting-compact-security__confirm {
+  grid-column: 2 / 3;
 }
 
 .setting-compact-security__actions {
@@ -7326,14 +7332,14 @@ body {
 }
 
 .setting-page-compact .form-field input {
-  min-height: 30px;
-  height: 30px;
-  padding: 0 10px;
+  min-height: 34px;
+  height: 34px;
+  padding: 0 12px;
   border: 1px solid #cfd9d4;
   border-radius: 6px;
   background: #fff;
   color: #23303f;
-  font-size: 10px;
+  font-size: 11px;
   box-shadow: none;
 }
 
@@ -7344,18 +7350,25 @@ body {
 .setting-compact-form__actions .button,
 .setting-compact-security__actions .button,
 .setting-compact-session__actions .button {
-  min-height: 28px;
-  height: 28px;
-  padding: 0 14px;
+  flex: 0 0 auto;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 18px;
   border-radius: 7px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
+}
+
+.setting-compact-form__actions,
+.setting-compact-security__actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .setting-compact-card--session {
   grid-column: 1 / 3;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .setting-compact-session__header {
@@ -7420,6 +7433,7 @@ body {
 @media (max-width: 1024px) {
   .setting-compact-grid {
     grid-template-columns: minmax(0, 1fr);
+    width: 100%;
   }
 
   .setting-compact-card--session {

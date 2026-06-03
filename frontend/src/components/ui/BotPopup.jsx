@@ -1,19 +1,99 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { apiChatBot } from '../../utils/api.js';
 import { quickPrompts } from '../../data/predictionData.js';
 import { getCache } from '../../utils/cache.js';
 
+const POPUP_POSITION_KEY = 'monify_bot_popup_position';
+const DESKTOP_MEDIA_QUERY = '(min-width: 821px)';
+const VIEWPORT_MARGIN = 16;
+const FAB_SIZE = 64;
+const POPUP_WIDTH = 340;
+const POPUP_HEIGHT = 480;
+const STACK_GAP = 16;
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getDefaultPosition(isOpen = false) {
+  if (typeof window === 'undefined') {
+    return { x: 0, y: 0 };
+  }
+
+  const width = isOpen ? POPUP_WIDTH : FAB_SIZE;
+  const height = isOpen ? POPUP_HEIGHT + STACK_GAP + FAB_SIZE : FAB_SIZE;
+
+  return {
+    x: Math.max(VIEWPORT_MARGIN, window.innerWidth - width - 30),
+    y: Math.max(VIEWPORT_MARGIN, window.innerHeight - height - 30),
+  };
+}
+
+function normalizePosition(position, isOpen = false) {
+  if (typeof window === 'undefined') {
+    return position;
+  }
+
+  const width = isOpen ? POPUP_WIDTH : FAB_SIZE;
+  const height = isOpen ? POPUP_HEIGHT + STACK_GAP + FAB_SIZE : FAB_SIZE;
+
+  return {
+    x: clamp(position.x, VIEWPORT_MARGIN, Math.max(VIEWPORT_MARGIN, window.innerWidth - width - VIEWPORT_MARGIN)),
+    y: clamp(position.y, VIEWPORT_MARGIN, Math.max(VIEWPORT_MARGIN, window.innerHeight - height - VIEWPORT_MARGIN)),
+  };
+}
+
+function loadSavedPosition() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(POPUP_POSITION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.x !== 'number' || typeof parsed?.y !== 'number') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 export default function BotPopup() {
   const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState(() => loadSavedPosition() || getDefaultPosition(false));
   const [messages, setMessages] = useState([
     { id: 1, sender: 'bot', text: 'Halo! Saya Monify Bot. Ada yang bisa saya bantu hari ini?' }
   ]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
-
   const [isLoading, setIsLoading] = useState(false);
+  const dragStateRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const suppressClickRef = useRef(false);
 
-  const togglePopup = () => setIsOpen(!isOpen);
+  const togglePopup = () => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
+
+  const beginDrag = (event) => {
+    if (typeof window === 'undefined') return;
+    if (!window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return;
+    if (event.button != null && event.button !== 0) return;
+
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - position.x,
+      offsetY: event.clientY - position.y,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+    setIsDragging(true);
+  };
 
   const handleSend = async (eOrText) => {
     if (eOrText && eOrText.preventDefault) {
@@ -51,17 +131,80 @@ export default function BotPopup() {
     }
   }, [messages, isOpen]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePointerMove = (event) => {
+      const dragState = dragStateRef.current;
+      if (!dragState) return;
+
+      if (
+        Math.abs(event.clientX - dragState.startX) > 4 ||
+        Math.abs(event.clientY - dragState.startY) > 4
+      ) {
+        suppressClickRef.current = true;
+      }
+
+      setPosition((current) =>
+        normalizePosition(
+          {
+            x: event.clientX - dragState.offsetX,
+            y: event.clientY - dragState.offsetY,
+          },
+          isOpen,
+        ),
+      );
+    };
+
+    const stopDrag = () => {
+      dragStateRef.current = null;
+      setIsDragging(false);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', stopDrag);
+    window.addEventListener('pointercancel', stopDrag);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', stopDrag);
+      window.removeEventListener('pointercancel', stopDrag);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const normalized = normalizePosition(position, isOpen);
+    if (normalized.x !== position.x || normalized.y !== position.y) {
+      setPosition(normalized);
+      return;
+    }
+    window.localStorage.setItem(POPUP_POSITION_KEY, JSON.stringify(normalized));
+  }, [isOpen, position]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      setPosition((current) => normalizePosition(current, isOpen));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isOpen]);
+
 return (
   <div
     style={{
       position: 'fixed',
-      bottom: '30px',
-      right: '30px',
+      left: `${position.x}px`,
+      top: `${position.y}px`,
       zIndex: 9999,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-end',
-      gap: '16px'
+      gap: '16px',
+      cursor: isDragging ? 'grabbing' : 'default'
     }}
   >
     {isOpen && (
@@ -88,8 +231,11 @@ return (
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            cursor: 'grab',
+            userSelect: 'none'
           }}
+          onPointerDown={beginDrag}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
@@ -104,6 +250,7 @@ return (
           </div>
           <button
             onClick={togglePopup}
+            onPointerDown={(event) => event.stopPropagation()}
             style={{
               background: 'none', border: 'none', color: '#fff', fontSize: '24px', cursor: 'pointer', opacity: 0.8, padding: 0, lineHeight: 1
             }}
@@ -250,7 +397,9 @@ return (
         boxShadow: '0 12px 28px rgba(0, 168, 112, 0.35)',
         transition: 'transform 0.2s ease, border-radius 0.2s ease',
         transform: isOpen ? 'scale(0.95)' : 'scale(1)',
+        touchAction: 'none',
       }}
+      onPointerDown={beginDrag}
       onMouseEnter={(e) => e.currentTarget.style.transform = isOpen ? 'scale(0.95)' : 'scale(1.05)'}
       onMouseLeave={(e) => e.currentTarget.style.transform = isOpen ? 'scale(0.95)' : 'scale(1)'}
     >
