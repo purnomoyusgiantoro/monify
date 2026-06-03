@@ -11,7 +11,9 @@ export default function BudgetList({ rows }) {
           <p className="empty-state">Belum ada budget untuk periode ini.</p>
         ) : (
           rows.map((row) => {
-            const status = getBudgetStatus(row.percent);
+            const status = row.limit > 0
+              ? getBudgetStatus(row.percent)
+              : { label: 'Belum Diatur', tone: 'warning' };
 
             return (
               <article className="budget-page-row" key={`${row.period}-${row.category}`}>

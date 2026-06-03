@@ -5,8 +5,9 @@ import ProgressBar from '../components/ProgressBar.jsx';
 import SpendingChart from '../components/SpendingChart.jsx';
 import BudgetSection from '../components/BudgetSection.jsx';
 import TransactionSection from '../components/TransactionSection.jsx';
+import { budgetCategories, getBudgetRowsForCategories } from '../data/budgetData.js';
 import { dashboardData as staticDashboardData } from '../data/dashboardData.js';
-import { apiGetDashboardSummary, apiGetExpenseByCategory, apiGetTransactionHistory } from '../utils/api.js';
+import { apiGetBudgets, apiGetDashboardSummary, apiGetExpenseCategories, apiGetTransactionHistory, apiGetTransactions } from '../utils/api.js';
 import { getCache, setCache } from '../utils/cache.js';
 
 function toIsoDate(date) {
@@ -115,28 +116,52 @@ export default function Dashboard() {
       setLoading(true);
 
       try {
-        const [summaryRes, categoryRes, historyRes] = await Promise.all([
+        const [summaryRes, budgetsRes, historyRes, expenseCategoriesRes, transactionsRes] = await Promise.all([
           apiGetDashboardSummary(selectedDate),
-          apiGetExpenseByCategory(selectedDate),
+          apiGetBudgets(),
           apiGetTransactionHistory(200),
+          apiGetExpenseCategories(),
+          apiGetTransactions(),
         ]);
 
         if (cancelled) return;
 
         const s = summaryRes.ok ? summaryRes.data.data : null;
-        const c = categoryRes.ok ? categoryRes.data.data : null;
         const h = historyRes.ok ? historyRes.data.data : null;
+        const mappedBudgets = budgetsRes.ok && Array.isArray(budgetsRes.data.data)
+          ? budgetsRes.data.data.map((budget) => ({
+            id: budget.id,
+            category: budget.category_name || 'Lainnya',
+            limit: Number(budget.amount) || 0,
+            period: `${budget.year}-${String(budget.month).padStart(2, '0')}`,
+            used: Number(budget.used_amount) || 0,
+            _expense_category_id: budget.expense_category_id || null,
+          }))
+          : [];
+        const expenseCategories = expenseCategoriesRes.ok && Array.isArray(expenseCategoriesRes.data.data)
+          ? expenseCategoriesRes.data.data
+          : null;
+        const transactions = transactionsRes.ok && Array.isArray(transactionsRes.data.data)
+          ? normalizeDashboardTransactions(transactionsRes.data.data)
+          : [];
 
         setData((prev) => {
           let next = { ...prev };
+          const activePeriod = selectedDate.slice(0, 7);
+          const categoryNames = expenseCategories && expenseCategories.length > 0
+            ? expenseCategories.map((category) => category.name)
+            : budgetCategories;
+          const budgetRows = getBudgetRowsForCategories(categoryNames, mappedBudgets, transactions, activePeriod);
+          const totalBudget = budgetRows.reduce((sum, row) => sum + (row.limit || 0), 0);
+          const totalUsed = budgetRows.reduce((sum, row) => sum + (row.used || 0), 0);
 
           if (s) {
             next.summary = {
               balance: s.balance || 0,
               income: s.total_income || 0,
               expense: s.total_expense || 0,
-              budgetTotal: s.total_budget || 0,
-              budgetUsed: s.total_expense || 0,
+              budgetTotal: totalBudget,
+              budgetUsed: totalUsed,
               safeToSpendToday: s.safe_to_spend_today_remaining ?? s.safe_to_spend ?? 0,
               monthlyPrediction: s.projected_expense || 0,
               balanceTrend: prev.summary.balanceTrend,
@@ -144,15 +169,15 @@ export default function Dashboard() {
               expenseTrend: prev.summary.expenseTrend,
             };
             next.selectedDate = selectedDate;
+          } else {
+            next.summary = {
+              ...prev.summary,
+              budgetTotal: totalBudget,
+              budgetUsed: totalUsed,
+            };
           }
 
-          if (c && c.categories) {
-            next.budgets = c.categories.map((cat) => ({
-              category: cat.category_name || 'Lainnya',
-              used: cat.amount || 0,
-              limit: cat.budget_limit || 0,
-            }));
-          }
+          next.budgets = budgetRows;
           next.selectedDate = selectedDate;
           
           const mappedHistory = Array.isArray(h) ? normalizeDashboardTransactions(h) : [];

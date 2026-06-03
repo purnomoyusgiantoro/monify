@@ -7110,6 +7110,12 @@ body {
   flex-direction: column;
 }
 
+.budget-page-row .status-pill {
+  min-width: 112px;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
 .setting-compact-card--profile {
   padding: 14px 10px 12px;
   text-align: center;

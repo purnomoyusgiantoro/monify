@@ -3,12 +3,13 @@ import Topbar from '../components/Topbar.jsx';
 import BudgetSummaryCards from '../components/budget/BudgetSummaryCards.jsx';
 import BudgetForm from '../components/budget/BudgetForm.jsx';
 import BudgetList from '../components/budget/BudgetList.jsx';
-import { getBudgetSummary, initialBudgets } from '../data/budgetData.js';
+import { budgetCategories, getBudgetRowsForCategories, getBudgetSummary, initialBudgets } from '../data/budgetData.js';
 import { initialTransactions } from '../data/transactionData.js';
 import {
   apiCreateBudget,
   apiGetBudgets,
   apiGetExpenseCategories,
+  apiGetTransactions,
   apiUpdateBudget,
 } from '../utils/api.js';
 import { clearCache, getCache, setCache } from '../utils/cache.js';
@@ -27,6 +28,7 @@ export default function Budget() {
   });
   const [formData, setFormData] = useState(emptyForm);
   const [apiCategories, setApiCategories] = useState([]);
+  const [apiTransactions, setApiTransactions] = useState([]);
   const [useApi, setUseApi] = useState(false);
 
   // Fetch budgets + expense categories from API
@@ -35,9 +37,10 @@ export default function Budget() {
 
     async function fetchData() {
       try {
-        const [budgetRes, catRes] = await Promise.all([
+        const [budgetRes, catRes, trxRes] = await Promise.all([
           apiGetBudgets(),
           apiGetExpenseCategories(),
+          apiGetTransactions(),
         ]);
 
         if (cancelled) return;
@@ -66,6 +69,18 @@ export default function Budget() {
             }));
           }
         }
+
+        if (trxRes.ok && Array.isArray(trxRes.data.data)) {
+          setApiTransactions(
+            trxRes.data.data.map((transaction) => ({
+              id: transaction.id,
+              amount: Number(transaction.amount) || 0,
+              date: transaction.transactions_date || '',
+              category: transaction.category_name || 'Lainnya',
+              type: transaction.type || 'expense',
+            })),
+          );
+        }
       } catch {
         // Fallback: keep static data
       }
@@ -76,22 +91,20 @@ export default function Budget() {
   }, []);
 
   const summary = useMemo(() => {
+    const period = formData.period || activePeriod;
+
     if (useApi) {
-      // Compute summary from API budgets
-      const period = formData.period || activePeriod;
-      const filtered = budgets.filter((b) => b.period === period);
-      const totalBudget = filtered.reduce((sum, b) => sum + (b.limit || 0), 0);
-      const totalUsed = filtered.reduce((sum, b) => sum + (b.used || 0), 0);
-      const rows = filtered.map((b) => ({
-        ...b,
-        used: b.used || 0,
-        percent: b.limit > 0 ? Math.round((b.used / b.limit) * 100) : 0,
-        remaining: (b.limit || 0) - (b.used || 0),
-      }));
+      const categoryNames = apiCategories.length > 0
+        ? apiCategories.map((category) => category.name)
+        : budgetCategories;
+      const rows = getBudgetRowsForCategories(categoryNames, budgets, apiTransactions, period);
+      const totalBudget = rows.reduce((sum, row) => sum + (row.limit || 0), 0);
+      const totalUsed = rows.reduce((sum, row) => sum + (row.used || 0), 0);
       return { rows, totalBudget, totalUsed, remaining: totalBudget - totalUsed };
     }
-    return getBudgetSummary(budgets, initialTransactions, formData.period || activePeriod);
-  }, [budgets, formData.period, useApi]);
+
+    return getBudgetSummary(budgets, initialTransactions, period);
+  }, [apiCategories, apiTransactions, budgets, formData.period, useApi]);
 
   function handleFormChange(name, value) {
     setFormData((current) => ({ ...current, [name]: value }));

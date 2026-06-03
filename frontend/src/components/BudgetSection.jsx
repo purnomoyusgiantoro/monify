@@ -18,7 +18,9 @@ export default function BudgetSection({ budgets }) {
       <div className="budget-list dashboard-budget-list">
         {budgets.map((item) => {
           const percent = item.limit > 0 ? Math.round((item.used / item.limit) * 100) : 0;
-          const status = getBudgetStatus(percent);
+          const status = item.limit > 0
+            ? getBudgetStatus(percent)
+            : { label: 'Belum Diatur', tone: 'warning' };
 
           return (
             <div className="budget-row dashboard-budget-row" key={item.category}>
