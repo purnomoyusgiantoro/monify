@@ -8,7 +8,6 @@ import Transaksi from './pages/Transaksi';
 import Budget from './pages/Budget';
 import Prediksi from './pages/Prediksi';
 import Setting from './pages/Setting';
-import BotPopup from './components/ui/BotPopup';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -76,7 +75,6 @@ function App() {
             <Route path="/laporan" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>
-        <BotPopup />
       </>
     </Router>
   );

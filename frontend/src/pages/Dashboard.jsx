@@ -216,16 +216,14 @@ export default function Dashboard() {
             value={summary.balance}
             icon="/assets/icon-saldo.png"
             size="large"
-            trend={summary.balanceTrend}
-            trendType="positive"
+            description="Saldo Anda bulan ini"
           />
           <StatCard
             title="Pengeluaran"
             value={summary.expense}
             icon="/assets/icon-pengeluaran.png"
             size="large"
-            trend={summary.expenseTrend}
-            trendType="negative"
+            description="Pengeluaran Anda bulan ini"
           />
         </section>
 
@@ -234,8 +232,7 @@ export default function Dashboard() {
             title="Pemasukan"
             value={summary.income}
             icon="/assets/icon-pemasukan.png"
-            trend={summary.incomeTrend}
-            trendType="positive"
+            description="Pemasukan Anda bulan ini"
           />
           <StatCard
             title="Budget"

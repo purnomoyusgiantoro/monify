@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStylesheet, useReveal } from '../utils/hooks';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import BotPopup from '../components/ui/BotPopup';
 import { apiLogin, apiRegister, setAuth } from '../utils/api';
 import {
   Search,
@@ -459,6 +460,7 @@ export default function Landing() {
           </div>
         </div>
       )}
+      <BotPopup />
     </>
   );
 }
