@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar.jsx';
 import PredictionCards from '../components/prediction/PredictionCards.jsx';
 import MonifySuggestion from '../components/prediction/MonifySuggestion.jsx';
@@ -12,8 +13,20 @@ import {
   apiGetOverbudget,
 } from '../utils/api.js';
 import { getCache, setCache } from '../utils/cache.js';
+import { getBudgetStatus } from '../utils/formatters.js';
 
-export default function PredictionAI({ onAddTransaction = () => {} }) {
+function getDashboardBudgetRisk(totalBudget, monthlyExpense) {
+  const rawPercent = totalBudget > 0 ? Math.round((monthlyExpense / totalBudget) * 100) : 0;
+  const riskPercent = Math.max(0, rawPercent);
+
+  return {
+    riskPercent,
+    status: getBudgetStatus(riskPercent),
+  };
+}
+
+export default function PredictionAI() {
+  const navigate = useNavigate();
   const localMetrics = useMemo(() => {
     return getPredictionMetrics(initialBudgets, initialTransactions, predictionConfig.currentDate);
   }, []);
@@ -60,17 +73,6 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
             }
 
             if (o) {
-              next.riskPercent = Math.min(100, Math.max(0, o.risk_percentage || prev.riskPercent));
-
-              // Map status
-              if (o.status === 'over_budget') {
-                next.status = { label: 'Overbudget', tone: 'danger' };
-              } else if (o.status === 'warning') {
-                next.status = { label: 'Waspada', tone: 'warning' };
-              } else {
-                next.status = { label: 'Aman', tone: 'success' };
-              }
-
               // Find highest category from breakdown
               if (o.category_breakdown && o.category_breakdown.length > 0) {
                 const top = o.category_breakdown[0];
@@ -80,6 +82,13 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
                 };
               }
             }
+
+            const { riskPercent, status } = getDashboardBudgetRisk(
+              next.totalBudget || 0,
+              next.monthlyExpense || 0,
+            );
+            next.riskPercent = riskPercent;
+            next.status = status;
 
             // Rebuild suggestions based on new data
             next.suggestions = buildApiSuggestions(next);
@@ -105,7 +114,7 @@ export default function PredictionAI({ onAddTransaction = () => {} }) {
         selectedDate={metrics.currentDate || predictionConfig.currentDate}
         showDate={false}
         action={(
-          <button type="button" className="add-transaction-button" onClick={onAddTransaction}>
+          <button type="button" className="add-transaction-button" onClick={() => navigate('/transaksi')}>
             <span aria-hidden="true">+</span>
             Tambah Transaksi
           </button>

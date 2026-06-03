@@ -7,6 +7,7 @@ import { budgetCategories, getBudgetRowsForCategories, getBudgetSummary, initial
 import { initialTransactions } from '../data/transactionData.js';
 import {
   apiCreateBudget,
+  apiDeleteBudget,
   apiGetBudgets,
   apiGetExpenseCategories,
   apiGetTransactions,
@@ -113,9 +114,35 @@ export default function Budget() {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    if (!formData.category || !formData.period) {
+      alert('Kategori dan periode wajib diisi.');
+      return;
+    }
+
     const limit = Number(formData.limit);
-    if (!formData.category || !formData.period || !limit || limit <= 0) {
-      alert('Kategori, limit budget, dan periode wajib diisi dengan benar.');
+    // Check existing
+    const existing = budgets.find(
+      (b) => b.category === formData.category && b.period === formData.period,
+    );
+
+    if (!formData.limit || limit <= 0) {
+      if (existing?.id) {
+        try {
+          const result = await apiDeleteBudget(existing.id);
+          if (!result.ok) {
+            alert(result.data?.message || 'Gagal mengembalikan budget ke Belum Diatur.');
+            return;
+          }
+        } catch {
+          alert('Terjadi kesalahan saat menghapus budget.');
+          return;
+        }
+
+        setBudgets((current) => current.filter((budget) => budget.id !== existing.id));
+        clearCache();
+      }
+
+      setFormData((current) => ({ ...current, limit: '' }));
       return;
     }
 
@@ -126,11 +153,6 @@ export default function Budget() {
       (c) => c.name.toLowerCase() === formData.category.toLowerCase(),
     );
     const expense_category_id = catMatch ? catMatch.id : null;
-
-    // Check existing
-    const existing = budgets.find(
-      (b) => b.category === formData.category && b.period === formData.period,
-    );
 
     try {
       if (existing && existing.id) {

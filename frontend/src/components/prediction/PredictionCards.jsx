@@ -23,7 +23,12 @@ export default function PredictionCards({ metrics }) {
         valueType="percent"
       >
         <div className="prediction-risk-line">
-          <ProgressBar percent={metrics.riskPercent} />
+          <ProgressBar
+            value={Math.min(metrics.riskPercent, 100)}
+            max={100}
+            tone={metrics.status.tone}
+            label={`Risiko over budget ${metrics.riskPercent}%`}
+          />
           <span className={`status-pill status-pill--${metrics.status.tone}`}>{metrics.status.label}</span>
         </div>
       </PredictionCard>

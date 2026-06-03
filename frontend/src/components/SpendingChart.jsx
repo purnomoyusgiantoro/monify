@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency, formatDate } from '../utils/formatters.js';
+
+const TOOLTIP_WIDTH = 240;
+const TOOLTIP_OFFSET = 12;
+const TOOLTIP_SIDE_MARGIN = 12;
 
 function buildLinePath(points) {
   return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
@@ -21,6 +25,8 @@ function formatCompactAxis(value) {
 export default function SpendingChart({ chart }) {
   const navigate = useNavigate();
   const [selectedPoint, setSelectedPoint] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState(null);
+  const canvasRef = useRef(null);
 
   const pointCount = chart.points.length;
   const width = Math.max(760, pointCount * 68 + 96);
@@ -48,10 +54,30 @@ export default function SpendingChart({ chart }) {
 
   useEffect(() => {
     setSelectedPoint(null);
+    setTooltipPosition(null);
   }, [chart.filterValue]);
 
   function handlePointSelect(point) {
     setSelectedPoint(point);
+
+    if (!canvasRef.current) {
+      setTooltipPosition(null);
+      return;
+    }
+
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const renderedSvgWidth = canvasRef.current.querySelector('svg')?.getBoundingClientRect().width || canvasRect.width;
+    const scaleX = renderedSvgWidth / width;
+    const scaleY = canvasRect.height / height;
+    const rawLeft = point.x * scaleX;
+    const rawTop = point.y * scaleY;
+    const minLeft = TOOLTIP_WIDTH / 2 + TOOLTIP_SIDE_MARGIN;
+    const maxLeft = Math.max(minLeft, canvasRect.width - TOOLTIP_WIDTH / 2 - TOOLTIP_SIDE_MARGIN);
+
+    setTooltipPosition({
+      left: Math.min(maxLeft, Math.max(minLeft, rawLeft)),
+      top: Math.max(TOOLTIP_SIDE_MARGIN + TOOLTIP_OFFSET, rawTop),
+    });
   }
 
   function handleOpenTransactions() {
@@ -84,7 +110,12 @@ export default function SpendingChart({ chart }) {
         </div>
       </div>
 
-      <div className="chart-card__canvas" role="img" aria-label={`Grafik pengeluaran ${chart.filterValue || 7} hari terakhir`}>
+      <div
+        ref={canvasRef}
+        className="chart-card__canvas"
+        role="img"
+        aria-label={`Grafik pengeluaran ${chart.filterValue || 7} hari terakhir`}
+      >
         <svg
           viewBox={`0 0 ${width} ${height}`}
           preserveAspectRatio="none"
@@ -139,12 +170,12 @@ export default function SpendingChart({ chart }) {
           ))}
         </svg>
 
-        {selectedPoint && (
+        {selectedPoint && tooltipPosition && (
           <div
             className="chart-card__tooltip"
             style={{
-              left: `${Math.min(92, Math.max(8, (selectedPoint.x / width) * 100))}%`,
-              top: `${Math.min(78, Math.max(18, (selectedPoint.y / height) * 100))}%`,
+              left: `${tooltipPosition.left}px`,
+              top: `${tooltipPosition.top}px`,
             }}
           >
             <strong>{formatDate(selectedPoint.fullDate)}</strong>

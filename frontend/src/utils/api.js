@@ -189,6 +189,12 @@ export async function apiUpdateBudget(id, data) {
     return res;
 }
 
+export async function apiDeleteBudget(id) {
+    const res = await apiFetch(`/budgets/${id}`, { method: 'DELETE' });
+    if (res.ok) clearCache();
+    return res;
+}
+
 // ============================================
 // DASHBOARD API
 // ============================================

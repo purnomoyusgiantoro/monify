@@ -190,16 +190,6 @@ export default function Setting() {
         </article>
 
         <section className="setting-compact-card setting-compact-card--session">
-          <header className="setting-compact-session__header">
-            <div className="setting-compact-session__badge" aria-hidden="true">
-              <img src="/assets/icon-zona-akun.png" alt="" />
-            </div>
-            <div>
-              <h2>Sesi Akun</h2>
-              <p>Kelola navigasi dan sesi akun yang sedang aktif</p>
-            </div>
-          </header>
-
           <div className="setting-compact-session__item">
             <div className="setting-compact-session__item-icon" aria-hidden="true">
               <LogOut size={16} />
