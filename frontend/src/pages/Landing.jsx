@@ -209,7 +209,7 @@ export default function Landing() {
                 dengan <span>Monify</span>
               </h1>
               <p>
-                Monify adalah aplikasi pencatatan dan analisis keuangan berbasis AI yang membantu pengguna memahami pola pengeluaran, mengatur budget, dan memantau kondisi keuangan secara lebih efisien.
+                Monify adalah aplikasi pencatatan dan analisis keuangan berbasis AI yang membantu Gen Z memahami pola pengeluaran, mengatur budget, dan memantau kondisi keuangan secara lebih efisien.
               </p>
               <div className="landing-hero-actions">
                 <button className="landing-btn-primary" onClick={() => openAuth('login')}>Mulai Sekarang</button>
