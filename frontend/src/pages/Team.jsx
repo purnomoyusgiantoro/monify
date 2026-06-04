@@ -36,6 +36,9 @@ const members = [
     major: 'Teknologi Informasi',
     skills: ['Data', 'EDA', 'Leadership'],
     img: 'kristina.jpg',
+    photoPosition: 'center 18%',
+    photoFit: 'cover',
+    photoFrameClass: 'team-photo-box-portrait',
   },
   {
     name: 'Chenida Rira Verlyta',
@@ -45,6 +48,9 @@ const members = [
     major: 'Informatika',
     skills: ['Data', 'Analysis', 'Feature'],
     img: 'chenida.jpg',
+    photoPosition: 'center center',
+    photoFit: 'cover',
+    photoFrameClass: '',
   },
   {
     name: 'Faradila Octavia Nabila',
@@ -54,6 +60,9 @@ const members = [
     major: 'Teknik Komputer',
     skills: ['Model', 'Training', 'Inference'],
     img: 'faradila.jpg',
+    photoPosition: 'center 18%',
+    photoFit: 'cover',
+    photoFrameClass: '',
   },
   {
     name: 'Mohamad Fajar Mutaqin',
@@ -63,6 +72,9 @@ const members = [
     major: 'Teknik Informatika',
     skills: ['Data', 'EDA', 'Leadership'],
     img: 'fajar.jpg',
+    photoPosition: 'center center',
+    photoFit: 'cover',
+    photoFrameClass: '',
   },
   {
     name: 'Purnomo Yusgiantoro',
@@ -72,6 +84,9 @@ const members = [
     major: 'Ilmu Komputer',
     skills: ['React', 'API', 'Database'],
     img: 'purnomo.jpg',
+    photoPosition: 'center 28%',
+    photoFit: 'cover',
+    photoFrameClass: 'team-photo-box-portrait',
   },
   {
     name: 'Indra Fata Nizar Azizi',
@@ -81,6 +96,9 @@ const members = [
     major: 'Ilmu Komputer',
     skills: ['Backend', 'Express', 'Integrasi AI'],
     img: 'indra.jpg',
+    photoPosition: 'center 26%',
+    photoFit: 'cover',
+    photoFrameClass: 'team-photo-box-portrait',
   },
 ];
 
@@ -146,10 +164,14 @@ export default function Team() {
                   key={member.id}
                   className={`team-member-card reveal ${index > 0 ? `delay-${index % 4 || 1}` : ''}`}
                 >
-                  <div className="team-photo-box">
+                  <div className={`team-photo-box ${member.photoFrameClass}`.trim()}>
                     <img
                       src={`/TeamImages/${member.img}`}
                       alt={member.name}
+                      style={{
+                        objectFit: member.photoFit,
+                        objectPosition: member.photoPosition,
+                      }}
                       onError={(e) => {
                         e.currentTarget.classList.add('image-fallback');
                       }}

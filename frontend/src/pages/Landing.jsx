@@ -84,18 +84,24 @@ const steps = [
 const articles = [
   {
     tag: 'Budgeting',
-    title: 'Cara Atur Uang Bulanan ala Gen Z',
-    desc: 'Mulai dari membagi kebutuhan, keinginan, dan tabungan tanpa rumus yang ribet.',
+    title: 'Cara Gen Z Mengatur dan Menghabiskan Uang Mereka',
+    desc: 'Membahas cara Gen Z mengatur anggaran, memanfaatkan aplikasi keuangan, dan tetap cerdas saat belanja di era digital.',
+    image: 'https://www.prudential.co.id/content/dam/prudential-aem-lbu/plai/images/pahami-bareng/artikel/keuangan-dan-investasi/manajemen-dan-perencanaan-keuangan/article-keuangan_366x206.jpg',
+    href: 'https://www.prudential.co.id/id/knowledge-corner/pahami-keuangan-investasi/bagaimana-gen-z-menghabiskan-uang-mereka/',
   },
   {
     tag: 'Kebiasaan',
-    title: 'Kenapa Pengeluaran Kecil Bikin Boros',
-    desc: 'Biaya kecil sering tidak terasa karena tidak dilihat sebagai pola berulang.',
+    title: 'Pengeluaran Kecil yang Diam-diam Bikin Boros, Kamu Sadar Nggak?',
+    desc: 'Menjelaskan kenapa kopi, ongkir, subscription, dan checkout impulsif bisa membuat pengeluaran bulanan membengkak tanpa terasa.',
+    image: 'https://assets.banksaqu.co.id/Pengeluaran_kecil_boros_34adb84800/Pengeluaran_kecil_boros_34adb84800.jpg',
+    href: 'https://banksaqu.co.id/blog/pengeluaran-kecil-bikin-boros',
   },
   {
     tag: 'AI Insight',
-    title: 'Apa Gunanya Prediksi Pengeluaran',
-    desc: 'Prediksi membantu pengguna mengambil tindakan sebelum saldo benar-benar menipis.',
+    title: 'Apa itu perkiraan keuangan?',
+    desc: 'IBM menjelaskan financial forecasting sebagai proses memprediksi pendapatan, arus kas, dan pengeluaran untuk membantu keputusan bisnis yang lebih tepat.',
+    image: 'https://assets.ibm.com/is/image/ibm/oe-alt-finance-transformation-pi-1916525?dpr=off&ts=1768313486471',
+    href: 'https://www.ibm.com/id-id/think/topics/financial-forecasting',
   },
 ];
 
@@ -341,12 +347,21 @@ export default function Landing() {
             </div>
             <div className="landing-article-grid">
               {articles.map((article, idx) => (
-                <article key={article.title} className={`landing-article-card reveal ${idx === 0 ? '' : `delay-${Math.min(idx, 3)}`}`}>
-                  <span>{article.tag}</span>
-                  <h3>{article.title}</h3>
-                  <p>{article.desc}</p>
-                  <button type="button">Baca ringkasan</button>
-                </article>
+                <a
+                  key={article.title}
+                  className={`landing-article-card reveal ${idx === 0 ? '' : `delay-${Math.min(idx, 3)}`}`}
+                  href={article.href}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img src={article.image} alt={article.title} className="landing-article-image" />
+                  <div className="landing-article-body">
+                    <span>{article.tag}</span>
+                    <h3>{article.title}</h3>
+                    <p>{article.desc}</p>
+                    <strong>Baca artikel</strong>
+                  </div>
+                </a>
               ))}
             </div>
           </div>

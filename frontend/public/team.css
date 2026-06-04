@@ -206,6 +206,11 @@ img{display:block;max-width:100%}
   background:linear-gradient(180deg, #eff7f2 0%, #d7eee2 100%);
 }
 
+.team-photo-box-portrait{
+  width:100%;
+  margin-inline:0;
+}
+
 .team-photo-box img{
   width:100%;
   height:100%;
