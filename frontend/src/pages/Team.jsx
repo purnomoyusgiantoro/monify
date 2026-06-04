@@ -33,7 +33,7 @@ const members = [
     id: 'CDCC245D6X1272',
     role: 'Ketua Tim & Data Scientist',
     university: 'Universitas Kristen Satya Wacana',
-    major: 'Teknologi Informasi',
+    major: 'Teknik Informatika',
     skills: ['Data', 'EDA', 'Leadership'],
     img: 'kristina.jpg',
     photoPosition: 'center 18%',
