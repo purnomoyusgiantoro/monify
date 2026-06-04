@@ -94,7 +94,7 @@ a{text-decoration:none;color:inherit}
 .insight{background:linear-gradient(180deg,#fff,#f2fbf6)}.insight-grid{display:grid;grid-template-columns:.95fr 1.05fr;align-items:center;gap:70px}.dashboard{background:#fff;border:1px solid var(--line);border-radius:28px;padding:28px;box-shadow:var(--shadow);max-width:480px}.dash-head,.dash-row{display:flex;align-items:center;justify-content:space-between}.dash-head{margin-bottom:20px}.dash-head b{font-size:19px}.dash-head span{font-size:13px;color:var(--muted);font-weight:800}.dash-total{background:#f1fff8;border:1px solid #cdf4dd;border-radius:20px;padding:20px;margin-bottom:20px}.dash-total strong{display:block;font-size:36px;letter-spacing:-1.2px;color:#079457}.dash-bars{height:150px;display:flex;align-items:end;gap:14px;border-bottom:1px solid #e5e7eb;margin-bottom:18px}.dash-bars i{flex:1;border-radius:10px 10px 0 0;background:linear-gradient(180deg,#23c984,#0e9e5b);opacity:.85}.dash-bars i:nth-child(1){height:43%}.dash-bars i:nth-child(2){height:69%}.dash-bars i:nth-child(3){height:54%}.dash-bars i:nth-child(4){height:82%}.dash-bars i:nth-child(5){height:64%;background:#b5ead2}.dash-row{padding:12px 0;border-bottom:1px solid #eef2f6;color:#44515f}.dash-row b{color:#111827}.dash-alert{margin-top:18px;background:#fff7ed;border:1px solid #ffedd5;color:#9a3412;border-radius:14px;padding:14px;font-size:14px;font-weight:760}.check-list{margin-top:24px;display:grid;gap:12px}.check-list p{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:#536173;font-weight:760}
 .article-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.article-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:0 10px 26px rgba(16,24,40,.05);transition:.24s ease}.article-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}.article-card span{display:inline-flex;color:#008c52;background:#effff6;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:850;margin-bottom:18px}.article-card h3{font-size:23px;line-height:1.15;letter-spacing:-.7px;margin-bottom:13px}.article-card p{color:#667085;margin-bottom:20px}.article-card a{color:#008e51;font-weight:900}.cta{padding-top:40px}.cta-card{background:linear-gradient(135deg,#03a95d,#0fc984);border-radius:30px;padding:48px;display:flex;align-items:center;justify-content:space-between;gap:28px;color:#fff;box-shadow:0 24px 45px rgba(0,170,91,.24)}.cta-card h2{color:#fff;max-width:760px}.cta-card .pill{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff}.footer{padding:56px 0;background:#0f172a;color:#d8e3e0}.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:42px}.footer p{color:#a9b8b4;max-width:380px;margin-top:14px}.footer h4{color:#fff;margin-bottom:14px}.footer a:not(.brand){display:block;color:#b7c6c2;margin:9px 0;font-weight:650}.footer a:hover{color:#fff}.footer-brand{color:#fff}.muted{font-size:13px;color:#82918d!important}
 
-/* TEAM PAGE */
+/* Halaman Team */
 .team-hero{background:radial-gradient(circle at 85% 15%, #dbffeb 0, transparent 30%), linear-gradient(180deg,#fff,#f5fbf8)}.team-hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:54px;align-items:center;min-height:480px}.team-hero h1{font-size:68px;margin-top:18px}.team-summary{background:#fff;border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.team-summary div{padding:20px;border-radius:18px;background:#f5fbf8;text-align:center}.team-summary strong{display:block;font-size:42px;color:var(--green);letter-spacing:-1px;line-height:1}.team-summary span{display:block;font-size:13px;color:#667085;font-weight:850;margin-top:6px}.role-section{padding:42px 0 20px;background:#fff}.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.role-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 12px 30px rgba(16,24,40,.05);position:relative;overflow:hidden}.role-card:after{content:"";position:absolute;right:-40px;top:-40px;width:120px;height:120px;background:#ecfff5;border-radius:50%}.role-card span{display:inline-flex;color:#008d50;font-weight:950;margin-bottom:20px}.role-card h3{font-size:23px;margin-bottom:10px;color:#111827}.role-card p{color:#667085}.members{background:#f7fbf9}.member-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.member-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 12px 28px rgba(16,24,40,.06);transition:.25s ease;position:relative;overflow:hidden}.member-card:hover{transform:translateY(-7px);box-shadow:var(--shadow)}.member-card:after{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,var(--green),#73e5b2)}.member-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}.avatar{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:950;letter-spacing:-.5px;box-shadow:0 14px 26px rgba(16,24,40,.14)}.avatar-green{background:linear-gradient(135deg,#00aa5b,#0fd18a)}.avatar-mint{background:linear-gradient(135deg,#2cc7a0,#96e8cc)}.avatar-blue{background:linear-gradient(135deg,#2684ff,#78b7ff)}.avatar-purple{background:linear-gradient(135deg,#7c3aed,#b692ff)}.avatar-orange{background:linear-gradient(135deg,#f97316,#ffc078)}.avatar-dark{background:linear-gradient(135deg,#111827,#334155)}.status{font-size:12px;font-weight:900;color:#008e51;background:#effff6;border:1px solid #cbf3de;padding:7px 10px;border-radius:999px}.member-card h3{font-size:23px;letter-spacing:-.6px;color:#101828;margin-bottom:5px}.member-card p{color:#667085;font-weight:760;min-height:52px}.member-skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.highlight-member{box-shadow:0 16px 38px rgba(0,170,91,.13);border-color:#bdeed5}.collab{background:#fff}.collab-card{background:#0f172a;color:#fff;border-radius:30px;padding:44px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:36px;box-shadow:var(--shadow)}.collab-card h2{color:#fff;max-width:720px}.collab-card p{color:#cbd5e1;max-width:720px}.collab-card .pill{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.16);color:#9ff3cc}.flow-mini{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.flow-mini span{background:#16243a;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 18px;font-weight:900}.flow-mini i{width:32px;height:2px;background:#3ee59f;border-radius:9px}
 
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease, transform .75s ease}.reveal.visible{opacity:1;transform:translateY(0)}.delay-1{transition-delay:.12s}.delay-2{transition-delay:.22s}.delay-3{transition-delay:.32s}
@@ -108,7 +108,7 @@ a{text-decoration:none;color:inherit}
   .container{width:min(100% - 28px,1180px)}.navbar{height:auto;padding:14px 0;flex-wrap:wrap}.brand{font-size:24px}.nav-links{order:3;width:100%;overflow-x:auto;justify-content:flex-start}.login-btn{min-width:auto;padding:10px 15px}.section-pad{padding:64px 0}.hero-grid{gap:20px;min-height:auto}.hero h1,.team-hero h1{font-size:43px;letter-spacing:-2.2px}.hero p,.team-hero p{font-size:16px}.phone-card{width:294px;height:470px;padding:36px 20px 20px;border-radius:35px}.phone-stage{height:500px}.feature-grid,.steps,.article-grid,.role-grid,.member-grid,.footer-grid{grid-template-columns:1fr}.tools{padding:64px 0}.section-title h2,.problem h2,.insight h2,.cta h2,.collab h2{font-size:34px}.cta-card{align-items:flex-start;flex-direction:column;padding:34px}.team-summary{grid-template-columns:1fr}.flow-mini i{display:none}
 }
 
-/* ---------- Auth popup – Match login.html ---------- */
+/* Modal Auth */
 .auth-modal{
   position:fixed;
   inset:0;
@@ -133,7 +133,7 @@ a{text-decoration:none;color:inherit}
   z-index:1;
 }
 
-/* ── Card container ── */
+/* Kartu Modal Auth */
 .auth-modal-card{
   width:100%;
   background:#fff;
@@ -155,7 +155,7 @@ a{text-decoration:none;color:inherit}
   padding-top:38px;
 }
 
-/* Close Button */
+/* Tombol Tutup Auth */
 .auth-close{
   position:absolute;
   top:-12px;
@@ -179,7 +179,7 @@ a{text-decoration:none;color:inherit}
   background:#f4faf7;
 }
 
-/* Brand logo */
+/* Brand Auth */
 .auth-brand-logo{
   display:flex;
   align-items:center;
@@ -215,7 +215,7 @@ a{text-decoration:none;color:inherit}
 }
 .auth-logo-text span{color:#00aa5b;}
 
-/* Heading */
+/* Judul Auth */
 .auth-heading{
   margin-top:19px;
   text-align:center;
@@ -235,7 +235,7 @@ a{text-decoration:none;color:inherit}
   font-weight:600;
 }
 
-/* Forms */
+/* Form Auth */
 .auth-form{display:none;}
 .auth-form.active{
   display:block;
@@ -259,7 +259,7 @@ a{text-decoration:none;color:inherit}
   color:#667085;
 }
 
-/* Input fields */
+/* Field Auth */
 .auth-field{
   position:relative;
 }
@@ -286,7 +286,7 @@ a{text-decoration:none;color:inherit}
   background:#f4faf7;
 }
 
-/* Password toggle */
+/* Tombol Lihat Password */
 .auth-field.with-toggle input{
   padding-right:40px;
 }
@@ -312,7 +312,7 @@ a{text-decoration:none;color:inherit}
 }
 .auth-eye-btn svg{display:block;}
 
-/* Submit button */
+/* Tombol Submit Auth */
 .auth-submit{
   width:100%;
   height:40px;
@@ -337,7 +337,7 @@ a{text-decoration:none;color:inherit}
   margin-top:42px;
 }
 
-/* Switcher link */
+/* Pindah Form Auth */
 .auth-switcher{
   text-align:center;
   font-size:12px;
@@ -361,10 +361,10 @@ a{text-decoration:none;color:inherit}
   text-decoration:none;
 }
 
-/* Body lock */
+/* Kunci Scroll Auth */
 body.auth-locked{overflow:hidden;}
 
-/* Animations */
+/* Animasi Auth */
 @keyframes fadeAuth{from{opacity:0}to{opacity:1}}
 @keyframes modalPop{
   from{opacity:0;transform:translateY(18px) scale(.97)}
@@ -375,7 +375,7 @@ body.auth-locked{overflow:hidden;}
   to{opacity:1;transform:translateX(0)}
 }
 
-/* ── Responsive ── */
+/* Auth Responsive */
 @media(max-width:520px){
   .auth-modal{padding:0 10px;}
   .auth-modal-shell{max-width:100%;}
@@ -428,7 +428,7 @@ a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 
-/* ---------- Public/auth pages ---------- */
+/* Halaman Publik */
 .auth-body {
   min-height: 100vh;
   display: grid;
@@ -609,7 +609,7 @@ button { cursor: pointer; }
 .auth-switch { text-align: center; margin-top: 22px; font-size: 13px; color: var(--muted); }
 .auth-switch a { color: var(--green-2); font-weight: 900; }
 
-/* ---------- App layout ---------- */
+/* Layout Aplikasi */
 .app-body { background: #f4fbf8; min-height: 100vh; }
 .app-shell { display: grid; grid-template-columns: 292px minmax(0, 1fr); min-height: 100vh; }
 .sidebar {
@@ -839,20 +839,6 @@ button { cursor: pointer; }
 
 .profile-card { max-width:720px; }
 .footer-note { margin-top:26px; color:var(--muted); font-size:13px; text-align:center; }
-.toast {
-  position: fixed; right: 24px; bottom: 24px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: #10231d;
-  color: white;
-  box-shadow: var(--shadow);
-  transform: translateY(20px);
-  opacity: 0;
-  pointer-events: none;
-  transition: .25s ease;
-  z-index: 99;
-}
-.toast.show { opacity: 1; transform: translateY(0); }
 .empty-state { padding:30px; text-align:center; color:var(--muted); }
 .empty-state strong { display:block; color:var(--dark); font-size:18px; margin-bottom:7px; }
 
@@ -887,7 +873,7 @@ button { cursor: pointer; }
   .bars { gap:8px; }
 }
 
-/* ---------- Revisi fitur MONIFY ---------- */
+/* Gaya Tambahan */
 .hidden{display:none!important;}
 .form-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 .ai-category-preview{

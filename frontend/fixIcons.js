@@ -50,8 +50,8 @@ replaceFile(path.join(pagesDir, 'Dashboard.jsx'), code => {
 // Budget.jsx
 replaceFile(path.join(pagesDir, 'Budget.jsx'), code => {
   let newCode = code.replace(
-    "import { getState, setState, summary, rupiah, toast, timestamp } from '../utils/store';", 
-    "import { getState, setState, summary, rupiah, toast, timestamp } from '../utils/store';\nimport { Target, CreditCard, Leaf, Bot, Flame, Calculator, CheckCircle } from 'lucide-react';"
+    "import { getState, setState, summary, rupiah, timestamp } from '../utils/store';", 
+    "import { getState, setState, summary, rupiah, timestamp } from '../utils/store';\nimport { Target, CreditCard, Leaf, Bot, Flame, Calculator, CheckCircle } from 'lucide-react';"
   );
   newCode = newCode.replace(/<div className="stat-icon">🎯<\/div>/g, '<div className="stat-icon"><Target size={24}/></div>');
   newCode = newCode.replace(/<div className="stat-icon">💸<\/div>/g, '<div className="stat-icon"><CreditCard size={24}/></div>');
@@ -64,8 +64,8 @@ replaceFile(path.join(pagesDir, 'Budget.jsx'), code => {
 // Prediksi.jsx
 replaceFile(path.join(pagesDir, 'Prediksi.jsx'), code => {
   let newCode = code.replace(
-    "import { getState, summary, rupiah, toast, timestamp } from '../utils/store';", 
-    "import { getState, summary, rupiah, toast, timestamp } from '../utils/store';\nimport { Tags, TrendingUp, ShieldAlert, Target, Calculator, Receipt, Heart } from 'lucide-react';"
+    "import { getState, summary, rupiah, timestamp } from '../utils/store';", 
+    "import { getState, summary, rupiah, timestamp } from '../utils/store';\nimport { Tags, TrendingUp, ShieldAlert, Target, Calculator, Receipt, Heart } from 'lucide-react';"
   );
   newCode = newCode.replace(/<i>🏷️<\/i>/g, "<i><Tags size={24}/></i>");
   newCode = newCode.replace(/<i>📈<\/i>/g, "<i><TrendingUp size={24}/></i>");

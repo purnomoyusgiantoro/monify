@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { LogOut } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
 import Topbar from '../components/Topbar.jsx';
-import { getState, setState, toast } from '../utils/store';
+import { getState, setState } from '../utils/store';
 import { apiLogout, apiUpdatePassword, apiUpdateProfile, apiGetMe } from '../utils/api';
 
 export default function Setting() {
+  const { showToast = () => {} } = useOutletContext() ?? {};
   const [user, setUser] = useState({ name: '', email: '' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -43,21 +45,35 @@ export default function Setting() {
     event.preventDefault();
     if (savingProfile) return;
 
+    const name = user.name.trim();
+    const email = user.email.trim();
+
+    if (name.length < 3) {
+      showToast('error', 'Gagal memperbarui profil. Nama lengkap minimal 3 karakter.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast('error', 'Gagal memperbarui profil. Format email belum benar.');
+      return;
+    }
+
     try {
       setSavingProfile(true);
-      const result = await apiUpdateProfile(user.name, user.email);
+      const result = await apiUpdateProfile(name, email);
       if (!result.ok) {
-        toast(result.data?.message || 'Gagal menyimpan profil.');
+        showToast('error', result.data?.message || 'Gagal memperbarui profil.');
         return;
       }
 
       const next = getState();
-      next.user.name = user.name;
-      next.user.email = user.email;
+      next.user.name = name;
+      next.user.email = email;
       setState(next);
-      toast('Profil berhasil diperbarui.');
+      setUser((current) => ({ ...current, name, email }));
+      showToast('success', 'Profil berhasil diperbarui.');
     } catch {
-      toast('Terjadi kesalahan saat menyimpan profil.');
+      showToast('error', 'Terjadi kesalahan saat memperbarui profil.');
     } finally {
       setSavingProfile(false);
     }
@@ -71,8 +87,23 @@ export default function Setting() {
     const newPassword = event.currentTarget.newPassword.value;
     const confirmPassword = event.currentTarget.confirmPassword.value;
 
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      showToast('error', 'Gagal memperbarui password. Semua field wajib diisi.');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      showToast('error', 'Gagal memperbarui password. Password baru minimal 8 karakter.');
+      return;
+    }
+
+    if (oldPassword === newPassword) {
+      showToast('error', 'Gagal memperbarui password. Password baru tidak boleh sama dengan password lama.');
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
-      toast('Konfirmasi password tidak sama.');
+      showToast('error', 'Gagal memperbarui password. Konfirmasi password tidak sama.');
       return;
     }
 
@@ -80,14 +111,14 @@ export default function Setting() {
       setSavingPassword(true);
       const result = await apiUpdatePassword(oldPassword, newPassword);
       if (!result.ok) {
-        toast(result.data?.message || 'Gagal mengubah password.');
+        showToast('error', result.data?.message || 'Gagal memperbarui password.');
         return;
       }
 
       event.currentTarget.reset();
-      toast('Password berhasil diubah.');
+      showToast('success', 'Password berhasil diperbarui.');
     } catch {
-      toast('Terjadi kesalahan saat mengubah password.');
+      showToast('error', 'Terjadi kesalahan saat memperbarui password.');
     } finally {
       setSavingPassword(false);
     }

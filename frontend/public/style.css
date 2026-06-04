@@ -1781,7 +1781,7 @@ a {
   margin-top: 8px
 }
 
-/* TEAM PAGE */
+/* Halaman Team */
 .team-hero {
   background: radial-gradient(circle at 85% 15%, #dbffeb 0, transparent 30%), linear-gradient(180deg, #fff, #f5fbf8)
 }
@@ -2416,7 +2416,7 @@ a {
   }
 }
 
-/* ---------- Auth popup – Match login.html ---------- */
+/* Modal Auth */
 .auth-modal {
   position: fixed;
   inset: 0;
@@ -2446,7 +2446,7 @@ a {
   z-index: 1;
 }
 
-/* ── Card container ── */
+/* Kartu Modal Auth */
 .auth-modal-card {
   width: 100%;
   background: #fff;
@@ -2470,7 +2470,7 @@ a {
   padding-top: 38px;
 }
 
-/* Close Button */
+/* Tombol Tutup Auth */
 .auth-close {
   position: absolute;
   top: -12px;
@@ -2498,7 +2498,7 @@ a {
   background: #f4faf7;
 }
 
-/* Brand logo */
+/* Brand Auth */
 .auth-brand-logo {
   display: flex;
   align-items: center;
@@ -2513,7 +2513,7 @@ a {
   object-fit: contain;
 }
 
-/* Heading */
+/* Judul Auth */
 .auth-heading {
   margin-top: 19px;
   text-align: center;
@@ -2535,7 +2535,7 @@ a {
   font-weight: 600;
 }
 
-/* Forms */
+/* Form Auth */
 .auth-form {
   display: none;
 }
@@ -2569,7 +2569,7 @@ a {
   color: #667085;
 }
 
-/* Input fields */
+/* Field Auth */
 .auth-field {
   position: relative;
 }
@@ -2599,7 +2599,7 @@ a {
   background: #f4faf7;
 }
 
-/* Password toggle */
+/* Tombol Lihat Password */
 .auth-field.with-toggle input {
   padding-right: 40px;
 }
@@ -2630,7 +2630,7 @@ a {
   display: block;
 }
 
-/* Submit button */
+/* Tombol Submit Auth */
 .auth-submit {
   width: 100%;
   height: 40px;
@@ -2658,7 +2658,7 @@ a {
   margin-top: 42px;
 }
 
-/* Switcher link */
+/* Pindah Form Auth */
 .auth-switcher {
   text-align: center;
   font-size: 12px;
@@ -2686,12 +2686,12 @@ a {
   text-decoration: none;
 }
 
-/* Body lock */
+/* Kunci Scroll Auth */
 body.auth-locked {
   overflow: hidden;
 }
 
-/* Animations */
+/* Animasi Auth */
 @keyframes fadeAuth {
   from {
     opacity: 0
@@ -2726,7 +2726,7 @@ body.auth-locked {
   }
 }
 
-/* ── Responsive ── */
+/* Auth Responsive */
 @media(max-width:520px) {
   .auth-modal {
     padding: 0 10px;

@@ -39,19 +39,6 @@ export function getState() {
 
 export function setState(next) { localStorage.setItem('monify_state', JSON.stringify(next)); window.dispatchEvent(new Event('statechange')); }
 
-export function toast(message) {
-  let el = document.querySelector('.toast');
-  if (!el) {
-    el = document.createElement('div');
-    el.className = 'toast';
-    document.body.appendChild(el);
-  }
-  el.textContent = message;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2300);
-}
-
-
 export function summary(state = getState(), transactions = state.transactions) {
   const today = new Date();
   const income = transactions.filter(x => x.type === 'income').reduce((a,b)=>a+Number(b.amount || 0),0);

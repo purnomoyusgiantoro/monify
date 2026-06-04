@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 import Topbar from '../components/Topbar.jsx';
 import TransactionTabs from '../components/transactions/TransactionTabs.jsx';
 import TransactionForm from '../components/transactions/TransactionForm.jsx';
@@ -37,6 +37,7 @@ function makeEmptyForm() {
 }
 
 export default function Transaksi() {
+  const { showToast = () => {} } = useOutletContext() ?? {};
   const [searchParams] = useSearchParams();
   const routeDateFilter = searchParams.get('date') || '';
   const [activeTab, setActiveTab] = useState('all');
@@ -218,7 +219,7 @@ export default function Transaksi() {
     const amount = Number(formData.amount);
 
     if (!name || !amount || amount <= 0) {
-      alert('Nama transaksi dan nominal wajib diisi dengan benar.');
+      showToast('error', 'Gagal menambahkan transaksi. Periksa nama transaksi dan nominal.');
       return;
     }
 
@@ -270,6 +271,7 @@ export default function Transaksi() {
             ),
           );
         }
+        showToast('success', 'Transaksi berhasil diperbarui.');
       } else {
         // Create via API
         const payload = {
@@ -315,6 +317,7 @@ export default function Transaksi() {
           };
           setTransactions((current) => [newTrx, ...current]);
         }
+        showToast('success', 'Transaksi berhasil ditambahkan.');
       }
     } catch {
       // Fallback: local only
@@ -330,8 +333,10 @@ export default function Transaksi() {
       };
       if (editingId) {
         setTransactions((current) => current.map((t) => (t.id === editingId ? localPayload : t)));
+        showToast('success', 'Transaksi berhasil diperbarui.');
       } else {
         setTransactions((current) => [localPayload, ...current]);
+        showToast('success', 'Transaksi berhasil ditambahkan.');
       }
     }
 
@@ -352,6 +357,11 @@ export default function Transaksi() {
   }
 
   async function handleDelete() {
+    if (!deleteTarget) {
+      showToast('error', 'Gagal menghapus transaksi. Data tidak ditemukan.');
+      return;
+    }
+
     try {
       const res = await apiDeleteTransaction(deleteTarget.id);
       if (res.ok) {
@@ -367,6 +377,7 @@ export default function Transaksi() {
     clearCache();
     if (editingId === deleteTarget.id) resetForm();
     setDeleteTarget(null);
+    showToast('success', 'Transaksi berhasil dihapus.');
   }
 
   // Categories for the form

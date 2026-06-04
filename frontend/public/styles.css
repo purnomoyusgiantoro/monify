@@ -1803,11 +1803,7 @@ button {
   }
 }
 
-/* =========================================================
-   Monify UI Consistency Polish
-   Fokus: konsistensi font, spacing, radius, alignment, dan ruang kosong.
-   Tidak mengubah susunan komponen dan tidak menambah elemen baru.
-   ========================================================= */
+/* Dasar Aplikasi */
 :root {
   --radius-card: 16px;
   --radius-control: 10px;
@@ -2510,10 +2506,7 @@ textarea {
   }
 }
 
-/* =========================================================
-   Final request polish: input groups, icons, budget actions,
-   dashboard alignment, and responsive icon sizing.
-   ========================================================= */
+/* Kontrol Umum */
 :root {
   --control-height: 50px;
   --control-left: clamp(48px, 4.6vw, 58px);
@@ -2522,7 +2515,7 @@ textarea {
   --icon-lg: clamp(26px, 2.5vw, 32px);
 }
 
-/* Remove stray tiny v / native indicators */
+/* Indikator Kontrol */
 .date-picker span[aria-hidden],
 .filter-button span[aria-hidden],
 .small-button span[aria-hidden] {
@@ -2566,7 +2559,7 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
-/* Flat, consistent input groups: radius only belongs to the outer wrapper */
+/* Grup Input */
 .select-box,
 .amount-input,
 .date-input {
@@ -2642,7 +2635,7 @@ input[type='number'] {
   padding-right: 14px;
 }
 
-/* Dashboard: make used percentage visually centered */
+/* Ringkasan Budget Dashboard */
 .budget-summary div:last-child {
   text-align: center;
 }
@@ -2657,13 +2650,13 @@ input[type='number'] {
   text-align: center;
 }
 
-/* Sidebar profile background should be one clean surface */
+/* Profil Sidebar */
 .sidebar__profile {
   background: var(--surface);
   box-shadow: inset 0 1px 0 var(--line);
 }
 
-/* Budget list with usage text and delete action */
+/* Baris Budget */
 .budget-page-row {
   grid-template-columns: minmax(86px, 0.9fr) minmax(170px, 2fr) 48px 78px 36px;
   min-height: 72px;
@@ -2713,7 +2706,7 @@ input[type='number'] {
   object-fit: contain;
 }
 
-/* New edit/delete assets: keep wrappers balanced */
+/* Tombol Aksi Baris */
 .row-actions button {
   width: 34px;
   height: 32px;
@@ -2731,7 +2724,7 @@ input[type='number'] {
   height: var(--icon-sm);
 }
 
-/* Setting page harmony */
+/* Halaman Pengaturan */
 .setting-grid {
   grid-template-columns: minmax(220px, 260px) minmax(340px, 430px) minmax(440px, 1fr);
   align-items: stretch;
@@ -2829,7 +2822,7 @@ input[type='number'] {
   margin-top: auto;
 }
 
-/* Global icon responsiveness */
+/* Ikon Responsive */
 .sidebar__item img {
   width: var(--icon-md);
   height: var(--icon-md);
@@ -2941,10 +2934,7 @@ input[type='number'] {
   }
 }
 
-/* =========================================================
-   MONIFY FINAL REVISION OVERRIDES
-   UI polish + responsive behavior + toast + skeleton
-   ========================================================= */
+/* Override Aplikasi */
 :root {
   --sidebar-width: 304px;
   --radius-card-final: 18px;
@@ -2954,7 +2944,7 @@ input[type='number'] {
   --chevron-svg: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.5 5.25L7 8.75L10.5 5.25' stroke='%2317212B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Stable desktop shell/sidebar: no random resize while scrolling */
+/* Shell Desktop */
 .app-shell {
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr) !important;
   align-items: stretch;
@@ -3018,7 +3008,7 @@ input[type='number'] {
   color: var(--muted) !important;
 }
 
-/* Input group segmentation: keep the neat left segment, but make the boundary straight. */
+/* Input Bertingkat */
 .select-box,
 .amount-input,
 .date-input {
@@ -3096,7 +3086,7 @@ input[type='number'] {
   padding-right: 16px !important;
 }
 
-/* One clean dropdown indicator only for selects/filter controls. */
+/* Kontrol Select */
 .form-field > select,
 .select-box select {
   appearance: none !important;
@@ -3137,7 +3127,7 @@ input[type='number'] {
   content: none !important;
 }
 
-/* Dashboard budget rows: show used / limit clearly. */
+/* Baris Budget Dashboard */
 .budget-row {
   grid-template-columns: minmax(88px, 0.75fr) minmax(150px, 1.15fr) minmax(120px, 2fr) 48px 94px !important;
   align-items: center !important;
@@ -3163,7 +3153,7 @@ input[type='number'] {
   text-align: center !important;
 }
 
-/* Budget page row action clarity. */
+/* Aksi Baris Budget */
 .budget-page-row {
   grid-template-columns: minmax(92px, 0.8fr) minmax(220px, 2fr) 52px 92px 44px !important;
   align-items: center !important;
@@ -3206,7 +3196,7 @@ input[type='number'] {
   height: clamp(16px, 1.35vw, 20px) !important;
 }
 
-/* Setting page harmonization. */
+/* Layout Pengaturan */
 .setting-grid {
   align-items: stretch !important;
 }
@@ -3335,96 +3325,7 @@ input[type='number'] {
   margin: 0 !important;
 }
 
-/* Toast notification */
-.toast {
-  position: fixed;
-  top: 22px;
-  right: 22px;
-  z-index: 1000;
-  width: min(390px, calc(100vw - 32px));
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) 32px;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 14px;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: 0 20px 48px rgba(7, 25, 18, 0.14);
-  animation: toast-in 180ms ease-out;
-}
-
-.toast--success {
-  border-left: 5px solid var(--green);
-}
-
-.toast--error {
-  border-left: 5px solid var(--red);
-}
-
-.toast__icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-}
-
-.toast--success .toast__icon {
-  background: var(--green-soft);
-  color: var(--green-dark);
-}
-
-.toast--error .toast__icon {
-  background: var(--red-soft);
-  color: var(--red);
-}
-
-.toast__content {
-  display: grid;
-  gap: 2px;
-}
-
-.toast__content strong {
-  font-size: 14px;
-}
-
-.toast__content span {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.toast__close {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 22px;
-  line-height: 1;
-}
-
-.toast__close:hover {
-  background: var(--surface-soft);
-  color: var(--text);
-}
-
-@keyframes toast-in {
-  from {
-    transform: translateY(-8px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Skeleton loading */
+/* Skeleton Loading */
 .skeleton-page,
 .skeleton-panel,
 .skeleton-panel--form {
@@ -3524,7 +3425,7 @@ input[type='number'] {
   }
 }
 
-/* Responsive icon/layout rules: only switch at clear breakpoints. */
+/* Layout Responsive */
 @media (max-width: 1180px) {
   :root {
     --sidebar-width: 248px;
@@ -3674,13 +3575,6 @@ input[type='number'] {
     gap: 14px !important;
   }
 
-  .toast {
-    top: 12px;
-    right: 12px;
-    left: 12px;
-    width: auto;
-  }
-
   .select-box,
   .amount-input,
   .date-input,
@@ -3702,10 +3596,7 @@ input[type='number'] {
   }
 }
 
-/* =========================================================
-   MONIFY REVISION V3
-   Restore input group character + complete skeleton + compact setting + custom toast
-   ========================================================= */
+/* Lapisan Revisi */
 :root {
   --control-height-v3: 56px;
   --control-radius-v3: 16px;
@@ -3713,8 +3604,7 @@ input[type='number'] {
   --input-left-soft-v3: #f2fbf6;
 }
 
-/* Restore Transaksi/Budget input group style closer to monify_consistent_design.zip.
-   The left icon/prefix keeps the soft curved segment instead of the flat divider from v2. */
+/* Input Transaksi dan Budget */
 .select-box,
 .amount-input,
 .date-input {
@@ -3867,7 +3757,7 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
-/* Make Setting page compact; keep structure but reduce oversized spacing. */
+/* Pengaturan Ringkas */
 .setting-grid {
   grid-template-columns: minmax(210px, 250px) minmax(320px, 420px) minmax(460px, 1fr) !important;
   gap: 16px !important;
@@ -4021,76 +3911,7 @@ input[type='number'] {
   font-size: 14px !important;
 }
 
-/* Custom Monify toast: compact, not template-looking. */
-.toast {
-  top: 20px !important;
-  right: 20px !important;
-  width: min(360px, calc(100vw - 32px)) !important;
-  grid-template-columns: 28px minmax(0, 1fr) 26px !important;
-  gap: 10px !important;
-  padding: 12px 12px 12px 14px !important;
-  border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.96) !important;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(221, 232, 226, 0.95) !important;
-  border-left: 1px solid rgba(221, 232, 226, 0.95) !important;
-  box-shadow: 0 16px 42px rgba(7, 25, 18, 0.13) !important;
-}
-
-.toast--success {
-  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(244,251,247,0.98)) !important;
-  border-color: rgba(0, 170, 91, 0.22) !important;
-}
-
-.toast--error {
-  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(255,247,247,0.98)) !important;
-  border-color: rgba(241, 29, 36, 0.2) !important;
-}
-
-.toast--info {
-  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(245,248,247,0.98)) !important;
-  border-color: rgba(65, 77, 88, 0.16) !important;
-}
-
-.toast__icon {
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: 9px !important;
-  font-size: 14px !important;
-  font-weight: 900 !important;
-}
-
-.toast--success .toast__icon {
-  background: rgba(0, 170, 91, 0.12) !important;
-  color: var(--green-dark) !important;
-}
-
-.toast--error .toast__icon {
-  background: rgba(241, 29, 36, 0.1) !important;
-  color: var(--red) !important;
-}
-
-.toast--info .toast__icon {
-  background: rgba(23, 33, 43, 0.06) !important;
-  color: var(--text) !important;
-}
-
-.toast__message {
-  margin: 0 !important;
-  color: var(--text) !important;
-  font-size: 13px !important;
-  font-weight: 650 !important;
-  line-height: 1.35 !important;
-}
-
-.toast__close {
-  width: 26px !important;
-  height: 26px !important;
-  border-radius: 8px !important;
-  font-size: 18px !important;
-}
-
-/* Skeleton additions for Prediksi AI and Setting. */
+/* Skeleton Tambahan */
 .prediction-layout--skeleton {
   margin-top: 20px !important;
 }
@@ -4291,19 +4112,12 @@ input[type='number'] {
     justify-self: stretch !important;
   }
 
-  .toast {
-    top: 12px !important;
-    left: 12px !important;
-    right: 12px !important;
-    width: auto !important;
-  }
-
   .skeleton-bot-card {
     min-height: 440px !important;
   }
 }
 
-/* Dashboard budget panel: scoped responsive repair. */
+/* Panel Budget Dashboard */
 .dashboard-budget-card {
   overflow: hidden;
 }
@@ -4576,7 +4390,7 @@ input[type='number'] {
   }
 }
 
-/* Responsive visibility repair: Transaksi, Budget, and Prediksi AI. */
+/* Responsive Halaman */
 .topbar > div,
 .topbar__actions,
 .transaksi-main,
@@ -4914,7 +4728,7 @@ input[type='number'] {
   }
 }
 
-/* Setting page final layout: match the requested three-card composition. */
+/* Layout Halaman Pengaturan */
 .setting-main {
   overflow-x: hidden;
 }
@@ -5336,7 +5150,7 @@ input[type='number'] {
   }
 }
 
-/* Restore original Setting layout */
+/* Reset Layout Pengaturan */
 .setting-main {
   overflow-x: hidden;
 }
@@ -5647,7 +5461,7 @@ input[type='number'] {
   }
 }
 
-/* Final form input repair: remove oversized curved prefixes in Transaksi and Budget. */
+/* Rapikan Input Form */
 :root {
   --monify-form-control-height: 56px;
   --monify-form-prefix-width: 58px;
@@ -5792,7 +5606,7 @@ input[type='number'] {
   }
 }
 
-/* Final typography comfort pass: softer contrast and less aggressive bold. */
+/* Tipografi */
 :root {
   --text: #1f2a35;
   --text-strong: #111b26;
@@ -5844,8 +5658,7 @@ body {
 .add-transaction-button,
 .quick-prompts button,
 .settings-profile-card__logout,
-.danger-zone__button,
-.toast__message {
+.danger-zone__button {
   font-weight: 650 !important;
 }
 
@@ -5915,7 +5728,7 @@ body {
   color: var(--text-strong) !important;
 }
 
-/* Target frontend compatibility: keep existing routing/API logic, adapt only layout hooks. */
+/* Kompatibilitas Frontend */
 .app-body {
   min-height: 100vh;
   background: var(--bg);
@@ -5984,7 +5797,7 @@ body {
   }
 }
 
-/* Final parity pass for the routed target app shell. */
+/* Shell Aplikasi Routed */
 .app-shell .main {
   min-width: 0 !important;
   background: var(--bg) !important;
@@ -6052,7 +5865,7 @@ body {
   }
 }
 
-/* Final mobile list polish for Transaksi and Budget. */
+/* Daftar Mobile */
 @media (max-width: 640px) {
   .transaction-card--list,
   .budget-page-card--list {
@@ -6264,7 +6077,7 @@ body {
   }
 }
 
-/* Target Budget rows do not expose delete logic, so remove the reserved action column. */
+/* Baris Budget Mobile */
 @media (max-width: 640px) {
   .budget-page-row:not(:has(.budget-row__delete)) {
     grid-template-columns: minmax(0, 1fr) auto !important;
@@ -6275,7 +6088,7 @@ body {
   }
 }
 
-/* Chat contrast fix: keep global muted text from overriding message bubbles. */
+/* Pesan Chat */
 .chat-message.chat-message--bot {
   background: #eef4f1 !important;
   color: #17212b !important;
@@ -6294,7 +6107,7 @@ body {
   color: #17212b !important;
 }
 
-/* Transaction action buttons must stay side by side. */
+/* Aksi Transaksi */
 .full-transaction-row .row-actions {
   display: inline-flex !important;
   flex-direction: row !important;
@@ -6316,7 +6129,7 @@ body {
   }
 }
 
-/* Phone layout: turn the sidebar into a fixed bottom navigation. */
+/* Navigasi Mobile */
 @media (max-width: 1024px) {
   .app-shell {
     display: block !important;
@@ -6401,7 +6214,7 @@ body {
   }
 }
 
-/* Exact mobile bottom tab bar treatment. */
+/* Tab Bawah Mobile */
 @media (max-width: 1024px) {
   .sidebar,
   .sidebar--app-nav {
@@ -6455,7 +6268,7 @@ body {
   }
 }
 
-/* Dashboard visual revision only: Budget Bulan Ini and Transaksi Terbaru. */
+/* Panel Dashboard */
 
 .dashboard-budget-row {
   display: grid !important;
@@ -6712,7 +6525,7 @@ body {
 }
 
 
-/* Dashboard remaining revisions: Budget summary, Transaksi Terbaru, and Tren Pengeluaran interactions. */
+/* Penyempurnaan Dashboard */
 .dashboard-budget-summary {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -6852,7 +6665,7 @@ body {
   background: var(--green-dark);
 }
 
-/* Budget summary final layout (desktop: 3 cols, tablet/mobile: 2 + 1). */
+/* Ringkasan Budget Responsive */
 .dashboard-budget-summary {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -7009,7 +6822,7 @@ body {
   }
 }
 
-/* Dashboard "Transaksi terbaru": source of truth final override */
+/* Transaksi Terbaru */
 @media (min-width: 768px) {
   .dashboard-panels > .panel-card:nth-child(2) .transaction-row {
     display: grid !important;
@@ -7090,7 +6903,7 @@ body {
   }
 }
 
-/* Setting compact layout */
+/* Layout Pengaturan Ringkas */
 .setting-page-compact {
   padding-top: 12px;
 }
@@ -7100,6 +6913,124 @@ body {
   margin-bottom: 10px;
 }
 
+/* Notifikasi Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: min(360px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 26px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid rgba(221, 232, 226, 0.95);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border-left-color: rgba(221, 232, 226, 0.95);
+  box-shadow: 0 16px 42px rgba(7, 25, 18, 0.13);
+  backdrop-filter: blur(10px);
+  animation: toast-in 180ms ease-out;
+}
+
+.toast--success {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 247, 0.98));
+  border-color: rgba(0, 170, 91, 0.22);
+}
+
+.toast--error {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 247, 0.98));
+  border-color: rgba(241, 29, 36, 0.2);
+}
+
+.toast--info {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 248, 247, 0.98));
+  border-color: rgba(65, 77, 88, 0.16);
+}
+
+.toast__icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-weight: 900;
+}
+
+.toast--success .toast__icon {
+  background: rgba(0, 170, 91, 0.12);
+  color: var(--green-dark);
+}
+
+.toast--error .toast__icon {
+  background: rgba(241, 29, 36, 0.1);
+  color: var(--red);
+}
+
+.toast--info .toast__icon {
+  background: rgba(23, 33, 43, 0.06);
+  color: var(--text);
+}
+
+.toast__message {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.toast__close {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.toast__close:hover {
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .toast {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}
+
+.setting-page-compact .topbar h1 {
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.setting-page-compact .topbar p {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+}
 .setting-compact-grid {
   display: grid;
   width: min(100%, 1372px);
@@ -7365,7 +7296,7 @@ body {
   }
 }
 
-/* Compact Setting sizing */
+/* Ukuran Pengaturan Ringkas */
 .setting-grid {
   --setting-top-card-height: 286px !important;
   grid-template-columns:

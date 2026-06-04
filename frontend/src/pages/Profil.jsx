@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar';
-import { getState, setState, toast } from '../utils/store';
+import { getState, setState } from '../utils/store';
 
 export default function Profil() {
   const { setMobileMenuOpen } = useOutletContext();
@@ -18,16 +18,14 @@ export default function Profil() {
     st.user.name = user.name;
     st.user.email = user.email;
     setState(st);
-    toast('Profil demo diperbarui.');
   };
 
   const handlePassword = (e) => {
     e.preventDefault();
     const newPass = e.target.elements.newPass.value;
     const confirmPass = e.target.elements.confirmPass.value;
-    if (newPass !== confirmPass) return toast('Password baru dan konfirmasi belum sama.');
+    if (newPass !== confirmPass) return;
     e.target.reset();
-    toast('Password demo berhasil diganti.');
   };
 
   const handleLogout = async () => {
@@ -44,7 +42,6 @@ export default function Profil() {
 
   const handleReset = () => {
     localStorage.removeItem('monify_state');
-    toast('Data demo direset.');
     setTimeout(() => window.location.reload(), 600);
   };
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import Topbar from '../components/Topbar.jsx';
 import BudgetSummaryCards from '../components/budget/BudgetSummaryCards.jsx';
 import BudgetForm from '../components/budget/BudgetForm.jsx';
@@ -23,6 +24,7 @@ const emptyForm = {
 };
 
 export default function Budget() {
+  const { showToast = () => {} } = useOutletContext() ?? {};
   const [budgets, setBudgets] = useState(() => {
     const cached = getCache('budgets');
     return cached ? cached : initialBudgets;
@@ -115,7 +117,7 @@ export default function Budget() {
     event.preventDefault();
 
     if (!formData.category || !formData.period) {
-      alert('Kategori dan periode wajib diisi.');
+      showToast('error', 'Gagal menyimpan budget. Periksa kategori, limit, dan periode.');
       return;
     }
 
@@ -130,16 +132,19 @@ export default function Budget() {
         try {
           const result = await apiDeleteBudget(existing.id);
           if (!result.ok) {
-            alert(result.data?.message || 'Gagal mengembalikan budget ke Belum Diatur.');
+            showToast('error', result.data?.message || 'Gagal mengembalikan budget ke Belum Diatur.');
             return;
           }
         } catch {
-          alert('Terjadi kesalahan saat menghapus budget.');
+          showToast('error', 'Terjadi kesalahan saat menghapus budget.');
           return;
         }
 
         setBudgets((current) => current.filter((budget) => budget.id !== existing.id));
         clearCache();
+        showToast('info', 'Budget dikembalikan ke Belum Diatur.');
+      } else {
+        showToast('error', 'Gagal menyimpan budget. Periksa kategori, limit, dan periode.');
       }
 
       setFormData((current) => ({ ...current, limit: '' }));
@@ -227,6 +232,7 @@ export default function Budget() {
 
     clearCache();
     setFormData((current) => ({ ...current, limit: '' }));
+    showToast('success', 'Budget berhasil disimpan.');
   }
 
   // Category names for the form
