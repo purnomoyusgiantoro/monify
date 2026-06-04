@@ -510,7 +510,7 @@ function generateRecommendation(status, risk, safe, monthExpenses, currentMonth)
 // ============================================
 // POST /api/ai/chat
 // ============================================
-router.post('/chat', authMiddleware, async (req, res) => {
+router.post('/chat', async (req, res) => {
     try {
         const { message, metrics } = req.body;
         const apiKey = process.env.OPENROUTER_API_KEY;
