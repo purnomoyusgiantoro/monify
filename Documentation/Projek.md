@@ -1,3 +1,11 @@
+# Dokumentasi Proyek MONIFY
+
+**MONIFY** adalah Sistem Cerdas Pengelolaan Keuangan Pribadi (Proyek Capstone). Proyek ini menggunakan pendekatan arsitektur Monorepo yang menggabungkan **React** (Frontend), **Express.js** (Backend API), dan **FastAPI dengan TensorFlow** (AI Service) dalam satu repositori.
+
+Tujuan utama dari sistem ini adalah untuk mencatat dan mengategorikan transaksi keuangan pengguna secara otomatis menggunakan model Artificial Intelligence (AI) / Machine Learning.
+
+---
+
 ### 1. Arsitektur Monorepo MONIFY
 
 Kita akan membagi monorepo menjadi 2 folder utama:

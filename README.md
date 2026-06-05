@@ -1,18 +1,51 @@
 # 💰 MONIFY — Sistem Cerdas Pengelolaan Keuangan Pribadi
 
-Monorepo untuk proyek capstone MONIFY yang menggabungkan **React**, **Express.js**, **FastAPI**, dan **TensorFlow** dalam satu repositori.
+Di era digital saat ini, pengelolaan keuangan pribadi menjadi tugas yang semakin kompleks karena tingginya volume transaksi keuangan dan data pengeluaran yang tidak terstruktur. Perencanaan keuangan dan manajemen pengeluaran telah menjadi kebutuhan esensial bagi individu untuk memantau pengeluaran harian, menginterpretasikan perilaku finansial, dan merencanakan investasi masa depan secara efektif. Namun, banyak mahasiswa dan generasi muda, khususnya Gen Z, mengalami kesulitan besar dalam mengelola keuangan mereka, seperti kebiasaan tidak mencatat pengeluaran, kurangnya pemahaman terhadap pola konsumsi pribadi, serta absennya perencanaan keuangan yang terstruktur.
 
-## 📁 Struktur Proyek
+Monorepo untuk proyek capstone MONIFY yang menggabungkan **React**, **Express.js**, **FastAPI**, dan **TensorFlow** dalam satu repositori untuk memberikan solusi pencatatan dan kategorisasi keuangan otomatis berbasis kecerdasan buatan.
 
-```
-monify/
-├── frontend/           ⚛️  Frontend (React)
+---
+
+## 🔗 Tautan Penting
+
+### 🚀 Deployment Produk
+- **Aplikasi Web (Frontend)**: [MONIFY Frontend (Vercel)](https://monify-xi.vercel.app/)
+- **Backend API**: [MONIFY API (Vercel)](https://monify-api-two.vercel.app/)
+- **AI Service (Model ML)**: [Hugging Face Spaces](https://huggingface.co/spaces/pxy18/ai_v4)
+
+### 📹 Media & Presentasi
+- **Video Presentasi (Pitching) 10 Menit**: [Tonton di YouTube](https://youtu.be/wMPuAO88emI?si=X7zP_eoP_3M9em-m)
+- **Video Demo Penggunaan Produk**: [Tonton di YouTube](https://youtu.be/cZSFpbb0LGE?si=isl6MOTSWVGpjjwX)
+- **Slide Presentasi (Pitch Deck)**: [Lihat di Canva](https://canva.link/rl7x5qsyar3ojf6)
+
+### 📊 Data & Riset
+- **Dataset Transaksi Keuangan**: [Unduh via Google Drive](https://drive.google.com/file/d/1SAafOz-Rva2I7XmXlZEncXIC97ezMwG1/view?usp=drive_link)
+
+---
+
+## 🛠️ Teknologi (Tech Stack)
+
+Sistem ini dibangun dengan arsitektur terpisah (Microservices/Monorepo) yang menggunakan teknologi berikut:
+- **Frontend**: React.js (Aplikasi Antarmuka Pengguna)
+- **Backend API**: Node.js & Express.js (Rest API Utama)
+- **AI & Machine Learning**: Python, FastAPI, TensorFlow/Keras, Scikit-learn (Pemrosesan dan Prediksi Kategori)
+- **Data Science & Dashboard**: Jupyter Notebook, Pandas, Streamlit
+
+---
+
+## 📁 Struktur Proyek (Tree)
+
+```text
+monify-monorepo/
+├── frontend/           ⚛️  Frontend Web App (React)
 ├── backend/
-│   ├── api/            🟢 Backend (Express.js)
-│   ├── ai-service/     🐍 Microservice AI (FastAPI + TensorFlow)
-│   └── data-science/   📊 Area Kerja Data Scientist
-└── Documentation/      📄 Dokumen Proyek
+│   ├── api/            🟢 REST API Utama (Node.js + Express.js)
+│   ├── ai-service/     🐍 Microservice Machine Learning (Python + FastAPI + TensorFlow)
+│   └── data-science/   📊 Eksperimen Model, Notebooks, Dashboard Keuangan (Streamlit), Dataset
+└── Documentation/      📄 Dokumen Pendukung Proyek (Arsitektur, Panduan, dll)
 ```
+
+---
 
 ## 👥 Tim & Penanggung Jawab
 
@@ -23,7 +56,9 @@ monify/
 | AI Service (FastAPI) | Faradila Octavia & Mohamad Fajar Mutaqin |
 | Data Science | Kristina Ester & Chenida Rira Verlyta |
 
-## 🚀 Cara Menjalankan
+---
+
+## 🚀 Cara Menjalankan Secara Lokal
 
 ### 1. Setup Frontend & Backend (Node.js)
 ```bash
@@ -38,32 +73,19 @@ npm run dev:web
 
 # Atau jalankan keduanya sekaligus
 npm run dev
-```
 
-### 2. Setup AI Service (Python)
-```bash
-cd backend/ai-service
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# Mac/Linux
-source venv/bin/activate
-
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
-```
+---
 
 ## 🔗 Arsitektur Integrasi
 
-```
+```text
 React (3000) → Express (5000) → FastAPI (8000)
                     ↓
               JSON File Storage
 ```
 
-1. **React** mengirim input user ke **Express Backend**
-2. **Express** meneruskan request ke **FastAPI AI Service** untuk prediksi
-3. **Express** menerima hasil AI dan menyimpan ke file JSON
-4. **Express** mengirimkan hasil kembali ke **React** untuk ditampilkan
+1. **React** mengirim input teks atau transaksi dari pengguna ke **Express Backend**.
+2. **Express** meneruskan *request* tersebut ke **FastAPI AI Service** untuk dilakukan klasifikasi prediksi.
+3. **FastAPI** membalas dengan kategori (misal: "Makanan & Minuman").
+4. **Express** menerima hasil AI, kemudian menyimpannya ke file JSON lokal (sebagai penyimpanan).
+5. **Express** mengirimkan respons terakhir kembali ke **React** untuk divisualisasikan pada *Dashboard* pengguna.

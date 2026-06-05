@@ -56,6 +56,8 @@ Skrip tersebut (*app.py*) memuat seluruh aset *Pickle* & *Keras*, lalu memberika
 * `category`: Nama kelas (kategori) hasil prediksi (misalnya: "Belanja", "Transportasi", dsb).
 * `confidence`: Nilai keyakinan model (dari skala 0.0 - 1.0) atas prediksi tersebut.
 
+**Live Demo**: [Gradio di Hugging Face Spaces](https://huggingface.co/spaces/pxy18/ai_v4)
+
 ### Library Dependensi (`requirements.txt`)
 Dependensi minimum yang diperlukan untuk menjalankan sistem AI ini antara lain:
 * `tensorflow`
