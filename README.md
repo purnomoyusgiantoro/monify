@@ -23,6 +23,28 @@ Proyek *capstone* ini dibangun dengan arsitektur Monorepo yang menggabungkan:
 - **Backend API**: [MONIFY API (Vercel)](https://monify-api-two.vercel.app/)
 - **AI Service (Model ML)**: [Hugging Face Spaces](https://huggingface.co/spaces/pxy18/ai_v4)
 
+---
+
+## 📡 Dokumentasi API
+
+**Base URL Produksi:** `https://monify-api-two.vercel.app`  
+**Base URL Lokal:** `http://localhost:5000`  
+**Versi API:** `2.0.0`  
+
+Untuk melihat seluruh dokumentasi API secara lengkap dan interaktif, Anda dapat membuka akses Swagger melalui URL lokal berikut:
+👉 **[http://localhost:8080/swagger](http://localhost:8080/swagger)**
+
+### ⚙️ Cara Menjalankan Swagger UI Lokal
+
+Jika Anda ingin menjalankan Swagger UI secara lokal di port `8080`, pastikan Anda sudah menginstal Node.js, lalu jalankan perintah berikut di terminal (pada folder root):
+
+```bash
+npx swagger-ui-watcher ./Documentation/swagger.json --port 8080
+```
+*(Ini akan membaca file `swagger.json` yang ada di folder Documentation dan membuka Swagger UI secara otomatis di browser Anda).*
+
+Jika Anda ingin melihat rinciannya secara tekstual, dokumentasi lengkap juga tersedia di file: [`Documentation/API_DOCUMENTATION.md`](./Documentation/API_DOCUMENTATION.md)
+
 ### 📈 Dashboard Data Science
 Untuk menjalankan dan melihat visualisasi data transaksi, kami menggunakan Streamlit.
 - **Live Demo**: [Streamlit Dashboard](https://projectini-6d2spgubracvgnsipavrkp.streamlit.app/)
