@@ -1,8 +1,15 @@
 # 💰 MONIFY — Sistem Cerdas Pengelolaan Keuangan Pribadi
 
-Di era digital saat ini, pengelolaan keuangan pribadi menjadi tugas yang semakin kompleks karena tingginya volume transaksi keuangan dan data pengeluaran yang tidak terstruktur. Perencanaan keuangan dan manajemen pengeluaran telah menjadi kebutuhan esensial bagi individu untuk memantau pengeluaran harian, menginterpretasikan perilaku finansial, dan merencanakan investasi masa depan secara efektif. Namun, banyak mahasiswa dan generasi muda, khususnya Gen Z, mengalami kesulitan besar dalam mengelola keuangan mereka, seperti kebiasaan tidak mencatat pengeluaran, kurangnya pemahaman terhadap pola konsumsi pribadi, serta absennya perencanaan keuangan yang terstruktur.
+Banyak individu, terutama generasi muda, yang kesulitan mengelola keuangan karena kurangnya pencatatan dan pemahaman pola konsumsi. **MONIFY** hadir sebagai solusi inovatif yang mengotomatiskan pencatatan dan kategorisasi transaksi keuangan harian Anda dengan memanfaatkan Kecerdasan Buatan (AI).
 
-Monorepo untuk proyek capstone MONIFY yang menggabungkan **React**, **Express.js**, **FastAPI**, dan **TensorFlow** dalam satu repositori untuk memberikan solusi pencatatan dan kategorisasi keuangan otomatis berbasis kecerdasan buatan.
+Proyek *capstone* ini dibangun dengan arsitektur Monorepo yang menggabungkan:
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 
 ---
 
