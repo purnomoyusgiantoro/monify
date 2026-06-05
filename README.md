@@ -40,6 +40,7 @@ Untuk menjalankan dan melihat visualisasi data transaksi, kami menggunakan Strea
 
 ### 📊 Data & Riset
 - **Dataset Transaksi Keuangan**: [Unduh via Google Drive](https://drive.google.com/file/d/1SAafOz-Rva2I7XmXlZEncXIC97ezMwG1/view?usp=drive_link)
+- **Aset Model AI (ZIP)**: [Unduh via Google Drive](https://drive.google.com/file/d/1Bq-wJ8bdgJdoIZTimoGQgwlfqDjX2KHI/view?usp=drive_link)
 
 ---
 
