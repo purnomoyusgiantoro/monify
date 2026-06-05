@@ -214,6 +214,6 @@ if __name__ == "__main__":
    - Jalankan FastAPI di port khusus: `uvicorn main:app --reload --port 8000`.
 4. **Integrasi:**
    - React (Purnomo) mengirim input ketikan user ke Express Backend (Indra).
-   - Express Backend (Indra) memanggil API Python di `localhost:8000/predict-category` (Fajar/Faradila).
-   - Express menerima hasil AI dan menyimpannya ke File JSON (sesuai batasan eksklusi tanpa DB bank).
+   - Express Backend (Indra) memanggil API Python di **Hugging Face Spaces** (Fajar/Faradila).
+   - Express menerima hasil AI dan menyimpannya ke **Database Supabase**.
    - Express mengirimkan hasil tersebut kembali ke React untuk ditampilkan di _Dashboard_ pengguna.

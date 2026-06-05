@@ -100,13 +100,13 @@ npm run dev
 ## 🔗 Arsitektur Integrasi
 
 ```text
-React (3000) → Express (5000) → FastAPI (8000)
-                    ↓
-              JSON File Storage
+React (Vercel) → Express (Vercel) → FastAPI (Hugging Face Spaces)
+                        ↓
+                Database Supabase
 ```
 
 1. **React** mengirim input teks atau transaksi dari pengguna ke **Express Backend**.
-2. **Express** meneruskan *request* tersebut ke **FastAPI AI Service** untuk dilakukan klasifikasi prediksi.
+2. **Express** meneruskan *request* tersebut ke **FastAPI AI Service (di Hugging Face Spaces)** untuk dilakukan klasifikasi prediksi.
 3. **FastAPI** membalas dengan kategori (misal: "Makanan & Minuman").
-4. **Express** menerima hasil AI, kemudian menyimpannya ke file JSON lokal (sebagai penyimpanan).
+4. **Express** menerima hasil AI, kemudian menyimpannya ke **Database Supabase** (sebagai penyimpanan utama).
 5. **Express** mengirimkan respons terakhir kembali ke **React** untuk divisualisasikan pada *Dashboard* pengguna.
