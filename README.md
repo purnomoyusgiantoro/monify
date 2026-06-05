@@ -51,8 +51,8 @@ monify-monorepo/
 
 | Komponen | Penanggung Jawab |
 |---|---|
-| Frontend (React) | Purnomo Yusgiantoro |
-| Backend (Express.js) | Indra Fata Nizar Azizi |
+| Frontend (React) | Indra Fata Nizar Azizi |
+| Backend (Express.js) | Purnomo Yusgiantoro|
 | AI Service (FastAPI) | Faradila Octavia & Mohamad Fajar Mutaqin |
 | Data Science | Kristina Ester & Chenida Rira Verlyta |
 
