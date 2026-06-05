@@ -81,9 +81,18 @@ monify-monorepo/
 ## 🚀 Cara Menjalankan Secara Lokal
 
 ### 1. Setup Frontend & Backend (Node.js)
+
+⚠️ **Penting**: Sebelum menjalankan server, pastikan Anda mengatur *Environment Variables* terlebih dahulu dengan menyalin file `.env.example` menjadi `.env`.
+
 ```bash
 # Di root folder monify/
 npm install
+
+# Konfigurasi Environment Backend
+# 1. Masuk ke folder backend: cd backend/api
+# 2. Salin .env.example menjadi .env (atau copy paste manual)
+# 3. Buka file .env dan masukkan kredensial/konfigurasi Anda
+# 4. Kembali ke root: cd ../..
 
 # Jalankan backend (port 5000)
 npm run dev:api
