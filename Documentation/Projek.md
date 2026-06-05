@@ -13,8 +13,8 @@ Kita akan membagi monorepo menjadi 2 folder utama:
 2. **`backend`**: Berisi layanan backend (Express API, AI Service, dan Data Science).
 
 Rincian:
-1. **`frontend`**: Frontend aplikasi menggunakan React (Penanggung jawab: Purnomo Yusgiantoro).
-2. **`backend/api`**: Backend utama menggunakan Node.js/Express untuk CRUD, Autentikasi, dan manajemen JSON lokal (Penanggung jawab: Indra Fata Nizar Azizi).
+1. **`frontend`**: Frontend aplikasi menggunakan React (Penanggung jawab: Indra Fata Nizar Azizi).
+2. **`backend/api`**: Backend utama menggunakan Node.js/Express untuk CRUD, Autentikasi, dan manajemen JSON lokal (Penanggung jawab: Purnomo Yusgiantoro).
 3. **`backend/ai-service`**: Microservice menggunakan Python (FastAPI) khusus untuk menjalankan model TensorFlow Deep Learning (Penanggung jawab: Faradila Octavia & Mohamad Fajar Mutaqin).
 4. **`backend/data-science`**: Folder khusus untuk riset, dataset finansial, _feature engineering_, dan file Jupyter Notebook (Penanggung jawab: Kristina Ester & Chenida Rira Verlyta).
 
