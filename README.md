@@ -14,8 +14,13 @@ Monorepo untuk proyek capstone MONIFY yang menggabungkan **React**, **Express.js
 - **AI Service (Model ML)**: [Hugging Face Spaces](https://huggingface.co/spaces/pxy18/ai_v4)
 
 ### 📹 Media & Presentasi
-- **Video Presentasi (Pitching) 10 Menit**: [Tonton di YouTube](https://youtu.be/wMPuAO88emI?si=X7zP_eoP_3M9em-m)
-- **Video Demo Penggunaan Produk**: [Tonton di YouTube](https://youtu.be/cZSFpbb0LGE?si=isl6MOTSWVGpjjwX)
+
+**1. Video Presentasi (Pitching) 10 Menit**  
+[![Video Presentasi](https://img.youtube.com/vi/wMPuAO88emI/maxresdefault.jpg)](https://youtu.be/wMPuAO88emI)
+
+**2. Video Demo Penggunaan Produk**  
+[![Video Demo Penggunaan](https://img.youtube.com/vi/cZSFpbb0LGE/maxresdefault.jpg)](https://youtu.be/cZSFpbb0LGE)
+
 - **Slide Presentasi (Pitch Deck)**: [Lihat di Canva](https://canva.link/rl7x5qsyar3ojf6)
 
 ### 📊 Data & Riset
