@@ -13,6 +13,11 @@ Monorepo untuk proyek capstone MONIFY yang menggabungkan **React**, **Express.js
 - **Backend API**: [MONIFY API (Vercel)](https://monify-api-two.vercel.app/)
 - **AI Service (Model ML)**: [Hugging Face Spaces](https://huggingface.co/spaces/pxy18/ai_v4)
 
+### 📈 Dashboard Data Science
+Untuk menjalankan dan melihat visualisasi data transaksi, kami menggunakan Streamlit.
+- **Live Demo**: [Streamlit Dashboard](https://projectini-6d2spgubracvgnsipavrkp.streamlit.app/)
+- **Source Code Referensi**: [dashboard_keuangan.py](https://github.com/chenida/projectini/blob/main/dashboard_keuangan.py)
+
 ### 📹 Media & Presentasi
 
 **1. Video Presentasi (Pitching) 10 Menit**  
@@ -78,6 +83,7 @@ npm run dev:web
 
 # Atau jalankan keduanya sekaligus
 npm run dev
+```
 
 ---
 
